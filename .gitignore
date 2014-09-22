@@ -1,0 +1,29 @@
+build/
+*.orig
+*~
+*.patch
+
+###### geany ######
+*.gch
+
+###### rtnt ######
+*.Rproj*
+.Rhistory
+.RData
+*.tar.gz
+*.Rcheck
+core
+#temporary file use for R devs and tests
+scripts/rtnt3/R/dev.R
+scripts/rtnt3/man/*.log
+
+###### eclipse ######
+.cproject
+.project
+.settings
+
+###### auto-generated files ######
+*.pdf
+*.png
+.Rproj.user
+data/*/outputs
