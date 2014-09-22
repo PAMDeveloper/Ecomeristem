@@ -1,7 +1,7 @@
 /**
- * @file model/kernel/Model.hpp
+ * @file assimilation/Interc.hpp
  * @author The Ecomeristem Development Team
- * See the AUTHORS file
+ * See the AUTHORS or Authors.txt file
  */
 
 /*
@@ -22,39 +22,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODEL_KERNEL_MODEL_HPP
-#define MODEL_KERNEL_MODEL_HPP
+namespace ecomeristem { namespace plant { namespace assimilation {
 
-#include <model/models/ModelParameters.hpp>
-#include <model/models/ecomeristem/Model.hpp>
-
-namespace model { namespace kernel {
-
-class Model
+class Interc
 {
 public:
-    Model()
-    { }
-
-    virtual ~Model()
+    Interc()
     {
-        delete ecomeristem_model;
+        Kdf = 0.65;
     }
 
-    void build();
+    virtual ~Interc()
+    { }
 
-    void compute(double t);
-
-    void init(double t, const model::models::ModelParameters& parameters)
+    void assign_LAI(double value)
     {
-        ecomeristem_model->init(t, parameters);
+        _lai = value;
+    }
+
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
+    {
+        Kdf = parameters.get("Kdf");
+        _interc = 0;
+        return 0;
     }
 
 private:
-// models
-    ecomeristem::Model* ecomeristem_model;
+    void compute(double /* t */)
+    {
+        _interc = 1. - std::exp(-Kdf * _lai);
+    }
+
+// parameters
+    double Kdf;
+
+// internal variable
+    double _interc;
+
+// external variables
+    double _lai;
 };
 
-} }
-
-#endif
+} } } // namespace ecomeristem plant assimilation

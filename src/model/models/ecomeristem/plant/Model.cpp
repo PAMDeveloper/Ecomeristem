@@ -1,7 +1,7 @@
 /**
- * @file model/kernel/Model.hpp
+ * @file ecomeristem/plant/Model.cpp
  * @author The Ecomeristem Development Team
- * See the AUTHORS file
+ * See the AUTHORS or Authors.txt file
  */
 
 /*
@@ -22,39 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODEL_KERNEL_MODEL_HPP
-#define MODEL_KERNEL_MODEL_HPP
+#include <model/models/ecomeristem/plant/Model.hpp>
 
-#include <model/models/ModelParameters.hpp>
-#include <model/models/ecomeristem/Model.hpp>
+namespace ecomeristem { namespace plant {
 
-namespace model { namespace kernel {
-
-class Model
-{
-public:
-    Model()
-    { }
-
-    virtual ~Model()
-    {
-        delete ecomeristem_model;
-    }
-
-    void build();
-
-    void compute(double t);
-
-    void init(double t, const model::models::ModelParameters& parameters)
-    {
-        ecomeristem_model->init(t, parameters);
-    }
-
-private:
-// models
-    ecomeristem::Model* ecomeristem_model;
-};
-
-} }
-
-#endif
+} } // namespace ecomeristem plant

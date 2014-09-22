@@ -28,10 +28,12 @@ namespace model { namespace kernel {
 
 void Model::build()
 {
+    ecomeristem_model = new ecomeristem::Model;
 }
 
 void Model::compute(double t)
 {
+    ecomeristem_model->compute(t);
 }
 
 } }

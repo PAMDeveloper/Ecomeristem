@@ -1,7 +1,7 @@
 /**
- * @file model/kernel/Model.hpp
+ * @file assimilation/Assim.hpp
  * @author The Ecomeristem Development Team
- * See the AUTHORS file
+ * See the AUTHORS or Authors.txt file
  */
 
 /*
@@ -22,39 +22,51 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MODEL_KERNEL_MODEL_HPP
-#define MODEL_KERNEL_MODEL_HPP
+namespace ecomeristem { namespace plant { namespace assimilation {
 
-#include <model/models/ModelParameters.hpp>
-#include <model/models/ecomeristem/Model.hpp>
-
-namespace model { namespace kernel {
-
-class Model
+class Assim : public ecomeristem::Dynamics < >
 {
 public:
-    Model()
-    { }
-
-    virtual ~Model()
+    Assim()
     {
-        delete ecomeristem_model;
+        density = 30;
     }
 
-    void build();
+    virtual ~Assim()
+    { }
 
-    void compute(double t);
-
-    void init(double t, const model::models::ModelParameters& parameters)
+    void assign_RespMaint(double value)
     {
-        ecomeristem_model->init(t, parameters);
+        RespMaint = value;
+    }
+
+    void assign_AssimPot(double value)
+    {
+        AssimPot = value;
+    }
+
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
+    {
+        density = parameters.get("density");
+        _assim = 0;
+    }
+
+    void compute(double t)
+    {
+        _assim = std::max(0., AssimPot / density - RespMaint);
     }
 
 private:
-// models
-    ecomeristem::Model* ecomeristem_model;
+// parameters
+    double density;
+
+// internal variable
+    double _assim;
+
+// external variables
+    double RespMaint;
+    double AssimPot;
 };
 
-} }
-
-#endif
+} } } // namespace ecomeristem plant assimilation

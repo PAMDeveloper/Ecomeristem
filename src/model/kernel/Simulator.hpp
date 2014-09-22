@@ -42,9 +42,9 @@ public:
     virtual ~Simulator()
     { delete model; }
 
-    void init(const model::models::ModelParameters& parameters)
+    void init(double t, const model::models::ModelParameters& parameters)
     {
-        model->init(parameters);
+        model->init(t, parameters);
         observer.init();
     }
 
