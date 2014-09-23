@@ -22,15 +22,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class Model
+class Model : public AbstractCoupledModel < Model >
 {
 public:
+    static const int STOCK = 0;
+    static const int GROW = 1;
+
     Model()
-    { }
+    {
+    }
 
     virtual ~Model()
     { }

@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 
 namespace ecomeristem { namespace culm {
 
-class Model
+class Model : public AbstractCoupledModel < Model >
 {
 public:
     Model()

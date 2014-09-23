@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_PLANT_HPP Manager.hpp Model.hpp TillerManager.hpp)
+SET(ECOMERISTEM_PLANT_HPP Lig.hpp Manager.hpp Model.hpp TillerManager.hpp)
 
 SET(ECOMERISTEM_PLANT_CPP Manager.cpp Model.cpp)
 

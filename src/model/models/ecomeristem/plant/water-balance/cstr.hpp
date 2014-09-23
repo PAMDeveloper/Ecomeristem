@@ -1,12 +1,12 @@
 /**
- * @file waterbal/cstr.hpp
- * @author The PARADEVS Development Team
+ * @file plant/water-balance/cstr.hpp
+ * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2013 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2013 Cirad http://www.cirad.fr
+ * Copyright (C) 2005-2014 INRA http://www.cirad.fr
+ * Copyright (C) 2014 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,64 +22,50 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bag.hpp>
-#include <dynamics.hpp>
-#include <external_event.hpp>
-#include <time.hpp>
+#ifndef __ECOMERISTEM_PLANT_WATER_BALANCE_CSTR_HPP
+#define __ECOMERISTEM_PLANT_WATER_BALANCE_CSTR_HPP
 
-namespace ecomeristem { namespace water_balance {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class cstr : public ecomeristem::Dynamics < >
+namespace ecomeristem { namespace plant { namespace water_balance {
+
+class cstr : public AbstractAtomicModel < cstr >
 {
 public:
-    cstr(const std::string& name,
-         const paradevs::common::NoParameters& parameters) :
-        ecomeristem::Dynamics < >(name, parameters)
+    static const unsigned int CSTR = 0;
+    static const unsigned int FTSW = 0;
+
+    cstr()
     {
-        // ThresTransp = parameters.ThresTransp;
-        ThresTransp = 0.62;
+        internal(CSTR, &cstr::_cstr);
+        external(FTSW, &cstr::_ftsw);
     }
 
     virtual ~cstr()
     { }
 
-    void receive(const Bag& x, Time /* t */)
-    {
-        for (auto & event : x) {
-            if (event.get_port_name() == "FTSW") {
-                _FTSW = get_content(event);
-            }
-        }
-    }
+    void compute(double /* t */)
+    { _cstr = (_ftsw < ThresTransp) ?
+            std::max(1e-4, _ftsw * 1. / ThresTransp) : 1; }
 
-    paradevs::common::DoubleTime::type start(Time /* t */)
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
     {
+        ThresTransp = parameters.get < double >("ThresTransp");
         _cstr = 0;
-        return 0;
     }
-
-    Bag lambda(Time /* t */) const
-    { return build_bag("cstr", &_cstr_1); }
-
-    void update_buffer(Time /* t */)
-    { _cstr_1 = _cstr; }
 
 private:
-    void compute(Time /* t */)
-    {
-        _cstr = (_FTSW < ThresTransp) ?
-            std::max(1e-4, _FTSW * 1. / ThresTransp) : 1;
-    }
-
-// parameters
+    // parameters
     double ThresTransp;
 
-// internal variables
+    // internal variable
     double _cstr;
-    double _cstr_1;
 
-// external variables
-    double _FTSW;
+    // external variable
+    double _ftsw;
 };
 
-} } // namespace ecomeristem water_balance
+} } } // namespace ecomeristem plant water_balance
+
+#endif

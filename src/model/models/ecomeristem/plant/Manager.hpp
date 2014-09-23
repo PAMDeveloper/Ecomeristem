@@ -57,20 +57,35 @@ enum state_t { INIT, /* 0 */
 class Manager : public AbstractAtomicModel < Manager >
 {
 public:
+    static const int STOCK = 0;
+    static const int PHENO_STAGE = 1;
+    static const int BOOL_CROSSED_PLASTO = 2;
+    static const int FTSW = 3;
+    static const int IC = 4;
+
+    static const int PHASE = 0;
+
     Manager()
-    { }
+    {
+        external(STOCK, &Manager::_stock);
+        external(PHENO_STAGE, &Manager::_phenoStage);
+        external(BOOL_CROSSED_PLASTO, &Manager::_boolCrossedPlasto);
+        external(FTSW, &Manager::_FTSW);
+        external(IC, &Manager::_IC);
+
+        internal(PHASE, &Manager::_state);
+    }
 
     virtual ~Manager()
     { }
 
     virtual void init(double /* t */,
-                      const model::models::ModelParameters& /* parameters */)
+                      const model::models::ModelParameters& parameters)
     {
-        stock = 0;
-        phenoStage = 0;
-        boolCrossedPlasto = 0;
-        FTSW = 0;
-        IC = 0;
+        nbleaf_pi = 10; // parameters.get < double >("nbleaf_pi");
+        nbleaf_culm_elong = parameters.get < double >("nbleaf_culm_elong");
+        nbleaf_max_after_pi = parameters.get < double >("nbleaf_max_after_pi");
+
         culm_number = 1;
         leaf_number = 0;
         first_leaf = false;
@@ -87,15 +102,17 @@ private:
     double nbleaf_max_after_pi;
 
 // internal variables
-    state_t state;
-    double stock;
-    double phenoStage;
-    double boolCrossedPlasto;
-    double FTSW;
-    double IC;
+    double _state;
     unsigned int leaf_number;
     unsigned int culm_number;
     bool first_leaf;
+
+// external variables
+    double _stock;
+    double _phenoStage;
+    double _boolCrossedPlasto;
+    double _FTSW;
+    double _IC;
 };
 
 } } // namespace ecomeristem plant

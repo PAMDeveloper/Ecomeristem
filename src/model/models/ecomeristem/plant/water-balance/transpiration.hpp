@@ -1,12 +1,12 @@
 /**
- * @file waterbal/transpiration.hpp
- * @author The PARADEVS Development Team
+ * @file plant/water-balance/transpiration.hpp
+ * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2013 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2013 Cirad http://www.cirad.fr
+ * Copyright (C) 2005-2014 INRA http://www.cirad.fr
+ * Copyright (C) 2014 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,89 +22,73 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bag.hpp>
-#include <dynamics.hpp>
-#include <external_event.hpp>
-#include <time.hpp>
+#ifndef __ECOMERISTEM_PLANT_WATER_BALANCE_TRANSPIRATION_HPP
+#define __ECOMERISTEM_PLANT_WATER_BALANCE_TRANSPIRATION_HPP
 
-namespace ecomeristem { namespace water_balance {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class Transpiration : public ecomeristem::Dynamics  < >
+namespace ecomeristem { namespace plant { namespace water_balance {
+
+class Transpiration : public AbstractAtomicModel < Transpiration >
 {
 public:
-    Transpiration(const std::string& name,
-          const paradevs::common::NoParameters& parameters) :
-        ecomeristem::Dynamics < >(name, parameters)
-    {
-        // ETPmax = parameters.ETPmax;
-        // Kcpot = parameters.Kcpot;
-        // density = parameters.density;
+    static const unsigned int TRANSPIRATION = 0;
+    static const unsigned int ETP = 0;
+    static const unsigned int INTERC = 1;
+    static const unsigned int SWC = 2;
+    static const unsigned int CSTR = 3;
 
-        ETPmax = 8;
-        Kcpot = 1.3;
-        density = 30;
+    Transpiration()
+    {
+        internal(TRANSPIRATION, &Transpiration::_transpiration);
+        external(ETP, &Transpiration::_etp);
+        external(INTERC, &Transpiration::_interc);
+        external(SWC, &Transpiration::_swc);
+        external(CSTR, &Transpiration::_cstr);
     }
 
     virtual ~Transpiration()
     { }
 
-    void receive(const Bag& events, Time /* t */)
-    {
-        for (auto & event : events) {
-            if (event.get_port_name() == "cstr") {
-                _cstr = get_content(event);
-            }
-            if (event.get_port_name() == "Interc") {
-                _interc = get_content(event);
-            }
-            if (event.get_port_name() == "ETP") {
-                _ETP = get_content(event);
-            }
-            if (event.get_port_name() == "SWC") {
-                _SWC = get_content(event);
-            }
-        }
+    void compute(double /* t */)
+    { _transpiration = std::min(_swc_1, (Kcpot * std::min(_etp, ETPmax) *
+                                        _interc * _cstr) / density);
     }
 
-    paradevs::common::DoubleTime::type start(Time /* t */)
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
     {
+        ETPmax = parameters.get < double >("ETPmax");
+        Kcpot = parameters.get < double >("Kcpot");
+        density = parameters.get < double >("density");
         _transpiration = 0;
-        _SWC_1 = 0;
-        return 0;
     }
 
-    Bag lambda(Time /* t */) const
-    { return build_bag("deltap", &_transpiration_1); }
-
-    void update_buffer(Time /* t */)
+    void put(double t, unsigned int index, double value)
     {
-        _transpiration_1 = _transpiration;
-        _SWC_1 = _SWC;
+        if (index == SWC) {
+            _swc_1 = _swc;
+        }
+        AbstractAtomicModel < Transpiration >::put(t, index, value);
     }
 
 private:
-    void compute(Time /* t */)
-    {
-        _transpiration =  std::min(_SWC_1,
-                                   (Kcpot * std::min(_ETP, ETPmax) *
-                                    _interc * _cstr) / density);
-    }
-
-// parameters
+    // parameters
     double ETPmax;
     double Kcpot;
     double density;
 
-// internal variable
+    // internal variable
     double _transpiration;
-    double _transpiration_1;
 
-// external variables
-    double _cstr;
+    // external variable
+    double _etp;
     double _interc;
-    double _ETP;
-    double _SWC;
-    double _SWC_1;
+    double _swc;
+    double _swc_1;
+    double _cstr;
 };
 
-} } // namespace ecomeristem water_balance
+} } } // namespace ecomeristem plant water_balance
+
+#endif

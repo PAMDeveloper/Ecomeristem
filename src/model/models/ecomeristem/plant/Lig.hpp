@@ -1,5 +1,5 @@
 /**
- * @file plant/water-balance/Fcstr.hpp
+ * @file plant/Lig.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,45 +22,38 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_PLANT_WATER_BALANCE_FCSTR_HPP
-#define __ECOMERISTEM_PLANT_WATER_BALANCE_FCSTR_HPP
+#ifndef __ECOMERISTEM_PLANT_LIG_HPP
+#define __ECOMERISTEM_PLANT_LIG_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
-namespace ecomeristem { namespace plant { namespace water_balance {
+namespace ecomeristem { namespace plant {
 
-class Fcstr : public AbstractAtomicModel < Fcstr >
+class Lig : public AbstractAtomicModel < Lig >
 {
 public:
-    static const unsigned int FCSTR = 0;
-    static const unsigned int CSTR = 0;
+    static const unsigned int LIG = 0;
 
-    Fcstr()
+    Lig()
     {
-        internal(FCSTR, &Fcstr::_fcstr);
-        external(CSTR, &Fcstr::_cstr);
+        internal(LIG, &Lig::_lig);
     }
 
-    virtual ~Fcstr()
+    virtual ~Lig()
     { }
 
     void compute(double /* t */)
-    { _fcstr = std::sqrt(_cstr); }
+    { _lig = 0; }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
-    {
-        _fcstr = 0;
-    }
+    { _lig = 0; }
 
 private:
     // internal variable
-    double _fcstr;
-
-    // external variable
-    double _cstr;
+    double _lig;
 };
 
-} } } // namespace ecomeristem plant water_balance
+} } // namespace ecomeristem plant
 
 #endif

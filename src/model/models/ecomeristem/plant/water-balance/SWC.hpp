@@ -1,12 +1,12 @@
 /**
- * @file waterbal/SWC.hpp
- * @author The PARADEVS Development Team
+ * @file plant/water-balance/SWC.hpp
+ * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2013 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2013 Cirad http://www.cirad.fr
+ * Copyright (C) 2005-2014 INRA http://www.cirad.fr
+ * Copyright (C) 2014 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,66 +22,52 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bag.hpp>
-#include <dynamics.hpp>
-#include <external_event.hpp>
-#include <time.hpp>
+#ifndef __ECOMERISTEM_PLANT_WATER_BALANCE_SWC_HPP
+#define __ECOMERISTEM_PLANT_WATER_BALANCE_SWC_HPP
 
-namespace ecomeristem { namespace water_balance {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class SWC : public ecomeristem::Dynamics < >
+namespace ecomeristem { namespace plant { namespace water_balance {
+
+class Swc : public AbstractAtomicModel < Swc >
 {
 public:
-    SWC(const std::string& name,
-         const paradevs::common::NoParameters& parameters) :
-        ecomeristem::Dynamics < >(name, parameters)
+    static const unsigned int SWC = 0;
+    static const unsigned int DELTA_P = 0;
+    static const unsigned int WATER_SUPPLY = 1;
+
+    Swc()
     {
-        // RU1 = parameters.RU1;
-        RU1 = 250;
+        internal(SWC, &Swc::_swc);
+        external(DELTA_P, &Swc::_delta_p);
+        external(WATER_SUPPLY, &Swc::_water_supply);
     }
 
-    virtual ~SWC()
+    virtual ~Swc()
     { }
 
-    void receive(const Bag& x, Time /* t */)
-    {
-        for (auto & event : x) {
-            if (event.get_port_name() == "WaterSupply") {
-                _WaterSupply = get_content(event);
-            } else if (event.get_port_name() == "deltap") {
-                _deltap = get_content(event);
-            }
-        }
-    }
+    void compute(double /* t */)
+    { _swc = _swc - _delta_p + _water_supply; }
 
-    paradevs::common::DoubleTime::type start(Time /* t */)
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
     {
-        _SWC = 0;
-        return 0;
-    }
-
-    Bag lambda(Time /* t */) const
-    { return build_bag("SWC", &_SWC_1); }
-
-    void update_buffer(Time /* t */)
-    {
-        _SWC_1 = _SWC;
+        RU1 = parameters.get < double >("RU1");
+        _swc = 0;
     }
 
 private:
-    void compute(Time /* t */)
-    { _SWC = _SWC_1 - _deltap + _WaterSupply; }
-
-// parameters
+    // parameters
     double RU1;
 
-// internal variables
-    double _SWC;
-    double _SWC_1;
+    // internal variable
+    double _swc;
 
-// external variables
-    double _WaterSupply;
-    double _deltap;
+    // external variable
+    double _delta_p;
+    double _water_supply;
 };
 
-} } // namespace ecomeristem water_balance
+} } } // namespace ecomeristem plant water_balance
+
+#endif

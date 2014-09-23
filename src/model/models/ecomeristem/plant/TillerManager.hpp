@@ -22,15 +22,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractAtomicModel.hpp>
 
 namespace ecomeristem { namespace plant {
 
-class TillerManager
+class TillerManager : public AbstractAtomicModel < TillerManager >
 {
 public:
+    static const int BOOL_CROSSED_PLASTO = 0;
+    static const int IC = 1;
+    static const int PHENO_STAGE = 2;
+
     TillerManager()
-    { }
+    {
+        external(BOOL_CROSSED_PLASTO, &TillerManager::_boolCrossedPlasto);
+        external(IC, &TillerManager::_IC);
+        external(PHENO_STAGE, &TillerManager::_phenoStage);
+    }
 
     virtual ~TillerManager()
     { }
@@ -44,11 +52,11 @@ public:
 
     void compute(double /* t */)
     {
-        if (IC > Ict) {
+        if (_IC > Ict) {
             nbTillers += nbExistingTillers;
         }
-        if (boolCrossedPlasto > 0 and nbTillers >= 1 and
-            IC > Ict * ((P * resp_Ict) + 1)) {
+        if (_boolCrossedPlasto > 0 and nbTillers >= 1 and
+            _IC > Ict * ((P * resp_Ict) + 1)) {
             nbTillers = std::min(nbTillers, tae);
             nbExistingTillers += nbTillers;
         }
@@ -67,9 +75,9 @@ private:
     unsigned int tae;
 
     // external variables
-    double boolCrossedPlasto;
-    double IC;
-    double phenoStage;
+    double _boolCrossedPlasto;
+    double _IC;
+    double _phenoStage;
 };
 
 } } // namespace ecomeristem plant

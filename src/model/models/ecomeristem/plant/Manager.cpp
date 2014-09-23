@@ -61,18 +61,18 @@ void Manager::compute(double /* t */)
     state_t old_state;
 
     do {
-        old_state = state;
+        old_state = (state_t)_state;
 
-        switch (state) {
+        switch ((state_t)_state) {
         case INIT: {
-            state = INITIAL;
+            _state = INITIAL;
             break;
         }
         case INITIAL: {
-            if (stock > 0 and phenoStage < nbleaf_pi) {
-                state = PHYTOMER_MORPHO_GENESIS;
+            if (_stock > 0 and _phenoStage < nbleaf_pi) {
+                _state = PHYTOMER_MORPHO_GENESIS;
             } else {
-                state = DEAD;
+                _state = DEAD;
             }
             break;
         }
@@ -100,7 +100,7 @@ void Manager::compute(double /* t */)
         case NEW_PHYTOMER3:
         case LIG: break;
         };
-    } while (old_state != state);
+    } while (old_state != _state);
 }
 
 void Manager::put(double t, unsigned int index, double value)

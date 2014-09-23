@@ -1,12 +1,12 @@
 /**
- * @file waterbal/FTSW.hpp
- * @author The PARADEVS Development Team
+ * @file plant/water-balance/FTSW.hpp
+ * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2013 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2013 Cirad http://www.cirad.fr
+ * Copyright (C) 2005-2014 INRA http://www.cirad.fr
+ * Copyright (C) 2014 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,65 +22,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <bag.hpp>
-#include <dynamics.hpp>
-#include <external_event.hpp>
-#include <time.hpp>
+#ifndef __ECOMERISTEM_PLANT_WATER_BALANCE_FTSW_HPP
+#define __ECOMERISTEM_PLANT_WATER_BALANCE_FTSW_HPP
 
-namespace ecomeristem { namespace water_balance {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class FTSW : public ecomeristem::Dynamics < >
+namespace ecomeristem { namespace plant { namespace water_balance {
+
+class Ftsw : public AbstractAtomicModel < Ftsw >
 {
 public:
-    FTSW(const std::string& name,
-         const paradevs::common::NoParameters& parameters) :
-        ecomeristem::Dynamics < >(name, parameters)
+    static const unsigned int FTSW = 0;
+    static const unsigned int SWC = 0;
+
+    Ftsw()
     {
-        // RU1 = parameters.RU1;
-        RU1 = 250;
+        internal(FTSW, &Ftsw::_ftsw);
+        external(SWC, &Ftsw::_swc);
     }
 
-    virtual ~FTSW()
+    virtual ~Ftsw()
     { }
 
-    void receive(const Bag& x, Time /* t */)
+    void compute(double /* t */)
+    { _ftsw = _swc_1 / RU1; }
+
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
     {
-        for (auto & event : x) {
-            if (event.get_port_name() == "SWC") {
-                _SWC = get_content(event);
-            }
+        RU1 = parameters.get < double >("RU1");
+        _ftsw = 0;
+        _swc_1 = 0;
+    }
+
+    void put(double t, unsigned int index, double value)
+    {
+        if (index == SWC) {
+            _swc_1 = _swc;
         }
-    }
-
-    paradevs::common::DoubleTime::type start(Time /* t */)
-    {
-        _FTSW = 0;
-        return 0;
-    }
-
-    Bag lambda(Time /* t */) const
-    { return build_bag("FTSW", &_FTSW_1); }
-
-    void update_buffer(Time /* t */)
-    {
-        _FTSW_1 = _FTSW;
-        _SWC_1 = _SWC;
+        AbstractAtomicModel < Ftsw >::put(t, index, value);
     }
 
 private:
-    void compute(Time /* t */)
-    { _FTSW = _SWC_1 / RU1; }
-
-// parameters
+    // parameters
     double RU1;
 
-// internal variables
-    double _FTSW;
-    double _FTSW_1;
+    // internal variable
+    double _ftsw;
 
-// external variables
-    double _SWC;
-    double _SWC_1;
+    // external variable
+    double _swc;
+    double _swc_1;
 };
 
-} } // namespace ecomeristem water_balance
+} } } // namespace ecomeristem plant water_balance
+
+#endif
