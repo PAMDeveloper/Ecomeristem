@@ -1,5 +1,5 @@
 /**
- * @file ecomeristem/root/Model.hpp
+ * @file thermal-time/DeltaT.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,32 +22,49 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#ifndef __ECOMERISTEM_PLANT_THERMAL_TIME_DELAT_T_HPP
+#define __ECOMERISTEM_PLANT_THERMAL_TIME_DELAT_T_HPP
 
-namespace ecomeristem { namespace root {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class Model
+namespace ecomeristem { namespace plant { namespace thermal_time {
+
+class DeltaT : public AbstractAtomicModel < DeltaT >
 {
 public:
-    Model()
-    { }
+    static const unsigned int DELTA_T = 0;
+    static const unsigned int TA = 0;
 
-    virtual ~Model()
-    { }
-
-    void build()
+    DeltaT()
     {
+        internal(DELTA_T, &DeltaT::_deltaT);
+        external(TA, &DeltaT::_Ta);
     }
 
-    void init(double /* t */, const model::models::ModelParameters& /*     parameters */)
-    {
-    }
+    virtual ~DeltaT()
+    { }
 
     void compute(double /* t */)
+    { _deltaT = _Ta - _Tb; }
+
+    void init(double /* t */,
+              const model::models::ModelParameters& parameters)
     {
+        _Tb = parameters.get < double >("Tb");
+        _deltaT = 0;
     }
 
 private:
+    // parameters
+    double _Tb;
+
+    // internal variable
+    double _deltaT;
+
+    // external variable
+    double _Ta;
 };
 
-} } // namespace ecomeristem root
+} } } // namespace ecomeristem plant thermal_time
+
+#endif

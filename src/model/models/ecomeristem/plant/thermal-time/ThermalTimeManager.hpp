@@ -1,5 +1,5 @@
 /**
- * @file assimilation/Interc.hpp
+ * @file thermal-time/ThermalTimeManager.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,52 +22,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
-#define __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
+#ifndef __ECOMERISTEM_PLANT_THERMAL_TIME_THERMAL_TIME_MANAGER_HPP
+#define __ECOMERISTEM_PLANT_THERMAL_TIME_THERMAL_TIME_MANAGER_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
-namespace ecomeristem { namespace plant { namespace assimilation {
+namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Interc : public AbstractAtomicModel < Interc >
+class ThermalTimeManager : public AbstractAtomicModel < ThermalTimeManager >
 {
 public:
-    static const unsigned int INTERC = 0;
-    static const unsigned int LAI = 0;
+    enum state_t { INIT, DEAD, STOCK_AVAILABLE, NO_STOCK };
 
-    Interc()
+    static const unsigned int PHASE = 0;
+    static const unsigned int STOCK = 0;
+
+    ThermalTimeManager()
     {
-        internal(INTERC, &Interc::_interc);
-        external(LAI, &Interc::_lai);
-        _Kdf = 0.65;
+        internal(PHASE, &ThermalTimeManager::_phase);
+        external(STOCK, &ThermalTimeManager::_stock);
     }
 
-    virtual ~Interc()
+    virtual ~ThermalTimeManager()
     { }
 
     void compute(double /* t */)
     {
-        _interc = 1. - std::exp(-_Kdf * _lai);
+        // _assim = std::max(0., _assim_pot / _density - _resp_maint);
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& parameters)
+              const model::models::ModelParameters& /* parameters */)
     {
-        _Kdf = parameters.get < double >("Kdf");
-        _interc = 0;
+        // _density = parameters.get < double >("density");
+        // _assim = 0;
     }
 
 private:
-// parameters
-    double _Kdf;
+// // parameters
+//     double _density;
 
 // internal variable
-    double _interc;
+    double _phase;
 
 // external variables
-    double _lai;
+    double _stock;
 };
 
-} } } // namespace ecomeristem plant assimilation
+} } } // namespace ecomeristem plant thermal_time
 
 #endif

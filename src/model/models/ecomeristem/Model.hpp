@@ -39,6 +39,7 @@ public:
     void build()
     {
         plant_model = new ecomeristem::plant::Model;
+        plant_model->build();
     }
 
     void init(double t, const model::models::ModelParameters& parameters)

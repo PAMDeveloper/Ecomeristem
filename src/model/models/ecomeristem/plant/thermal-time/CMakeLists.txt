@@ -3,7 +3,9 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_PLANT_THERMAL_TIME_HPP Model.hpp)
+SET(ECOMERISTEM_PLANT_THERMAL_TIME_HPP DD.hpp DeltaT.hpp IH.hpp LiguloVisu.hpp
+  Model.hpp PhenoStage.hpp PlastoVisu.hpp ThermalTimeManager.hpp TT.hpp
+  TT_lig.hpp)
 
 SET(ECOMERISTEM_PLANT_THERMAL_TIME_CPP Model.cpp)
 

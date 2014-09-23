@@ -55,7 +55,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
                                  end);
 }
 
-static void run(const std::string& path, int verbose)
+static void run(const std::string& /* path */, int /* verbose */)
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);

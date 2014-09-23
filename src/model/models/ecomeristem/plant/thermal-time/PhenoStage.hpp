@@ -1,5 +1,5 @@
 /**
- * @file assimilation/Interc.hpp
+ * @file thermal-time/PhenoStage.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,52 +22,54 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
-#define __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
+#ifndef __ECOMERISTEM_PLANT_THERMAL_TIME_PHENO_STAGE_HPP
+#define __ECOMERISTEM_PLANT_THERMAL_TIME_PHENO_STAGE_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
-namespace ecomeristem { namespace plant { namespace assimilation {
+namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Interc : public AbstractAtomicModel < Interc >
+class PhenoStage : public AbstractAtomicModel < PhenoStage >
 {
 public:
-    static const unsigned int INTERC = 0;
-    static const unsigned int LAI = 0;
+    static const unsigned int PHENO_STAGE = 0;
+    static const unsigned int BOOL_CROSSED_PLASTO = 0;
+    static const unsigned int PHASE = 1;
 
-    Interc()
+    PhenoStage()
     {
-        internal(INTERC, &Interc::_interc);
-        external(LAI, &Interc::_lai);
-        _Kdf = 0.65;
+        internal(PHENO_STAGE, &PhenoStage::_PhenoStage);
+        external(BOOL_CROSSED_PLASTO, &PhenoStage::_boolCrossedPlasto);
+        external(PHASE, &PhenoStage::_phase);
     }
 
-    virtual ~Interc()
+    virtual ~PhenoStage()
     { }
 
     void compute(double /* t */)
     {
-        _interc = 1. - std::exp(-_Kdf * _lai);
+        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+            if (_boolCrossedPlasto >= 0) {
+                _PhenoStage = _PhenoStage + 1;
+            }
+        }
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& parameters)
+              const model::models::ModelParameters& /* parameters */)
     {
-        _Kdf = parameters.get < double >("Kdf");
-        _interc = 0;
+        _PhenoStage = 0;
     }
 
 private:
-// parameters
-    double _Kdf;
-
 // internal variable
-    double _interc;
+    double _PhenoStage;
 
 // external variables
-    double _lai;
+    double _boolCrossedPlasto;
+    double _phase;
 };
 
-} } } // namespace ecomeristem plant assimilation
+} } } // namespace ecomeristem plant thermal_time
 
 #endif

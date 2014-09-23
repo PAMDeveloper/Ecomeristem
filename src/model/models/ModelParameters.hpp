@@ -57,7 +57,7 @@ public:
         std::map < std::string, std::string >::const_iterator it;
         it = mParams.find(paramName);
 
-        return boost::lexical_cast<T>((it == mParams.end() ) ? "" : it->second);
+        return boost::lexical_cast<T>((it == mParams.end()) ? "0" : it->second);
     }
 
     /**

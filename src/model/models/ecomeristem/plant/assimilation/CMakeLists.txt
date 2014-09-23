@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES()
 
 SET(ECOMERISTEM_PLANT_ASSIMILATION_HPP Assim.hpp AssimPot.hpp Interc.hpp
-  LAI.hpp Model.hpp RespMaint.hpp)
+  Lai.hpp Model.hpp RespMaint.hpp)
 
 SET(ECOMERISTEM_PLANT_ASSIMILATION_CPP Model.cpp)
 

@@ -1,5 +1,5 @@
 /**
- * @file ecomeristem/root/Model.hpp
+ * @file ecomeristem/plant/TillerManager.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -24,30 +24,52 @@
 
 #include <model/models/ModelParameters.hpp>
 
-namespace ecomeristem { namespace root {
+namespace ecomeristem { namespace plant {
 
-class Model
+class TillerManager
 {
 public:
-    Model()
+    TillerManager()
     { }
 
-    virtual ~Model()
+    virtual ~TillerManager()
     { }
 
-    void build()
+    void init(double /* t */, const model::models::ModelParameters& /* parameters */)
     {
-    }
-
-    void init(double /* t */, const model::models::ModelParameters& /*     parameters */)
-    {
+        nbTillers = 0;
+        nbExistingTillers = 1;
+        tae = 0;
     }
 
     void compute(double /* t */)
     {
+        if (IC > Ict) {
+            nbTillers += nbExistingTillers;
+        }
+        if (boolCrossedPlasto > 0 and nbTillers >= 1 and
+            IC > Ict * ((P * resp_Ict) + 1)) {
+            nbTillers = std::min(nbTillers, tae);
+            nbExistingTillers += nbTillers;
+        }
     }
 
 private:
+    // parameters
+    double Ict;
+    double nbleaf_enabling_tillering;
+    double P;
+    double resp_Ict;
+
+    // internal variables
+    unsigned int nbTillers;
+    unsigned int nbExistingTillers;
+    unsigned int tae;
+
+    // external variables
+    double boolCrossedPlasto;
+    double IC;
+    double phenoStage;
 };
 
-} } // namespace ecomeristem root
+} } // namespace ecomeristem plant

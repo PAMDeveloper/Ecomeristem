@@ -1,7 +1,7 @@
 /**
- * @file model/kernel/Model.hpp
+ * @file model/kernel/AbstractModel.hpp
  * @author The Ecomeristem Development Team
- * See the AUTHORS file
+ * See the AUTHORS or Authors.txt file
  */
 
 /*
@@ -22,19 +22,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/kernel/Model.hpp>
+#ifndef __ECOMERISTEM_ABSTRACT_MODEL_HPP
+#define __ECOMERISTEM_ABSTRACT_MODEL_HPP
 
-namespace model { namespace kernel {
+#include <model/models/ModelParameters.hpp>
+#include <vector>
 
-void Model::build()
+namespace ecomeristem {
+
+class AbstractModel
 {
-    ecomeristem_model = new ecomeristem::Model;
-    ecomeristem_model->build();
+public:
+    AbstractModel()
+    { }
+
+    virtual ~AbstractModel()
+    { }
+
+    virtual void compute(double t) = 0;
+
+    virtual double get(unsigned int index) const = 0;
+
+    virtual void init(double t,
+                      const model::models::ModelParameters& parameters) = 0;
+
+    virtual void put(double t, unsigned int index, double value) = 0;
+};
+
 }
 
-void Model::compute(double t)
-{
-    ecomeristem_model->compute(t);
-}
-
-} }
+#endif

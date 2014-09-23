@@ -22,65 +22,67 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_RESP_MAINT_HPP
+#define __ECOMERISTEM_PLANT_ASSIMILATION_RESP_MAINT_HPP
+
+#include <model/kernel/AbstractAtomicModel.hpp>
+
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class RespMaint
+class RespMaint : public AbstractAtomicModel < RespMaint >
 {
 public:
+    static const unsigned int RESP_MAINT = 0;
+    static const unsigned int LEAF_BIOMASS = 0;
+    static const unsigned int INTERNODE_BIOMASS = 1;
+    static const unsigned int TA = 2;
+
     RespMaint()
     {
-        Kresp_leaf = 0.015;
-        Kresp_internode = 0.007;
-        Tresp = 25;
+        internal(RESP_MAINT, &RespMaint::_RespMaint);
+        external(LEAF_BIOMASS, &RespMaint::_LeafBiomass);
+        external(INTERNODE_BIOMASS, &RespMaint::_InternodeBiomass);
+        external(TA, &RespMaint::_Ta);
+
+        _Kresp_leaf = 0.015;
+        _Kresp_internode = 0.007;
+        _Tresp = 25;
     }
 
     virtual ~RespMaint()
     { }
 
-    void assign_LeafBiomass(double value)
+    void compute(double /* t */)
     {
-        LeafBiomass = value;
-    }
-
-    void assign_InternodeBiomass(double value)
-    {
-        InternodeBiomass = value;
-    }
-
-    void assign_Ta(double value)
-    {
-        Ta = value;
+        _RespMaint = (_Kresp_leaf * _LeafBiomass +
+                      _Kresp_internode * _InternodeBiomass) *
+            std::pow(2., (_Ta - _Tresp) / 10.);
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        Kresp_leaf = parameters.get("Kresp_leaf");
-        Kresp_internode = parameters.get("Kresp_internode");
-        Tresp = parameters.get("Tresp");
+        _Kresp_leaf = parameters.get < double >("Kresp_leaf");
+        _Kresp_internode = parameters.get < double >("Kresp_internode");
+        _Tresp = parameters.get < double >("Tresp");
         _RespMaint = 0;
-    }
-
-    void compute(double /* t */)
-    {
-        _RespMaint = (Kresp_leaf * LeafBiomass +
-                      Kresp_internode * InternodeBiomass) *
-            std::pow(2., (Ta - Tresp) / 10.);
     }
 
 private:
 // parameters
-    double Kresp_leaf;
-    double Kresp_internode;
-    double Tresp;
+    double _Kresp_leaf;
+    double _Kresp_internode;
+    double _Tresp;
 
 // internal variable
     double _RespMaint;
 
 // external variables
-    double LeafBiomass;
-    double InternodeBiomass;
-    double Ta;
+    double _LeafBiomass;
+    double _InternodeBiomass;
+    double _Ta;
 };
 
 } } } // namespace ecomeristem plant assimilation
+
+#endif

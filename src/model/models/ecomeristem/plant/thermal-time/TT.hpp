@@ -1,5 +1,5 @@
 /**
- * @file assimilation/LAI.hpp
+ * @file thermal-time/TT.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,53 +22,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace ecomeristem { namespace plant { namespace assimilation {
+#ifndef __ECOMERISTEM_PLANT_THERMAL_TIME_TT_HPP
+#define __ECOMERISTEM_PLANT_THERMAL_TIME_TT_HPP
 
-class LAI
+#include <model/kernel/AbstractAtomicModel.hpp>
+
+namespace ecomeristem { namespace plant { namespace thermal_time {
+
+class Tt : public AbstractAtomicModel < Tt >
 {
 public:
-    LAI()
+    static const unsigned int TT = 0;
+    static const unsigned int DELTA_T = 0;
+
+    Tt()
     {
-        density = 30;
-        rolling_A = 0.7;
-        rolling_B = 0.3;
-        _PAI = 1;
+        internal(TT, &Tt::_TT);
+        external(DELTA_T, &Tt::_DeltaT);
     }
 
-    virtual ~LAI()
+    virtual ~Tt()
     { }
 
-    void assign_fcstr(double value)
+    void compute(double /* t */)
     {
-        _fcstr = value;
+        _TT = _TT + _DeltaT;
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& parameters)
+              const model::models::ModelParameters& /* parameters */)
     {
-        density = parameters.get("density");
-        rolling_A = parameters.get("rolling_A");
-        rolling_B = parameters.get("rolling_B");
-        _lai = 0;
+        _TT = 0;
     }
 
 private:
-    void compute(double /* t */)
-    {
-        _lai = _PAI * (rolling_B + rolling_A * _fcstr) * density / 1.e4;
-    }
-
-// parameters
-    double density;
-    double rolling_A;
-    double rolling_B;
-
 // internal variable
-    double _lai;
+    double _TT;
 
 // external variables
-    double _fcstr;
-    double _PAI;
+    double _DeltaT;
 };
 
-} } } // namespace ecomeristem plant assimilation
+} } } // namespace ecomeristem plant thermal_time
+
+#endif

@@ -1,5 +1,5 @@
 /**
- * @file assimilation/AssimPot.hpp
+ * @file assimilation/Lai.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,63 +22,59 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_POT_HPP
-#define __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_POT_HPP
+#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_LAI_HPP
+#define __ECOMERISTEM_PLANT_ASSIMILATION_LAI_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class AssimPot : public AbstractAtomicModel < AssimPot >
+class Lai : public AbstractAtomicModel < Lai >
 {
 public:
-    static const unsigned int ASSIM_POT = 0;
-    static const unsigned int CSTR = 0;
-    static const unsigned int INTERC = 0;
-    static const unsigned int RADIATION = 0;
+    static const unsigned int LAI = 0;
+    static const unsigned int FCSTR = 0;
+    static const unsigned int PAI = 1;
 
-    AssimPot()
+    Lai()
     {
-        internal(ASSIM_POT, &AssimPot::_assim_pot);
-        external(CSTR, &AssimPot::_cstr);
-        external(INTERC, &AssimPot::_interc);
-        external(RADIATION, &AssimPot::_radiation);
-        _power_for_cstr = 0.5;
-        _kpar = 1;
-        _epsib = 3.5;
+        internal(LAI, &Lai::_lai);
+        external(FCSTR, &Lai::_fcstr);
+        external(PAI, &Lai::_PAI);
+         _density = 30;
+        _rolling_A = 0.7;
+        _rolling_B = 0.3;
     }
 
-    virtual ~AssimPot()
+    virtual ~Lai()
     { }
 
     void compute(double /* t */)
     {
-        _assim_pot = std::pow(_cstr, _power_for_cstr) * _interc * _epsib *
-            _radiation * _kpar;
+        _lai = _PAI * (_rolling_B + _rolling_A * _fcstr) * _density / 1.e4;
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _power_for_cstr = parameters.get < double >("power_for_cstr");
-        _kpar = parameters.get < double >("Kpar");
-        _epsib = parameters.get < double >("Epsib");
-        _assim_pot = 0;
+        _density = parameters.get < double >("density");
+        _rolling_A = parameters.get < double >("rolling_A");
+        _rolling_B = parameters.get < double >("rolling_B");
+        _lai = 0;
     }
 
 private:
 // parameters
-    double _power_for_cstr;
-    double _kpar;
-    double _epsib;
+    double _density;
+    double _rolling_A;
+    double _rolling_B;
 
 // internal variable
-    double _assim_pot;
+    double _lai;
 
 // external variables
-    double _cstr;
-    double _interc;
-    double _radiation;
+    double _fcstr;
+    double _PAI;
 };
 
 } } } // namespace ecomeristem plant assimilation

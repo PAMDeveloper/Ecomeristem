@@ -1,5 +1,5 @@
 /**
- * @file assimilation/Interc.hpp
+ * @file thermal-time/TT_lig.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,52 +22,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
-#define __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
+#ifndef __ECOMERISTEM_PLANT_THERMAL_TIME_TT_LIG_HPP
+#define __ECOMERISTEM_PLANT_THERMAL_TIME_TT_LIG_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <model/models/ecomeristem/plant/thermal-time/ThermalTimeManager.hpp>
 
-namespace ecomeristem { namespace plant { namespace assimilation {
+namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Interc : public AbstractAtomicModel < Interc >
+class TT_lig : public AbstractAtomicModel < TT_lig >
 {
 public:
-    static const unsigned int INTERC = 0;
-    static const unsigned int LAI = 0;
+    static const unsigned int TT_LIG = 0;
+    static const unsigned int EDD = 0;
+    static const unsigned int PHASE = 1;
 
-    Interc()
+    TT_lig()
     {
-        internal(INTERC, &Interc::_interc);
-        external(LAI, &Interc::_lai);
-        _Kdf = 0.65;
+        internal(TT_LIG, &TT_lig::_TT_lig);
+        external(EDD, &TT_lig::_EDD);
+        external(PHASE, &TT_lig::_phase);
     }
 
-    virtual ~Interc()
+    virtual ~TT_lig()
     { }
 
     void compute(double /* t */)
     {
-        _interc = 1. - std::exp(-_Kdf * _lai);
+        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+            _TT_lig = _TT_lig + _EDD;
+        }
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& parameters)
+              const model::models::ModelParameters& /* parameters */)
     {
-        _Kdf = parameters.get < double >("Kdf");
-        _interc = 0;
+        _TT_lig = 0;
     }
 
 private:
-// parameters
-    double _Kdf;
-
 // internal variable
-    double _interc;
+    double _TT_lig;
 
 // external variables
-    double _lai;
+    double _EDD;
+    double _phase;
 };
 
-} } } // namespace ecomeristem plant assimilation
+} } } // namespace ecomeristem plant thermal_time
 
 #endif

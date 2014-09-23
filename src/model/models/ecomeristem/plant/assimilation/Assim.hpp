@@ -22,51 +22,55 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_HPP
+#define __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_HPP
+
+#include <model/kernel/AbstractAtomicModel.hpp>
+
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class Assim : public ecomeristem::Dynamics < >
+class Assim : public AbstractAtomicModel < Assim >
 {
 public:
-    Assim()
+    static const unsigned int ASSIM = 0;
+    static const unsigned int RESP_MAINT = 0;
+    static const unsigned int ASSIM_POT = 1;
+
+    Assim() : _assim(0)
     {
-        density = 30;
+        internal(ASSIM, &Assim::_assim);
+        external(RESP_MAINT, &Assim::_resp_maint);
+        external(ASSIM_POT, &Assim::_assim_pot);
+        _density = 30;
     }
 
     virtual ~Assim()
     { }
 
-    void assign_RespMaint(double value)
+    void compute(double /* t */)
     {
-        RespMaint = value;
-    }
-
-    void assign_AssimPot(double value)
-    {
-        AssimPot = value;
+        _assim = std::max(0., _assim_pot / _density - _resp_maint);
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        density = parameters.get("density");
+        _density = parameters.get < double >("density");
         _assim = 0;
-    }
-
-    void compute(double t)
-    {
-        _assim = std::max(0., AssimPot / density - RespMaint);
     }
 
 private:
 // parameters
-    double density;
+    double _density;
 
 // internal variable
     double _assim;
 
 // external variables
-    double RespMaint;
-    double AssimPot;
+    double _resp_maint;
+    double _assim_pot;
 };
 
 } } } // namespace ecomeristem plant assimilation
+
+#endif
