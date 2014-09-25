@@ -22,38 +22,91 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/plant/Model.hpp>
 
 namespace ecomeristem {
 
-class Model
+class Model : public AbstractCoupledModel < Model >
 {
 public:
+    static const int LAI = 0;
+    static const int DELTA_T = 1;
+    static const int DD = 2;
+    static const int EDD = 3;
+    static const int IH = 4;
+    static const int LIGULO_VISU = 5;
+    static const int PHENO_STAGE = 6;
+    static const int PLASTO_VISU = 7;
+    static const int TT = 8;
+    static const int TT_LIG = 9;
+    static const int BOOL_CROSSED_PLASTO = 10;
+    static const int ASSIM = 11;
+    static const int CSTR = 12;
+
+    static const int ETP = 0;
+    static const int P = 1;
+    static const int RADIATION = 2;
+    static const int TA = 3;
+    static const int WATER_SUPPLY = 4;
+
     Model()
-    { }
+    {
+        internal(LAI, &plant_model, plant::Model::LAI);
+        internal(DELTA_T, &plant_model, plant::Model::DELTA_T);
+        internal(BOOL_CROSSED_PLASTO, &plant_model,
+                 plant::Model::BOOL_CROSSED_PLASTO);
+        internal(DD, &plant_model, plant::Model::DD);
+        internal(EDD, &plant_model, plant::Model::EDD);
+        internal(IH, &plant_model, plant::Model::IH);
+        internal(LIGULO_VISU, &plant_model, plant::Model::LIGULO_VISU);
+        internal(PHENO_STAGE, &plant_model, plant::Model::PHENO_STAGE);
+        internal(PLASTO_VISU, &plant_model, plant::Model::PLASTO_VISU);
+        internal(TT, &plant_model, plant::Model::TT);
+        internal(TT_LIG, &plant_model, plant::Model::TT_LIG);
+        internal(ASSIM, &plant_model, plant::Model::ASSIM);
+        internal(CSTR, &plant_model, plant::Model::CSTR);
+
+        external(ETP, &Model::_etp);
+        external(P, &Model::_p);
+        external(RADIATION, &Model::_radiation);
+        external(TA, &Model::_ta);
+        external(WATER_SUPPLY, &Model::_water_supply);
+    }
 
     virtual ~Model()
     { }
 
     void build()
     {
-        plant_model = new ecomeristem::plant::Model;
-        plant_model->build();
+        plant_model.build();
     }
 
     void init(double t, const model::models::ModelParameters& parameters)
     {
-        plant_model->init(t, parameters);
+        plant_model.init(t, parameters);
     }
 
     void compute(double t)
     {
-        plant_model->compute(t);
+        plant_model.put(t, plant::Model::ETP, _etp);
+        plant_model.put(t, plant::Model::P, _p);
+        plant_model.put(t, plant::Model::RADIATION, _radiation);
+        plant_model.put(t, plant::Model::TA, _ta);
+        plant_model.put(t, plant::Model::WATER_SUPPLY, _water_supply);
+        plant_model.compute(t);
     }
 
 private:
-    ecomeristem::plant::Model* plant_model;
+// external variables
+    double _etp;
+    double _p;
+    double _radiation;
+    double _ta;
+    double _water_supply;
+
+// submodels
+    plant::Model plant_model;
 };
 
 } // namespace ecomeristem

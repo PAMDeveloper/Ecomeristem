@@ -45,19 +45,26 @@ public:
     { }
 
     void compute(double /* t */)
-    { _ftsw = _swc_1 / RU1; }
+    {
+        _ftsw = _swc_1 / RU1;
+
+        // std::cout << "FTSW: " << _ftsw << " " << _swc << " " << _swc_1 << " "
+        //           << RU1 << std::endl;
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         RU1 = parameters.get < double >("RU1");
         _ftsw = 0;
-        _swc_1 = 0;
+        _swc = RU1;
+        _swc_1 = RU1;
     }
 
     void put(double t, unsigned int index, double value)
     {
-        if (index == SWC) {
+        if (index == SWC and !is_ready(t, SWC)) {
             _swc_1 = _swc;
         }
         AbstractAtomicModel < Ftsw >::put(t, index, value);

@@ -25,21 +25,52 @@
 #ifndef MODEL_KERNEL_MODEL_HPP
 #define MODEL_KERNEL_MODEL_HPP
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/Model.hpp>
+#include <model/models/meteo/Meteo.hpp>
 
 namespace model { namespace kernel {
 
-class Model
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    static const int LAI = 0;
+    static const int DELTA_T = 1;
+    static const int DD = 2;
+    static const int EDD = 3;
+    static const int IH = 4;
+    static const int LIGULO_VISU = 5;
+    static const int PHENO_STAGE = 6;
+    static const int PLASTO_VISU = 7;
+    static const int TT = 8;
+    static const int TT_LIG = 9;
+    static const int BOOL_CROSSED_PLASTO = 10;
+    static const int ASSIM = 11;
+    static const int CSTR = 12;
+
     Model()
-    { }
+    {
+        internal(LAI, &ecomeristem_model, ecomeristem::Model::LAI);
+        internal(DELTA_T, &ecomeristem_model, ecomeristem::Model::DELTA_T);
+        internal(DD, &ecomeristem_model, ecomeristem::Model::DD);
+        internal(EDD, &ecomeristem_model, ecomeristem::Model::EDD);
+        internal(IH, &ecomeristem_model, ecomeristem::Model::IH);
+        internal(LIGULO_VISU, &ecomeristem_model,
+                 ecomeristem::Model::LIGULO_VISU);
+        internal(PHENO_STAGE, &ecomeristem_model,
+                 ecomeristem::Model::PHENO_STAGE);
+        internal(PLASTO_VISU, &ecomeristem_model,
+                 ecomeristem::Model::PLASTO_VISU);
+        internal(TT, &ecomeristem_model, ecomeristem::Model::TT);
+        internal(TT_LIG, &ecomeristem_model, ecomeristem::Model::TT_LIG);
+        internal(BOOL_CROSSED_PLASTO, &ecomeristem_model,
+                 ecomeristem::Model::BOOL_CROSSED_PLASTO);
+        internal(ASSIM, &ecomeristem_model, ecomeristem::Model::ASSIM);
+        internal(CSTR, &ecomeristem_model, ecomeristem::Model::CSTR);
+   }
 
     virtual ~Model()
-    {
-        delete ecomeristem_model;
-    }
+    { }
 
     void build();
 
@@ -47,12 +78,14 @@ public:
 
     void init(double t, const model::models::ModelParameters& parameters)
     {
-        ecomeristem_model->init(t, parameters);
+        ecomeristem_model.init(t, parameters);
+        meteo_model.init(t, parameters);
     }
 
 private:
-// models
-    ecomeristem::Model* ecomeristem_model;
+// submodels
+    ecomeristem::Model ecomeristem_model;
+    meteo::Model meteo_model;
 };
 
 } }

@@ -39,7 +39,6 @@ public:
     {
         internal(INTERC, &Interc::_interc);
         external(LAI, &Interc::_lai);
-        _Kdf = 0.65;
     }
 
     virtual ~Interc()
@@ -48,6 +47,10 @@ public:
     void compute(double /* t */)
     {
         _interc = 1. - std::exp(-_Kdf * _lai);
+
+        // std::cout << "INTERC: " << _interc << " " << _Kdf << " " << _lai
+        //           << std::endl;
+
     }
 
     void init(double /* t */,

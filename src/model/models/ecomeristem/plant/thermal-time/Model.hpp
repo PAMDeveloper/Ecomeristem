@@ -103,7 +103,7 @@ public:
         TT_model.compute(t);
 
         ThermalTimeManager_model.put(t, ThermalTimeManager::STOCK, _stock);
-        ThermalTimeManager_model.compute(t);
+        // ThermalTimeManager_model.compute(t);
 
         DD_model.put(t, Dd::DELTA_T, DeltaT_model.get(DeltaT::DELTA_T));
         DD_model.put(t, Dd::GROW, _grow);
@@ -112,11 +112,16 @@ public:
         DD_model.put(t, Dd::PLASTO_DELAY, _plasto_delay);
         DD_model.compute(t);
 
+        TT_lig_model.put(t, TT_lig::PHASE,
+                         ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
         TT_lig_model.put(t, TT_lig::EDD, DD_model.get(Dd::EDD));
+        TT_lig_model.put(t, TT_lig::LIG, _lig);
         TT_lig_model.compute(t);
 
         IH_model.put(t, Ih::TT_LIG, TT_lig_model.get(TT_lig::TT_LIG));
         IH_model.put(t, Ih::LIG, _lig);
+        IH_model.put(t, Ih::PHASE,
+                     ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
         IH_model.compute(t);
 
         PlastoVisu_model.put(t, PlastoVisu::EDD, DD_model.get(Dd::EDD));

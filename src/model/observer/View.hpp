@@ -41,6 +41,8 @@ public:
     void attachModel(const model::kernel::Model* m)
     { model = m; }
 
+    virtual double get(double t, const std::string& name) const = 0;
+
     virtual void observe(double time) = 0;
 
 protected:

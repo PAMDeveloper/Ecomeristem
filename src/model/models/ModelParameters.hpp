@@ -25,6 +25,7 @@
 #ifndef MODELPARAMETERS_HPP
 #define MODELPARAMETERS_HPP 1
 
+#include <iostream>
 #include <map>
 #include <string>
 #include <boost/lexical_cast.hpp>
@@ -56,6 +57,10 @@ public:
     {
         std::map < std::string, std::string >::const_iterator it;
         it = mParams.find(paramName);
+
+        if (it == mParams.end()) {
+            std::cout << "Warning: no value for " << paramName << std::endl;
+        }
 
         return boost::lexical_cast<T>((it == mParams.end()) ? "0" : it->second);
     }

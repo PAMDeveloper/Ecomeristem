@@ -39,7 +39,7 @@ public:
 
     ThermalTimeManager()
     {
-        internal(PHASE, &ThermalTimeManager::_phase);
+        internal(PHASE, &ThermalTimeManager::_state);
         external(STOCK, &ThermalTimeManager::_stock);
     }
 
@@ -48,22 +48,52 @@ public:
 
     void compute(double /* t */)
     {
-        // _assim = std::max(0., _assim_pot / _density - _resp_maint);
+        state_t old_state;
+
+        do {
+            old_state = (state_t)_state;
+
+            switch ((state_t)_state) {
+            case INIT: {
+                _state = STOCK_AVAILABLE;
+                break;
+            }
+            case DEAD: {
+                break;
+            }
+            case STOCK_AVAILABLE: {
+                if (_stock <= 0){
+                    _state = NO_STOCK;
+                }
+                break;
+            }
+            case NO_STOCK: {
+                if (_stock > 0){
+                    _state = STOCK_AVAILABLE;
+                }
+                // TODO: => dead
+                break;
+            }
+            };
+        } while (old_state != _state);
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
-        // _density = parameters.get < double >("density");
-        // _assim = 0;
+        _state = INIT;
+        compute(t);
+    }
+
+    void put(double t, unsigned int index, double value)
+    {
+        AbstractAtomicModel < ThermalTimeManager >::put(t, index, value);
+        compute(t);
     }
 
 private:
-// // parameters
-//     double _density;
-
 // internal variable
-    double _phase;
+    double _state;
 
 // external variables
     double _stock;

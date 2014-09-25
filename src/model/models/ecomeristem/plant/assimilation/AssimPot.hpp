@@ -34,8 +34,8 @@ class AssimPot : public AbstractAtomicModel < AssimPot >
 public:
     static const unsigned int ASSIM_POT = 0;
     static const unsigned int CSTR = 0;
-    static const unsigned int INTERC = 0;
-    static const unsigned int RADIATION = 0;
+    static const unsigned int INTERC = 1;
+    static const unsigned int RADIATION = 2;
 
     AssimPot()
     {
@@ -55,13 +55,19 @@ public:
     {
         _assim_pot = std::pow(_cstr, _power_for_cstr) * _interc * _epsib *
             _radiation * _kpar;
+
+        // std::cout << "ASSIMPOT: " << _assim_pot << " " << _cstr << " "
+        //           << _power_for_cstr << " "
+        //           << _interc << " " << _epsib << " " << _radiation << " "
+        //           << _kpar << std::endl;
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         _power_for_cstr = parameters.get < double >("power_for_cstr");
-        _kpar = parameters.get < double >("Kpar");
+        _kpar = 1; // parameters.get < double >("Kpar");
         _epsib = parameters.get < double >("Epsib");
         _assim_pot = 0;
     }

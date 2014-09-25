@@ -83,8 +83,8 @@ public:
                       const model::models::ModelParameters& parameters)
     {
         nbleaf_pi = 10; // parameters.get < double >("nbleaf_pi");
-        nbleaf_culm_elong = parameters.get < double >("nbleaf_culm_elong");
-        nbleaf_max_after_pi = parameters.get < double >("nbleaf_max_after_pi");
+        nbleaf_culm_elong = parameters.get < double >("nb_leaf_stem_elong");
+        nbleaf_max_after_pi = parameters.get < double >("nb_leaf_max_after_PI");
 
         culm_number = 1;
         leaf_number = 0;

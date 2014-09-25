@@ -35,60 +35,31 @@ void ParametersReader::load(const std::string& id,
 {
     pqxx::connection& connection(
         utils::Connections::connection(
-            "samara", "dbname=samara user=user_samara password=toto"));
+            "ecomeristem",
+            "dbname=ecomeristem user=user_samara password=toto"));
 
     load_simulation(id, connection, parameters);
+    parameters.set < std::string >("BeginDate", "20-01-2010");
+    parameters.set < std::string >("EndDate", "20-02-2010");
+//    parameters.set < std::string >("EndDate", "08-05-2010");
 
-    load_variety(parameters.get < std::string >("IdVariety"), connection,
-                 parameters);
-    load_itineraire_technique(
-        parameters.get < std::string >("IdItineraireTechnique"), connection,
-        parameters);
-    load_plot(parameters.get < std::string >("IdPlot"), connection, parameters);
-    load_site(parameters.get < std::string >("IdSite"), connection, parameters);
-    load_station(parameters.get < std::string >("CodeStationMeteo"),
-                 connection, parameters);
-    load_type_soil(parameters.get < std::string >("IdTypeSol"), connection,
-                   parameters);
-
-    std::cout << "Simulation " << id << ":" << std::endl;
+/*    std::cout << "Simulation:" << std::endl;
     std::cout << " - begin = " << parameters.get < std::string >("BeginDate")
               << std::endl;
     std::cout << " - end = " << parameters.get < std::string >("EndDate")
-              << std::endl;
-    std::cout << " - variety = " << parameters.get < std::string >("IdVariety")
-              << std::endl;
-    std::cout << " - itineraire technique = "
-              << parameters.get < std::string >("IdItineraireTechnique")
-              << std::endl;
-    std::cout << " - date semis = "
-              << parameters.get < std::string >("DateSemis")
-              << std::endl;
-    std::cout << " - plot = " << parameters.get < std::string >("IdPlot")
-              << std::endl;
-    std::cout << " - site = " << parameters.get < std::string >("IdSite")
-              << std::endl;
-    std::cout << " - station = "
-              << parameters.get < std::string >("CodeStationMeteo")
-              << std::endl;
-    std::cout << " - type_soil = "
-              << parameters.get < std::string >("IdTypeSol")
-              << std::endl;
-
+    << std::endl; */
 }
 
 void ParametersReader::load_data(pqxx::connection& connection,
                                  const std::string& table,
-                                 const std::string& key,
-                                 const std::string& value,
                                  const std::vector < std::string >& names,
                                  model::models::ModelParameters& parameters)
 {
     try {
         pqxx::work action(connection);
         pqxx::result result = action.exec(
-            (boost::format("SELECT * FROM \"%1%\" WHERE \"%2%\"='%3%'") %
-             table % key % value).str());
+            (boost::format("SELECT * FROM \"%1%\"") %
+             table).str());
 
         if (not result.empty()) {
             for (pqxx::result::tuple::const_iterator it = result[0].begin();
@@ -114,186 +85,102 @@ void ParametersReader::load_data(pqxx::connection& connection,
     }
 }
 
-void ParametersReader::load_variety(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = {
-        "ASScstr",
-        "AttenMitch",
-        "Ca",
-        "CO2Cp",
-        "CO2Exp",
-        "CoeffAssimSla",
-        "CoefficientQ10",
-        "CoeffInternodeMass",
-        "CoeffInternodeNum",
-        "CoeffLeafDeath",
-        "CoeffLeafWLRatio",
-        "CoeffPanicleMass",
-        "CoeffPanSinkPop",
-        "CoeffResCapacityInternode",
-        "CoeffReserveSink",
-        "CoeffRootMassPerVolMax",
-        "CoeffTillerDeath",
-        "DEVcstr",
-        "ExcessAssimToRoot",
-        "FTSWIrrig",
-        "HaunCritTillering",
-        "IcTillering",
-        "InternodeLengthMax",
-        "IrrigAutoResume",
-        "IrrigAutoStop",
-        "KcMax",
-        "KCritSterCold1",
-        "KCritSterCold2",
-        "KCritSterFtsw1",
-        "KCritSterFtsw2",
-        "KCritSterHeat2",
-        "KCritStressCold1",
-        "KCritStressCold2",
-        "Kdf",
-        "KRespInternode",
-        "KRespMaintLeaf",
-        "KRespMaintRoot",
-        "KRespMaintSheath",
-        "KRespPanicle",
-        "KTempMaint",
-        "LeafLengthMax",
-        "PanStructMassMax",
-        "PFactor",
-        "Phyllo",
-        "PoidsSecGrain",
-        "PPCrit",
-        "PPExp",
-        "PriorityPan",
-        "RankLongestLeaf",
-        "RelMobiliInternodeMax",
-        "RollingBase",
-        "RollingSens",
-        "RootCstr",
-        "RootFrontMax",
-        "RootPartitMax",
-        "SDJBVP",
-        "SDJLevee",
-        "SDJMatu1",
-        "SDJMatu2",
-        "SDJRPR",
-        "SeuilPP",
-        "SlaMax",
-        "SlaMin",
-        "TBase",
-        "TempSla",
-        "TilAbility",
-        "TLet",
-        "TOpt1",
-        "TOpt2",
-        "TransplantingDepth",
-        "TxAssimBVP",
-        "TxAssimMatu1",
-        "TxAssimMatu2",
-        "TxConversion",
-        "TxResGrain",
-        "VRacBVP",
-        "VRacLevee",
-        "VRacMatu1",
-        "VRacMatu2",
-        "VRacPSP",
-        "VRacRPR",
-        "WaterLoggingSens",
-        "WtRatioLeafSheath"
-    };
-
-    load_data(connection, "variety", "Id", id, names, parameters);
-}
-
-void ParametersReader::load_itineraire_technique(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = {
-        "BundHeight",
-        "CoeffTransplantingShock",
-        "DateSemis",
-        "DensityField",
-        "DensityNursery",
-        "DurationNursery",
-        "FTSWIrrig",
-        "IrrigAuto",
-        "IrrigAutoResume",
-        "IrrigAutoStop",
-        "IrrigAutoTarget",
-        "LifeSavingDrainage",
-        "Mulch",
-        "PlantsPerHill",
-        "PlotDrainageDAF",
-        "ProfRacIni",
-        "Transplanting",
-        "TransplantingDepth"
-    };
-
-    load_data(connection, "itineraireTechnique", "Id", id, names, parameters);
-}
-
-void ParametersReader::load_plot(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = {
-        "Ca", "EpaisseurProf", "EpaisseurSurf", "StockIniProf", "StockIniSurf",
-        "IdTypeSol"
-    };
-
-    load_data(connection, "plot", "Id", id, names, parameters);
-}
-
 void ParametersReader::load_simulation(
-    const std::string& id,
+    const std::string& /* id */,
     pqxx::connection& connection,
     model::models::ModelParameters& parameters)
 {
-    std::vector < std::string > names = { "IdSite","IdPlot", "IdVariety",
-                                          "IdItineraireTechnique",
-                                          "BeginDate", "EndDate" };
+    std::vector < std::string > names = { "gdw",
+                                          "FSLA",
+                                          "Lef1",
+                                          "nb_leaf_max_after_PI",
+                                          "density",
+                                          "Epsib",
+                                          "Kdf",
+                                          "Kresp",
+                                          "Kresp_internode",
+                                          "Tresp",
+                                          "Tb",
+                                          "Kcpot",
+                                          "plasto_init",
+                                          "coef_plasto_ligulo",
+                                          "ligulo1",
+                                          "coef_ligulo1",
+                                          "MRG_init",
+                                          "Ict",
+                                          "resp_Ict",
+                                          "resp_R_d",
+                                          "resp_LER",
+                                          "SLAp",
+                                          "G_L",
+                                          "LL_BL_init",
+                                          "allo_area",
+                                          "WLR",
+                                          "coeff1_R_d",
+                                          "coeff2_R_d",
+                                          "realocationCoeff",
+                                          "leaf_stock_max",
+                                          "nb_leaf_enabling_tillering",
+                                          "deepL1",
+                                          "deepL2",
+                                          "FCL1",
+                                          "WPL1",
+                                          "FCL2",
+                                          "WPL2",
+                                          "RU1",
+                                          "Sdepth",
+                                          "Rolling_A",
+                                          "Rolling_B",
+                                          "thresLER",
+                                          "slopeLER",
+                                          "thresINER",
+                                          "slopeINER",
+                                          "thresTransp",
+                                          "power_for_cstr",
+                                          "ETPmax",
+                                          "nbleaf_pi",
+                                          "nb_leaf_stem_elong",
+                                          "nb_leaf_param2",
+                                          "coef_plasto_PI",
+                                          "coef_ligulo_PI",
+                                          "coeff_PI_lag",
+                                          "coef_MGR_PI",
+                                          "slope_LL_BL_at_PI",
+                                          "coeff_flo_lag",
+                                          "TT_PI_to_Flo",
+                                          "maximumReserveInInternode",
+                                          "leaf_width_to_IN_diameter",
+                                          "leaf_length_to_IN_length",
+                                          "slope_length_IN",
+                                          "spike_creation_rate",
+                                          "grain_filling_rate",
+                                          "gdw_empty",
+                                          "grain_per_cm_on_panicle",
+                                          "phenostage_to_end_filling",
+                                          "phenostage_to_maturity",
+                                          "IN_diameter_to_length",
+                                          "Fldw",
+                                          "testIc",
+                                          "nbtiller",
+                                          "K_IntN",
+                                          "pfact",
+                                          "stressfact",
+                                          "Assim_A",
+                                          "Assim_B",
+                                          "LIN1",
+                                          "IN_A",
+                                          "IN_B",
+                                          "coeff_lifespan",
+                                          "mu",
+                                          "ratio_INPed",
+                                          "peduncle_diam",
+                                          "IN_length_to_IN_diam",
+                                          "coef_lin_IN_diam",
+                                          "phenostage_PRE_FLO_to_FLO",
+                                          "density_IN",
+                                          "existTiller" };
 
-    load_data(connection, "simulation", "Id", id, names, parameters);
-}
-
-void ParametersReader::load_site(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = { "SeuilPluie", "Kpar",
-                                          "CodeStationMeteo" };
-
-    load_data(connection, "site", "Id", id, names, parameters);
-}
-
-void ParametersReader::load_station(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = { "Altitude", "Latitude" };
-
-    load_data(connection, "station", "Code", id, names, parameters);
-}
-
-void ParametersReader::load_type_soil(
-    const std::string& id,
-    pqxx::connection& connection,
-    model::models::ModelParameters& parameters)
-{
-    std::vector < std::string > names = {
-        "HumFC", "HumPF", "HumSat", "PercolationMax", "PourcRuiss",
-        "SeuilRuiss"
-    };
-
-    load_data(connection, "typeSoil", "Id", id, names, parameters);
+    load_data(connection, "parameter", names, parameters);
 }
 
 } // namespace utils

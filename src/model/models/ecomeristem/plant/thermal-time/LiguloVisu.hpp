@@ -61,16 +61,20 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _ligulo = parameters.get < double >("ligulo");
-        _LiguloVisu = 0;
+        _coef_ligulo = parameters.get < double >("coef_ligulo1");
+        _plasto = parameters.get < double >("plasto_init");
+        _ligulo = _plasto * _coef_ligulo;
+        _LiguloVisu = _ligulo;
     }
 
 private:
 // parameters
-    double _ligulo;
+    double _coef_ligulo;
+    double _plasto;
 
 // internal variable
     double _LiguloVisu;
+    double _ligulo;
 
 // external variables
     double _plasto_delay;

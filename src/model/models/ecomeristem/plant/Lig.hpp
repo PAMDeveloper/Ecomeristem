@@ -43,15 +43,27 @@ public:
     { }
 
     void compute(double /* t */)
-    { _lig = 0; }
+    {
+        // TODO
+        if (j == 3 || j == 7 || j == 11 || j == 15 || j == 19 || j == 23 ||
+            j == 26 || j == 29 || j == 34) {
+            ++_lig;
+        }
+        ++j;
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
-    { _lig = 0; }
+    {
+        _lig = 0;
+        j = 0;
+    }
 
 private:
     // internal variable
     double _lig;
+
+    unsigned int j;
 };
 
 } } // namespace ecomeristem plant

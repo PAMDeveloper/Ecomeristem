@@ -28,13 +28,23 @@ namespace model { namespace kernel {
 
 void Model::build()
 {
-    ecomeristem_model = new ecomeristem::Model;
-    ecomeristem_model->build();
+    ecomeristem_model.build();
+    meteo_model.build();
 }
 
 void Model::compute(double t)
 {
-    ecomeristem_model->compute(t);
+    meteo_model.compute(t);
+
+    ecomeristem_model.put(t, ecomeristem::Model::ETP, meteo_model.get().Etp);
+    ecomeristem_model.put(t, ecomeristem::Model::P, meteo_model.get().P);
+    ecomeristem_model.put(t, ecomeristem::Model::RADIATION,
+                          meteo_model.get().Par);
+    ecomeristem_model.put(t, ecomeristem::Model::WATER_SUPPLY,
+                          meteo_model.get().Irrigation);
+    ecomeristem_model.put(t, ecomeristem::Model::TA,
+                          meteo_model.get().Temperature);
+    ecomeristem_model.compute(t);
 }
 
 } }

@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/thermal-time/ThermalTimeManager.hpp>
+#include <utils/DateTime.hpp>
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
@@ -54,21 +55,30 @@ public:
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             _IH = _lig + std::min(1., _TT_lig / _ligulo);
         }
+
+        // std::cout << utils::DateTime::toJulianDay(t)
+        //           << " - IH: " << _IH << " " << _lig << " " << _TT_lig
+        //           << " " << _ligulo << std::endl;
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _ligulo = parameters.get < double >("ligulo");
+        _coef_ligulo = parameters.get < double >("coef_ligulo1");
+        _plasto = parameters.get < double >("plasto_init");
+        _ligulo = _plasto * _coef_ligulo;
         _IH = 0;
     }
 
 private:
 // parameters
-    double _ligulo;
+    double _coef_ligulo;
+    double _plasto;
 
 // internal variable
     double _IH;
+    double _ligulo;
 
 // external variables
     double _lig;

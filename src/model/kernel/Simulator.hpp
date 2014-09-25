@@ -34,25 +34,28 @@ class Simulator
 {
 public:
     Simulator(model::kernel::Model* model)
-        : model(model), observer(model)
+        : _model(model), _observer(model)
     {
-        model->build();
+        _model->build();
     }
 
     virtual ~Simulator()
-    { delete model; }
+    { delete _model; }
 
     void init(double t, const model::models::ModelParameters& parameters)
     {
-        model->init(t, parameters);
-        observer.init();
+        _model->init(t, parameters);
+        _observer.init();
     }
+
+    const observer::Observer& observer() const
+    { return _observer; }
 
     void run(double begin, double end);
 
 private:
-    model::kernel::Model* model;
-    observer::Observer observer;
+    model::kernel::Model* _model;
+    observer::Observer _observer;
 };
 
 } } // namespace model kernel

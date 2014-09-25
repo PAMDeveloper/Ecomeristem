@@ -58,7 +58,7 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
-        _PhenoStage = 0;
+        _PhenoStage = 1;
     }
 
 private:

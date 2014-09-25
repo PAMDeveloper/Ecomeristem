@@ -47,13 +47,18 @@ public:
     { }
 
     void compute(double /* t */)
-    { _swc = _swc - _delta_p + _water_supply; }
+    {
+        _swc = _swc - _delta_p + _water_supply;
+
+        // std::cout << "SWC: " << _swc << " " << _delta_p << " "
+        //           << _water_supply << " " << RU1 << std::endl;
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         RU1 = parameters.get < double >("RU1");
-        _swc = 0;
+        _swc = RU1;
     }
 
 private:

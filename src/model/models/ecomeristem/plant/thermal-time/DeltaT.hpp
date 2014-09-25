@@ -27,6 +27,8 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
+#include <iostream>
+
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
 class DeltaT : public AbstractAtomicModel < DeltaT >
@@ -45,7 +47,9 @@ public:
     { }
 
     void compute(double /* t */)
-    { _deltaT = _Ta - _Tb; }
+    {
+        _deltaT = _Ta - _Tb;
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)

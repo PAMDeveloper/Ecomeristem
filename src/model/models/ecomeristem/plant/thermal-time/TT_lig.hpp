@@ -36,12 +36,14 @@ public:
     static const unsigned int TT_LIG = 0;
     static const unsigned int EDD = 0;
     static const unsigned int PHASE = 1;
+    static const unsigned int LIG = 2;
 
     TT_lig()
     {
         internal(TT_LIG, &TT_lig::_TT_lig);
         external(EDD, &TT_lig::_EDD);
         external(PHASE, &TT_lig::_phase);
+        external(LIG, &TT_lig::_lig);
     }
 
     virtual ~TT_lig()
@@ -49,24 +51,48 @@ public:
 
     void compute(double /* t */)
     {
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-            _TT_lig = _TT_lig + _EDD;
+        if (_isFirstStep) {
+            _isFirstStep = false;
+        } else {
+            if (_lig_1 == _lig) {
+                if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+                    _TT_lig = _TT_lig + _EDD;
+                }
+            } else {
+                _TT_lig = 0;
+            }
         }
+
+        // std::cout << "TT_LIG: " << _TT_lig << " " << _lig << " "
+        //           << _lig_1 << " " << _EDD << std::endl;
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
         _TT_lig = 0;
+        _isFirstStep = true;
+        _lig_1 = 0;
     }
 
+    void put(double t, unsigned int index, double value)
+    {
+        if (index == LIG and !is_ready(t, LIG)) {
+            _lig_1 = _lig;
+        }
+        AbstractAtomicModel < TT_lig >::put(t, index, value);
+    }
 private:
 // internal variable
     double _TT_lig;
+    bool _isFirstStep;
 
 // external variables
     double _EDD;
     double _phase;
+    double _lig;
+    double _lig_1;
 };
 
 } } } // namespace ecomeristem plant thermal_time

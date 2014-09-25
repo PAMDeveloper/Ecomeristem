@@ -26,8 +26,8 @@
 #define MODEL_OBSERVER_OBSERVER_HPP
 
 #include <model/kernel/Model.hpp>
-
 #include <model/observer/View.hpp>
+#include <model/observer/PlantView.hpp>
 
 #include <vector>
 
@@ -35,7 +35,7 @@ namespace model { namespace observer {
 
 class Observer
 {
-    typedef std::vector < View* > Views;
+    typedef std::map < std::string, View* > Views;
 
 public:
     Observer(const model::kernel::Model* model) :
@@ -46,25 +46,29 @@ public:
     {
         for (typename Views::iterator it = views.begin(); it != views.end();
              ++it) {
-            delete (*it);
+            delete it->second;
         }
     }
 
-    void attachView(View* view)
+    void attachView(const std::string& name, View* view)
     {
-        views.push_back(view);
+        views[name] = view;
         view->attachModel(model);
     }
 
+    const View& view(const std::string& name) const
+    { return *views.find(name)->second; }
+
     void init()
     {
+        attachView("plant", new PlantView);
     }
 
     void observe(double t)
     {
         for (typename Views::iterator it = views.begin(); it != views.end();
              ++it) {
-            (*it)->observe(t);
+            it->second->observe(t);
         }
     }
 

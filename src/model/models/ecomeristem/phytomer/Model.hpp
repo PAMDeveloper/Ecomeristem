@@ -39,11 +39,12 @@ public:
     {
     }
 
-    void init(double t, const model::models::ModelParameters& parameters)
+    void init(double /* t */,
+              const model::models::ModelParameters& /* parameters */)
     {
     }
 
-    void compute(double t)
+    void compute(double /* t */)
     {
     }
 

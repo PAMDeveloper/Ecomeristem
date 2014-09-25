@@ -79,10 +79,11 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _plasto = parameters.get < double >("plasto");
+        _plasto = parameters.get < double >("plasto_init");
         _DD = 0;
         _EDD = 0;
         _BoolCrossedPlasto = 0;
+        _PreviousPlastoDelay = 0;
     }
 
     virtual void put(double t, unsigned int index, double value)

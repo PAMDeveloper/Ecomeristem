@@ -45,13 +45,18 @@ public:
     { }
 
     void compute(double /* t */)
-    { _cstr = (_ftsw < ThresTransp) ?
-            std::max(1e-4, _ftsw * 1. / ThresTransp) : 1; }
+    {
+        _cstr = (_ftsw < ThresTransp) ?
+            std::max(1e-4, _ftsw * 1. / ThresTransp) : 1;
+
+        // std::cout << "CSTR: " << _cstr << " " << _ftsw << std::endl;
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        ThresTransp = parameters.get < double >("ThresTransp");
+        ThresTransp = parameters.get < double >("thresTransp");
         _cstr = 0;
     }
 

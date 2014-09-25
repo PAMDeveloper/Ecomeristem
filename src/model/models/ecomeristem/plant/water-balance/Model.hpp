@@ -38,11 +38,19 @@ public:
     static const int INTERC = 1;
     static const int WATER_SUPPLY = 2;
 
+    static const int CSTR = 0;
+    static const int FCSTR = 1;
+    static const int FTSW = 2;
+
     Model()
     {
         external(ETP, &Model::_etp);
         external(INTERC, &Model::_interc);
         external(WATER_SUPPLY, &Model::_water_supply);
+
+        internal(CSTR, &cstr_model, cstr::CSTR);
+        internal(FCSTR, &fcstr_model, Fcstr::FCSTR);
+        internal(FTSW, &FTSW_model, Ftsw::FTSW);
     }
 
     virtual ~Model()

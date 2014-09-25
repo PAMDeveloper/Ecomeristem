@@ -47,9 +47,13 @@ public:
     bool is_ready() const
     { return received == externals.size(); }
 
-    virtual void put(double /* t */, unsigned int index, double value)
+    bool is_ready(double t, unsigned int index) const
+    { return externalDates.at(index) == t; }
+
+    virtual void put(double t, unsigned int index, double value)
     {
         static_cast < T* >(this)->*externals.at(index) = value;
+        externalDates.at(index) = t;
         ++received;
     }
 
@@ -58,8 +62,10 @@ protected:
     {
         if (externals.size() <= index) {
             externals.resize(index + 1);
+            externalDates.resize(index + 1);
         }
         externals[index] = var;
+        externalDates[index] = -1;
     }
 
     void internal(unsigned int index, double T::* var)
@@ -72,6 +78,7 @@ protected:
 
 private:
     std::vector < double T::* > externals;
+    std::vector < double > externalDates;
     std::vector < double T::* > internals;
     unsigned int received;
 };

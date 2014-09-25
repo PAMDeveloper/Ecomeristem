@@ -57,12 +57,16 @@ public:
         _RespMaint = (_Kresp_leaf * _LeafBiomass +
                       _Kresp_internode * _InternodeBiomass) *
             std::pow(2., (_Ta - _Tresp) / 10.);
+
+        // std::cout << "RESPMAINT: " << _RespMaint << " " << _LeafBiomass << " "
+        //           << _InternodeBiomass << " " << _Ta << std::endl;
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _Kresp_leaf = parameters.get < double >("Kresp_leaf");
+        _Kresp_leaf = parameters.get < double >("Kresp");
         _Kresp_internode = parameters.get < double >("Kresp_internode");
         _Tresp = parameters.get < double >("Tresp");
         _RespMaint = 0;

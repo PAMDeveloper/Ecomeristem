@@ -61,8 +61,8 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _plasto = parameters.get < double >("plasto");
-        _PlastoVisu = 0;
+        _plasto = parameters.get < double >("plasto_init");
+        _PlastoVisu = _plasto;
     }
 
 private:

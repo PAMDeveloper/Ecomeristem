@@ -33,6 +33,7 @@ class Lai : public AbstractAtomicModel < Lai >
 {
 public:
     static const unsigned int LAI = 0;
+
     static const unsigned int FCSTR = 0;
     static const unsigned int PAI = 1;
 
@@ -52,14 +53,17 @@ public:
     void compute(double /* t */)
     {
         _lai = _PAI * (_rolling_B + _rolling_A * _fcstr) * _density / 1.e4;
+
+        // std::cout << "LAI=" << _lai << " " << _PAI << std::endl;
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         _density = parameters.get < double >("density");
-        _rolling_A = parameters.get < double >("rolling_A");
-        _rolling_B = parameters.get < double >("rolling_B");
+        _rolling_A = parameters.get < double >("Rolling_A");
+        _rolling_B = parameters.get < double >("Rolling_B");
         _lai = 0;
     }
 

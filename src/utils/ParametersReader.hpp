@@ -46,31 +46,11 @@ public:
 private:
     void load_data(pqxx::connection& connection,
                    const std::string& table,
-                   const std::string& key,
-                   const std::string& value,
                    const std::vector < std::string >& names,
-                   model::models::ModelParameters& parameters);
-    void load_itineraire_technique(const std::string& id,
-                                   pqxx::connection& connection,
-                                   model::models::ModelParameters& parameters);
-    void load_plot(const std::string& id,
-                   pqxx::connection& connection,
                    model::models::ModelParameters& parameters);
     void load_simulation(const std::string& id,
                          pqxx::connection& connection,
                          model::models::ModelParameters& parameters);
-    void load_site(const std::string& id,
-                   pqxx::connection& connection,
-                   model::models::ModelParameters& parameters);
-    void load_station(const std::string& id,
-                      pqxx::connection& connection,
-                      model::models::ModelParameters& parameters);
-    void load_type_soil(const std::string& id,
-                        pqxx::connection& connection,
-                        model::models::ModelParameters& parameters);
-    void load_variety(const std::string& id,
-                      pqxx::connection& connection,
-                      model::models::ModelParameters& parameters);
 };
 
 } // namespace utils

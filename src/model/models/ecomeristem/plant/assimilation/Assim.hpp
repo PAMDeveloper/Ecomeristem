@@ -41,7 +41,6 @@ public:
         internal(ASSIM, &Assim::_assim);
         external(RESP_MAINT, &Assim::_resp_maint);
         external(ASSIM_POT, &Assim::_assim_pot);
-        _density = 30;
     }
 
     virtual ~Assim()
@@ -50,6 +49,10 @@ public:
     void compute(double /* t */)
     {
         _assim = std::max(0., _assim_pot / _density - _resp_maint);
+
+        // std::cout << "ASSIM: " << _assim << " " << _assim_pot << " "
+        //           << _resp_maint << std::endl;
+
     }
 
     void init(double /* t */,

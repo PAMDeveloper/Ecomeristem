@@ -40,7 +40,8 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     static const int ASSIM = 0;
-    static const int INTERC = 1;
+    static const int LAI = 1;
+    static const int INTERC = 2;
 
     static const int FCSTR = 0;
     static const int INTERNODE_BIOMASS = 1;
@@ -53,6 +54,7 @@ public:
     Model()
     {
         internal(ASSIM, &assim_model, Assim::ASSIM);
+        internal(LAI, &assim_model, Lai::LAI);
         internal(INTERC, &interc_model, Interc::INTERC);
 
         external(FCSTR, &Model::_fcstr);
@@ -77,7 +79,7 @@ public:
         lai_model.compute(t);
 
         interc_model.put(t, Interc::LAI,
-                          lai_model.get(Lai::LAI));
+                         lai_model.get(Lai::LAI));
         interc_model.compute(t);
 
         assimPot_model.put(t, AssimPot::CSTR, _cstr);
