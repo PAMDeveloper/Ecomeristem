@@ -3,7 +3,8 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_ROOT_HPP Model.hpp)
+SET(ECOMERISTEM_ROOT_HPP RootDemand.hpp RootDemandCoef.hpp RootManager.hpp
+  Model.hpp)
 
 SET(ECOMERISTEM_ROOT_CPP Model.cpp)
 

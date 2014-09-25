@@ -22,6 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef __ECOMERISTEM_PLANT_MANAGER_HPP
+#define __ECOMERISTEM_PLANT_MANAGER_HPP
+
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ModelParameters.hpp>
 
@@ -116,3 +119,5 @@ private:
 };
 
 } } // namespace ecomeristem plant
+
+#endif

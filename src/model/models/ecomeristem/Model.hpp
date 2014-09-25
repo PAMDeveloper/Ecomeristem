@@ -43,6 +43,19 @@ public:
     static const int BOOL_CROSSED_PLASTO = 10;
     static const int ASSIM = 11;
     static const int CSTR = 12;
+    static const int ROOT_DEMAND_COEF = 13;
+    static const int ROOT_DEMAND = 14;
+    static const int ROOT_BIOMASS = 15;
+    static const int STOCK = 16;
+    static const int GROW = 17;
+    static const int SUPPLY = 18;
+    static const int DEFICIT = 19;
+    static const int IC = 20;
+    static const int SURPLUS = 21;
+    static const int TEST_IC = 22;
+    static const int DAY_DEMAND = 23;
+    static const int RESERVOIR_DISPO = 24;
+    static const int SEED_RES = 25;
 
     static const int ETP = 0;
     static const int P = 1;
@@ -66,6 +79,20 @@ public:
         internal(TT_LIG, &plant_model, plant::Model::TT_LIG);
         internal(ASSIM, &plant_model, plant::Model::ASSIM);
         internal(CSTR, &plant_model, plant::Model::CSTR);
+        internal(ROOT_DEMAND_COEF, &plant_model,
+                 plant::Model::ROOT_DEMAND_COEF);
+        internal(ROOT_DEMAND, &plant_model, plant::Model::ROOT_DEMAND);
+        internal(ROOT_BIOMASS, &plant_model, plant::Model::ROOT_BIOMASS);
+        internal(STOCK, &plant_model, plant::Model::STOCK);
+        internal(GROW, &plant_model, plant::Model::GROW);
+        internal(SUPPLY, &plant_model, plant::Model::SUPPLY);
+        internal(DEFICIT, &plant_model, plant::Model::DEFICIT);
+        internal(IC, &plant_model, plant::Model::IC);
+        internal(SURPLUS, &plant_model, plant::Model::SURPLUS);
+        internal(TEST_IC, &plant_model, plant::Model::TEST_IC);
+        internal(DAY_DEMAND, &plant_model, plant::Model::DAY_DEMAND);
+        internal(RESERVOIR_DISPO, &plant_model, plant::Model::RESERVOIR_DISPO);
+        internal(SEED_RES, &plant_model, plant::Model::SEED_RES);
 
         external(ETP, &Model::_etp);
         external(P, &Model::_p);
@@ -76,11 +103,6 @@ public:
 
     virtual ~Model()
     { }
-
-    void build()
-    {
-        plant_model.build();
-    }
 
     void init(double t, const model::models::ModelParameters& parameters)
     {

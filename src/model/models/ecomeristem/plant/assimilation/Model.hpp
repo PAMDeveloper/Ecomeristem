@@ -69,9 +69,6 @@ public:
     virtual ~Model()
     { }
 
-    void build()
-    { }
-
     void compute(double t)
     {
         lai_model.put(t, Lai::FCSTR, _fcstr);

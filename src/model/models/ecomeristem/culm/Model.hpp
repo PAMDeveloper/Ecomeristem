@@ -23,6 +23,7 @@
  */
 
 #include <model/kernel/AbstractCoupledModel.hpp>
+#include <model/models/ecomeristem/phytomer/Model.hpp>
 
 namespace ecomeristem { namespace culm {
 
@@ -35,19 +36,28 @@ public:
     virtual ~Model()
     { }
 
-    void build()
+    void init(double t, const model::models::ModelParameters& parameters)
     {
+        phytomer::Model* first_phytomer = new phytomer::Model();
+
+        first_phytomer->init(t, parameters);
+        phytomer_models.push_back(first_phytomer);
     }
 
-    void init(double /* t */, const model::models::ModelParameters& /*     parameters */)
+    void compute(double t)
     {
-    }
+        std::vector < phytomer::Model* >::iterator it =
+            phytomer_models.begin();
 
-    void compute(double /* t */)
-    {
+        while (it != phytomer_models.end()) {
+            (*it)->compute(t);
+            ++it;
+        }
     }
 
 private:
+//submodels
+    std::vector < phytomer::Model* > phytomer_models;
 };
 
 } } // namespace ecomeristem culm

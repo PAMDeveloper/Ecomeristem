@@ -22,11 +22,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
+#include <model/models/ecomeristem/internode/Model.hpp>
+#include <model/models/ecomeristem/leaf/Model.hpp>
 
 namespace ecomeristem { namespace phytomer {
 
-class Model
+class Model : public AbstractCoupledModel < Model >
 {
 public:
     Model()
@@ -35,20 +37,21 @@ public:
     virtual ~Model()
     { }
 
-    void build()
+    void init(double t, const model::models::ModelParameters& parameters)
     {
+        internode_model.init(t, parameters);
+        leaf_model.init(t, parameters);
     }
 
-    void init(double /* t */,
-              const model::models::ModelParameters& /* parameters */)
+    void compute(double t)
     {
-    }
-
-    void compute(double /* t */)
-    {
+        internode_model.compute(t);
+        leaf_model.compute(t);
     }
 
 private:
+    internode::Model internode_model;
+    leaf::Model leaf_model;
 };
 
 } } // namespace ecomeristem phytomer

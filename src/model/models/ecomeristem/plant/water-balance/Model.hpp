@@ -56,9 +56,6 @@ public:
     virtual ~Model()
     { }
 
-    void build()
-    { }
-
     void init(double t, const model::models::ModelParameters& parameters)
     {
         SWC_model.init(t, parameters);

@@ -47,6 +47,19 @@ public:
     static const int BOOL_CROSSED_PLASTO = 10;
     static const int ASSIM = 11;
     static const int CSTR = 12;
+    static const int ROOT_DEMAND_COEF = 13;
+    static const int ROOT_DEMAND = 14;
+    static const int ROOT_BIOMASS = 15;
+    static const int STOCK = 16;
+    static const int GROW = 17;
+    static const int SUPPLY = 18;
+    static const int DEFICIT = 19;
+    static const int IC = 20;
+    static const int SURPLUS = 21;
+    static const int TEST_IC = 22;
+    static const int DAY_DEMAND = 23;
+    static const int RESERVOIR_DISPO = 24;
+    static const int SEED_RES = 25;
 
     Model()
     {
@@ -67,12 +80,28 @@ public:
                  ecomeristem::Model::BOOL_CROSSED_PLASTO);
         internal(ASSIM, &ecomeristem_model, ecomeristem::Model::ASSIM);
         internal(CSTR, &ecomeristem_model, ecomeristem::Model::CSTR);
-   }
+        internal(ROOT_DEMAND_COEF, &ecomeristem_model,
+                 ecomeristem::Model::ROOT_DEMAND_COEF);
+        internal(ROOT_DEMAND, &ecomeristem_model,
+                 ecomeristem::Model::ROOT_DEMAND);
+        internal(ROOT_BIOMASS, &ecomeristem_model,
+                 ecomeristem::Model::ROOT_BIOMASS);
+        internal(STOCK, &ecomeristem_model, ecomeristem::Model::STOCK);
+        internal(GROW, &ecomeristem_model, ecomeristem::Model::GROW);
+        internal(SUPPLY, &ecomeristem_model, ecomeristem::Model::SUPPLY);
+        internal(DEFICIT, &ecomeristem_model, ecomeristem::Model::DEFICIT);
+        internal(IC, &ecomeristem_model, ecomeristem::Model::IC);
+        internal(SURPLUS, &ecomeristem_model, ecomeristem::Model::SURPLUS);
+        internal(TEST_IC, &ecomeristem_model, ecomeristem::Model::TEST_IC);
+        internal(DAY_DEMAND, &ecomeristem_model,
+                 ecomeristem::Model::DAY_DEMAND);
+        internal(RESERVOIR_DISPO, &ecomeristem_model,
+                 ecomeristem::Model::RESERVOIR_DISPO);
+        internal(SEED_RES, &ecomeristem_model, ecomeristem::Model::SEED_RES);
+    }
 
     virtual ~Model()
     { }
-
-    void build();
 
     void compute(double t);
 

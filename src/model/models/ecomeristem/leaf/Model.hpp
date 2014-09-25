@@ -22,11 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 
 namespace ecomeristem { namespace leaf {
 
-class Model
+class Model : public AbstractCoupledModel < Model >
 {
 public:
     Model()
@@ -35,15 +35,12 @@ public:
     virtual ~Model()
     { }
 
-    void build()
+    void init(double /* t */,
+              const model::models::ModelParameters& /*     parameters */)
     {
     }
 
-    void init(double t, const model::models::ModelParameters& parameters)
-    {
-    }
-
-    void compute(double t)
+    void compute(double /* t */)
     {
     }
 

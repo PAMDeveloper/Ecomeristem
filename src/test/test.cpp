@@ -63,11 +63,12 @@ void check_values(const std::string& file_name,
 	boost::split(columns, l, boost::is_any_of(" \t\n"),
                      boost::token_compress_on);
 
-        std::string time = (boost::format("%1% => %2%") %
+        std::string info = (boost::format("[%1%] %2% => %3%") % var_name %
                             utils::DateTime::toJulianDay(begin + j) % j).str();
-        CAPTURE(time);
+        CAPTURE(info);
         REQUIRE(boost::lexical_cast < double >(
-                    columns[2]) == Approx(view.get(t, var_name)));
+                    columns[2]) == Approx(view.get(t, var_name))
+            );
         ++t;
     }
 }
@@ -99,154 +100,35 @@ TEST_CASE("Thermal time tests", "variables")
     check_values("DD_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "DD");
-}
-
-TEST_CASE("EDD tests", "EDD variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("EDD_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "EDD");
-}
-
-TEST_CASE("IH tests", "IH variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("IH_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "IH");
-}
-
-TEST_CASE("LIGULO_VISU tests", "LIGULO_VISU variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("ligulo_visu_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "LIGULO_VISU");
-}
-
-TEST_CASE("PHENO_STAGE tests", "PHENO_STAGE variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("n_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "PHENO_STAGE");
-}
-
-TEST_CASE("PLASTO_VISU tests", "PLASTO_VISU variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("plasto_visu_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "PLASTO_VISU");
-}
-
-TEST_CASE("TT tests", "TT variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("TT_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "TT");
-}
-
-TEST_CASE("TT_LIG tests", "TT_LIG variable")
-{
-    kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
-    model::models::ModelParameters parameters;
-    utils::ParametersReader reader;
-    std::string begin;
-    std::string end;
-
-    reader.load("", parameters);
-    format_dates(parameters, begin, end);
-    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-    simulator.run(utils::DateTime::toJulianDayNumber(begin),
-                  utils::DateTime::toJulianDayNumber(end));
-
     check_values("TT_lig_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "TT_LIG");
 }
 
-TEST_CASE("CSTR tests", "CSTR variable")
+TEST_CASE("Water balance tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -267,7 +149,7 @@ TEST_CASE("CSTR tests", "CSTR variable")
                  "plant", "CSTR");
 }
 
-TEST_CASE("ASSIM tests", "ASSIM variable")
+TEST_CASE("Assimilation tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -286,4 +168,70 @@ TEST_CASE("ASSIM tests", "ASSIM variable")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "ASSIM");
+}
+
+TEST_CASE("Root tests", "variables")
+{
+    kernel::Model* model = new kernel::Model;
+    kernel::Simulator simulator(model);
+    model::models::ModelParameters parameters;
+    utils::ParametersReader reader;
+    std::string begin;
+    std::string end;
+
+    reader.load("", parameters);
+    format_dates(parameters, begin, end);
+    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
+    simulator.run(utils::DateTime::toJulianDayNumber(begin),
+                  utils::DateTime::toJulianDayNumber(end));
+
+    check_values("R_d_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "ROOT_DEMAND_COEF");
+    check_values("biomRoot_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "ROOT_BIOMASS");
+}
+
+TEST_CASE("Stock tests", "variables")
+{
+    kernel::Model* model = new kernel::Model;
+    kernel::Simulator simulator(model);
+    model::models::ModelParameters parameters;
+    utils::ParametersReader reader;
+    std::string begin;
+    std::string end;
+
+    reader.load("", parameters);
+    format_dates(parameters, begin, end);
+    simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
+    simulator.run(utils::DateTime::toJulianDayNumber(begin),
+                  utils::DateTime::toJulianDayNumber(end));
+
+/*    check_values("supply_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "SUPPLY");
+    check_values("stock_mainstem_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "STOCK");
+    check_values("reservoirDispo_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "RESERVOIR_DISPO");
+    check_values("deficit_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "DEFICIT"); */
+    check_values("dayDemand_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "DAY_DEMAND");
+    check_values("seedres_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "SEED_RES");
 }

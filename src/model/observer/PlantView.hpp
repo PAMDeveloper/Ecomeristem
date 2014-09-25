@@ -48,6 +48,19 @@ public:
         values["TT"] = std::map < double, double >();
         values["TT_LIG"] = std::map < double, double >();
         values["CSTR"] = std::map < double, double >();
+        values["ROOT_DEMAND_COEF"] = std::map < double, double >();
+        values["ROOT_DEMAND"] = std::map < double, double >();
+        values["ROOT_BIOMASS"] = std::map < double, double >();
+        values["STOCK"] = std::map < double, double >();
+        values["SURPLUS"] = std::map < double, double >();
+        values["SUPPLY"] = std::map < double, double >();
+        values["RESERVOIR_DISPO"] = std::map < double, double >();
+        values["SEED_RES"] = std::map < double, double >();
+        values["IC"] = std::map < double, double >();
+        values["TEST_IC"] = std::map < double, double >();
+        values["DAY_DEMAND"] = std::map < double, double >();
+        values["GROW"] = std::map < double, double >();
+        values["DEFICIT"] = std::map < double, double >();
     }
 
     virtual ~PlantView()
@@ -77,6 +90,32 @@ public:
         values["TT_LIG"][t] = model->get(model::kernel::Model::TT_LIG);
         values["ASSIM"][t] = model->get(model::kernel::Model::ASSIM);
         values["CSTR"][t] = model->get(model::kernel::Model::CSTR);
+        values["ROOT_DEMAND_COEF"][t] =
+            model->get(model::kernel::Model::ROOT_DEMAND_COEF);
+        values["ROOT_DEMAND"][t] =
+            model->get(model::kernel::Model::ROOT_DEMAND);
+        values["ROOT_BIOMASS"][t] =
+            model->get(model::kernel::Model::ROOT_BIOMASS);
+        values["STOCK"][t] =
+            model->get(model::kernel::Model::STOCK);
+        values["SURPLUS"][t] =
+            model->get(model::kernel::Model::SURPLUS);
+        values["SUPPLY"][t] =
+            model->get(model::kernel::Model::SUPPLY);
+        values["RESERVOIR_DISPO"][t] =
+            model->get(model::kernel::Model::RESERVOIR_DISPO);
+        values["SEED_RES"][t] =
+            model->get(model::kernel::Model::SEED_RES);
+        values["IC"][t] =
+            model->get(model::kernel::Model::IC);
+        values["TEST_IC"][t] =
+            model->get(model::kernel::Model::TEST_IC);
+        values["DAY_DEMAND"][t] =
+            model->get(model::kernel::Model::DAY_DEMAND);
+        values["GROW"][t] =
+            model->get(model::kernel::Model::GROW);
+        values["DEFICIT"][t] =
+            model->get(model::kernel::Model::DEFICIT);
     }
 
 private:

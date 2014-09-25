@@ -52,9 +52,6 @@ public:
     virtual ~Model()
     { }
 
-    void build()
-    { }
-
     void compute(double t);
 
     const Climate& get() const

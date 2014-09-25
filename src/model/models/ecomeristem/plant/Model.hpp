@@ -35,8 +35,6 @@
 #include <model/models/ecomeristem/plant/water-balance/Model.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 
-#include <iostream>
-
 namespace ecomeristem { namespace plant {
 
 class Model : public AbstractCoupledModel < Model >
@@ -55,6 +53,19 @@ public:
     static const int BOOL_CROSSED_PLASTO = 10;
     static const int ASSIM = 11;
     static const int CSTR = 12;
+    static const int ROOT_DEMAND_COEF = 13;
+    static const int ROOT_DEMAND = 14;
+    static const int ROOT_BIOMASS = 15;
+    static const int STOCK = 16;
+    static const int GROW = 17;
+    static const int SUPPLY = 18;
+    static const int DEFICIT = 19;
+    static const int IC = 20;
+    static const int SURPLUS = 21;
+    static const int TEST_IC = 22;
+    static const int DAY_DEMAND = 23;
+    static const int RESERVOIR_DISPO = 24;
+    static const int SEED_RES = 25;
 
     static const int ETP = 0;
     static const int P = 1;
@@ -85,6 +96,19 @@ public:
                  plant::assimilation::Model::ASSIM);
         internal(CSTR, &water_balance_model,
                  plant::water_balance::Model::CSTR);
+        internal(ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF);
+        internal(ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND);
+        internal(ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS);
+        internal(STOCK, &stock_model, stock::Model::STOCK);
+        internal(GROW, &stock_model, stock::Model::GROW);
+        internal(SUPPLY, &stock_model, stock::Model::SUPPLY);
+        internal(DEFICIT, &stock_model, stock::Model::DEFICIT);
+        internal(IC, &stock_model, stock::Model::IC);
+        internal(SURPLUS, &stock_model, stock::Model::SURPLUS);
+        internal(TEST_IC, &stock_model, stock::Model::TEST_IC);
+        internal(DAY_DEMAND, &stock_model, stock::Model::DAY_DEMAND);
+        internal(RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO);
+        internal(SEED_RES, &stock_model, stock::Model::SEED_RES);
 
         external(ETP, &Model::_etp);
         external(P, &Model::_p);
@@ -94,9 +118,6 @@ public:
      }
 
     virtual ~Model()
-    { }
-
-    void build()
     { }
 
     void init(double t, const model::models::ModelParameters& parameters)
@@ -127,16 +148,13 @@ public:
                           thermal_time::Model::PHENO_STAGE));
         sla_model.compute(t);
 
-        // std::cout << "*********************************" << std::endl;
-
+        // TODO
         compute_assimilation(t);
         compute_water_balance(t);
         compute_assimilation(t);
         compute_water_balance(t);
 
-        // std::cout << "*********************************" << std::endl;
-
-        root_model.compute(t);
+        compute_root(t);
 
         manager_model.put(t, Manager::STOCK, 0.1);
         manager_model.put(t, Manager::PHENO_STAGE, thermal_time_model.get(
@@ -158,9 +176,12 @@ public:
         tiller_manager_model.put(t, TillerManager::IC, 0);
         tiller_manager_model.compute(t);
 
+        compute_stock(t);
+
         std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-        while (it != culm_models.begin()) {
+        while (it != culm_models.end()) {
             (*it)->compute(t);
+            ++it;
         }
     }
 
@@ -184,6 +205,31 @@ private:
                                water_balance_model.get(
                                    water_balance::Model::CSTR));
         assimilation_model.compute(t);
+    }
+
+    void compute_root(double t)
+    {
+        root_model.put(t, root::Model::P, _p);
+        root_model.put(t, root::Model::STOCK, 3.76073563218391E-5);
+        root_model.put(t, root::Model::LEAF_DEMAND_SUM, 9.40183908045977E-5);
+        root_model.put(t, root::Model::GROW, 0);
+        root_model.put(t, root::Model::PHASE,
+                       manager_model.get(Manager::PHASE));
+        root_model.compute(t);
+    }
+
+    void compute_stock(double t)
+    {
+        stock_model.put(t, stock::Model::ASSIM,
+                        assimilation_model.get(assimilation::Model::ASSIM));
+        stock_model.put(t, stock::Model::DEMAND_SUM, 9.40183908045977E-5);
+        stock_model.put(t, stock::Model::LEAF_BIOMASS_SUM, 9.40183908045977E-5);
+        stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
+                        9.40183908045977E-5);
+        stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0);
+        stock_model.put(t, stock::Model::PHASE,
+                        manager_model.get(Manager::PHASE));
+        stock_model.compute(t);
     }
 
     void compute_thermal_time(double t)

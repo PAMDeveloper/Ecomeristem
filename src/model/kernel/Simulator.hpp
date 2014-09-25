@@ -35,9 +35,7 @@ class Simulator
 public:
     Simulator(model::kernel::Model* model)
         : _model(model), _observer(model)
-    {
-        _model->build();
-    }
+    { }
 
     virtual ~Simulator()
     { delete _model; }

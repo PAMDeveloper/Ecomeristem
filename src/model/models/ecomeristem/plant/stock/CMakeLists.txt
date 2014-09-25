@@ -3,7 +3,8 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_PLANT_STOCK_HPP Model.hpp)
+SET(ECOMERISTEM_PLANT_STOCK_HPP DayDemand.hpp IndexCompetition.hpp Model.hpp
+  ReservoirDispo.hpp SeedRes.hpp Stock.hpp Supply.hpp Surplus.hpp)
 
 SET(ECOMERISTEM_PLANT_STOCK_CPP Model.cpp)
 

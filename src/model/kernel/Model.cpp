@@ -26,12 +26,6 @@
 
 namespace model { namespace kernel {
 
-void Model::build()
-{
-    ecomeristem_model.build();
-    meteo_model.build();
-}
-
 void Model::compute(double t)
 {
     meteo_model.compute(t);

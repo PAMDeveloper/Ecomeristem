@@ -78,9 +78,6 @@ public:
     virtual ~Model()
     { }
 
-    void build()
-    { }
-
     void init(double t, const model::models::ModelParameters& parameters)
     {
         DeltaT_model.init(t, parameters);

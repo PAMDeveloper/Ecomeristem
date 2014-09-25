@@ -83,6 +83,7 @@ public:
         }
         AbstractAtomicModel < TT_lig >::put(t, index, value);
     }
+
 private:
 // internal variable
     double _TT_lig;

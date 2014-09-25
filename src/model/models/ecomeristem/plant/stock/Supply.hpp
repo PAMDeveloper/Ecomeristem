@@ -1,5 +1,5 @@
 /**
- * @file ecomeristem/internode/Model.hpp
+ * @file ecomeristem/plant/stock/Supply.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,29 +22,47 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/kernel/AbstractCoupledModel.hpp>
+#ifndef __ECOMERISTEM_PLANT_STOCK_SUPPLY_HPP
+#define __ECOMERISTEM_PLANT_STOCK_SUPPLY_HPP
 
-namespace ecomeristem { namespace internode {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-class Model : public AbstractCoupledModel < Model >
+namespace ecomeristem { namespace plant { namespace stock {
+
+class Supply : public AbstractAtomicModel < Supply >
 {
 public:
-    Model()
-    { }
+    static const unsigned int SUPPLY = 0;
+    static const unsigned int ASSIM = 0;
 
-    virtual ~Model()
-    { }
-
-    void init(double /* t */,
-              const model::models::ModelParameters& /*     parameters */)
+    Supply()
     {
+        internal(SUPPLY, &Supply::_supply);
+        external(ASSIM, &Supply::_assim);
     }
+
+    virtual ~Supply()
+    { }
 
     void compute(double /* t */)
     {
+        _supply = _assim;
+    }
+
+    void init(double /* t */,
+              const model::models::ModelParameters& /* parameters */)
+    {
+        _supply = 0;
     }
 
 private:
+// internal variable
+    double _supply;
+
+// external variables
+    double _assim;
 };
 
-} } // namespace ecomeristem internode
+} } } // namespace ecomeristem plant stock
+
+#endif
