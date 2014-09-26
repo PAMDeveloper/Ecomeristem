@@ -26,8 +26,6 @@
 
 #include <utils/ParametersReader.hpp>
 
-#include <iostream>
-
 namespace utils {
 
 void ParametersReader::load(const std::string& id,
@@ -40,8 +38,8 @@ void ParametersReader::load(const std::string& id,
 
     load_simulation(id, connection, parameters);
     parameters.set < std::string >("BeginDate", "20-01-2010");
-    parameters.set < std::string >("EndDate", "21-01-2010");
-//    parameters.set < std::string >("EndDate", "08-05-2010");
+//    parameters.set < std::string >("EndDate", "21-01-2010");
+    parameters.set < std::string >("EndDate", "08-05-2010");
 
 /*    std::cout << "Simulation:" << std::endl;
     std::cout << " - begin = " << parameters.get < std::string >("BeginDate")

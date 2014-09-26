@@ -40,38 +40,13 @@ namespace ecomeristem { namespace plant {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    static const int LAI = 0;
-    static const int DELTA_T = 1;
-    static const int DD = 2;
-    static const int EDD = 3;
-    static const int IH = 4;
-    static const int LIGULO_VISU = 5;
-    static const int PHENO_STAGE = 6;
-    static const int PLASTO_VISU = 7;
-    static const int TT = 8;
-    static const int TT_LIG = 9;
-    static const int BOOL_CROSSED_PLASTO = 10;
-    static const int ASSIM = 11;
-    static const int CSTR = 12;
-    static const int ROOT_DEMAND_COEF = 13;
-    static const int ROOT_DEMAND = 14;
-    static const int ROOT_BIOMASS = 15;
-    static const int STOCK = 16;
-    static const int GROW = 17;
-    static const int SUPPLY = 18;
-    static const int DEFICIT = 19;
-    static const int IC = 20;
-    static const int SURPLUS = 21;
-    static const int TEST_IC = 22;
-    static const int DAY_DEMAND = 23;
-    static const int RESERVOIR_DISPO = 24;
-    static const int SEED_RES = 25;
-
-    static const int ETP = 0;
-    static const int P = 1;
-    static const int RADIATION = 2;
-    static const int TA = 3;
-    static const int WATER_SUPPLY = 4;
+    enum internals { LAI, DELTA_T, DD, EDD, IH, LIGULO_VISU, PHENO_STAGE,
+                     PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO,
+                     ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
+                     ROOT_BIOMASS, STOCK, GROW, SUPPLY, DEFICIT, IC,
+                     SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
+                     SEED_RES };
+    enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
     Model()
     {
@@ -132,7 +107,7 @@ public:
         lig_model.init(t, parameters);
         sla_model.init(t, parameters);
 
-        culm::Model* meristem = new culm::Model();
+        culm::Model* meristem = new culm::Model(1);
 
         meristem->init(t, parameters);
         culm_models.push_back(meristem);
@@ -156,6 +131,7 @@ public:
 
         compute_root(t);
 
+        // TODO
         manager_model.put(t, Manager::STOCK, 0.1);
         manager_model.put(t, Manager::PHENO_STAGE, thermal_time_model.get(
                               thermal_time::Model::PHENO_STAGE));
@@ -164,7 +140,7 @@ public:
                               thermal_time::Model::BOOL_CROSSED_PLASTO));
         manager_model.put(t, Manager::FTSW,
                           water_balance_model.get(water_balance::Model::FTSW));
-        manager_model.put(t, Manager::IC, 0);
+        manager_model.put(t, Manager::IC, stock_model.get(stock::Model::IC));
         // manager_model.compute(t);
 
         tiller_manager_model.put(t, TillerManager::BOOL_CROSSED_PLASTO,
@@ -173,16 +149,13 @@ public:
         tiller_manager_model.put(t, TillerManager::PHENO_STAGE,
                                  thermal_time_model.get(
                                      thermal_time::Model::PHENO_STAGE));
-        tiller_manager_model.put(t, TillerManager::IC, 0);
+        tiller_manager_model.put(t, TillerManager::IC,
+                                 stock_model.get(stock::Model::IC));
         tiller_manager_model.compute(t);
 
         compute_stock(t);
 
-        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-        while (it != culm_models.end()) {
-            (*it)->compute(t);
-            ++it;
-        }
+        compute_culms(t);
     }
 
 private:
@@ -191,8 +164,9 @@ private:
         assimilation_model.put(t, assimilation::Model::FCSTR,
                                water_balance_model.get(
                                    water_balance::Model::FCSTR));
-        assimilation_model.put(t,
-                               assimilation::Model::INTERNODE_BIOMASS, 0);
+        //TODO
+        assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS, 0);
+        //TODO
         assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
                                9.40183908045977E-5);
         // TODO: PAI
@@ -207,11 +181,50 @@ private:
         assimilation_model.compute(t);
     }
 
+    void compute_culms(double t)
+    {
+        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+        while (it != culm_models.end()) {
+            (*it)->put(t, culm::Model::DD,
+                       thermal_time_model.get(
+                           thermal_time::Model::DD));
+            (*it)->put(t, culm::Model::DELTA_T,
+                       thermal_time_model.get(
+                           thermal_time::Model::DELTA_T));
+            (*it)->put(t, culm::Model::FTSW,
+                       water_balance_model.get(
+                           water_balance::Model::FTSW));
+            (*it)->put(t, culm::Model::FCSTR,
+                       water_balance_model.get(
+                           water_balance::Model::FCSTR));
+            (*it)->put(t, culm::Model::P, _p);
+            (*it)->put(t, culm::Model::PHENO_STAGE,
+                       thermal_time_model.get(
+                           thermal_time::Model::PHENO_STAGE));
+            //TODO
+            (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM, 0);
+            (*it)->put(t, culm::Model::SLA, sla_model.get(Sla::SLA));
+            (*it)->put(t, culm::Model::GROW,
+                       stock_model.get(stock::Model::GROW));
+            (*it)->put(t, culm::Model::PHASE,
+                       manager_model.get(Manager::PHASE));
+            //TODO
+            (*it)->put(t, culm::Model::STOP, 0);
+            (*it)->put(t, culm::Model::TEST_IC,
+                       stock_model.get(stock::Model::TEST_IC));
+            (*it)->compute(t);
+            ++it;
+        }
+    }
+
     void compute_root(double t)
     {
         root_model.put(t, root::Model::P, _p);
+        //TODO
         root_model.put(t, root::Model::STOCK, 3.76073563218391E-5);
+        //TODO
         root_model.put(t, root::Model::LEAF_DEMAND_SUM, 9.40183908045977E-5);
+        //TODO
         root_model.put(t, root::Model::GROW, 0);
         root_model.put(t, root::Model::PHASE,
                        manager_model.get(Manager::PHASE));
@@ -222,10 +235,14 @@ private:
     {
         stock_model.put(t, stock::Model::ASSIM,
                         assimilation_model.get(assimilation::Model::ASSIM));
+        //TODO
         stock_model.put(t, stock::Model::DEMAND_SUM, 9.40183908045977E-5);
+        //TODO
         stock_model.put(t, stock::Model::LEAF_BIOMASS_SUM, 9.40183908045977E-5);
+        //TODO
         stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
                         9.40183908045977E-5);
+        //TODO
         stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0);
         stock_model.put(t, stock::Model::PHASE,
                         manager_model.get(Manager::PHASE));
@@ -235,13 +252,13 @@ private:
     void compute_thermal_time(double t)
     {
         thermal_time_model.put(t, thermal_time::Model::STOCK,
-                               3.76073563218391E-5);
-        // stock_model.get(stock::Model::STOCK));
+                               stock_model.get(stock::Model::STOCK));
         thermal_time_model.put(t, thermal_time::Model::TA, _ta);
-        thermal_time_model.put(t, thermal_time::Model::GROW, 0);
-        // stock_model.get(stock::Model::GROW));
+        thermal_time_model.put(t, thermal_time::Model::GROW,
+                               stock_model.get(stock::Model::GROW));
         thermal_time_model.put(t, thermal_time::Model::LIG,
                                lig_model.get(Lig::LIG));
+        // TODO
         thermal_time_model.put(t, thermal_time::Model::PLASTO_DELAY, 0);
         thermal_time_model.compute(t);
     }
