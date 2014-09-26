@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2014 INRA http://www.cirad.fr
- * Copyright (C) 2014 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2014 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2014 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,11 +35,12 @@ public:
     virtual ~Model()
     { }
 
-    void init(double t, const model::models::ModelParameters& parameters)
+    void init(double /* t */,
+              const model::models::ModelParameters& /* parameters */)
     {
     }
 
-    void compute(double t)
+    void compute(double /* t */)
     {
     }
 

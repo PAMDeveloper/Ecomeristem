@@ -1,12 +1,12 @@
 /**
  * @file DateTime.hpp
- * @author The TNT Development Team
+ * @author The Ecomeristem Development Team
  * See the AUTHORS file
  */
 
 /*
- * Copyright (C) 2013-2014 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2013-2014 INRA http://www.inra.fr
+ * Copyright (C) 2012-2014 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2014 Cirad http://www.cirad.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TNT_DATE_TIME_HPP
-#define TNT_DATE_TIME_HPP 1
+#ifndef ECOMERISTEM_DATE_TIME_HPP
+#define ECOMERISTEM_DATE_TIME_HPP
 
 #include <ostream>
 #include <string>

@@ -1,12 +1,12 @@
 /**
  * @file Exception.hpp
- * @author The TNT Development Team
+ * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2012-2013 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2012-2013 INRA http://www.inra.fr
+ * Copyright (C) 2012-2014 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2014 Cirad http://www.cirad.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TNT_EXCEPTION_HPP
-#define TNT_EXCEPTION_HPP 1
+#ifndef ECOMERISTEM_EXCEPTION_HPP
+#define ECOMERISTEM_EXCEPTION_HPP
 
 #include <boost/format.hpp>
 #include <stdexcept>
