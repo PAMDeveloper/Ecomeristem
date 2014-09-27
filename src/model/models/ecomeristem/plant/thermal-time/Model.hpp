@@ -91,56 +91,60 @@ public:
         PhenoStage_model.init(t, parameters);
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
         DeltaT_model.put(t, DeltaT::TA, _Ta);
-        DeltaT_model.compute(t);
+        DeltaT_model(t);
 
         TT_model.put(t, Tt::DELTA_T, DeltaT_model.get(DeltaT::DELTA_T));
-        TT_model.compute(t);
+        TT_model(t);
 
-        ThermalTimeManager_model.put(t, ThermalTimeManager::STOCK, _stock);
-        // ThermalTimeManager_model.compute(t);
+        if (is_ready(t, STOCK)) {
+            ThermalTimeManager_model.put(t, ThermalTimeManager::STOCK, _stock);
+        } else {
+            ThermalTimeManager_model(t);
+        }
 
         DD_model.put(t, Dd::DELTA_T, DeltaT_model.get(DeltaT::DELTA_T));
         DD_model.put(t, Dd::GROW, _grow);
         DD_model.put(t, Dd::PHASE,
                      ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
         DD_model.put(t, Dd::PLASTO_DELAY, _plasto_delay);
-        DD_model.compute(t);
+        DD_model(t);
 
         TT_lig_model.put(t, TT_lig::PHASE,
-                         ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
+                         ThermalTimeManager_model.get(
+                             ThermalTimeManager::PHASE));
         TT_lig_model.put(t, TT_lig::EDD, DD_model.get(Dd::EDD));
         TT_lig_model.put(t, TT_lig::LIG, _lig);
-        TT_lig_model.compute(t);
+        TT_lig_model(t);
 
         IH_model.put(t, Ih::TT_LIG, TT_lig_model.get(TT_lig::TT_LIG));
         IH_model.put(t, Ih::LIG, _lig);
         IH_model.put(t, Ih::PHASE,
                      ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
-        IH_model.compute(t);
+        IH_model(t);
 
         PlastoVisu_model.put(t, PlastoVisu::EDD, DD_model.get(Dd::EDD));
         PlastoVisu_model.put(t, PlastoVisu::PHASE,
                              ThermalTimeManager_model.get(
                                  ThermalTimeManager::PHASE));
         PlastoVisu_model.put(t, PlastoVisu::PLASTO_DELAY, _plasto_delay);
-        PlastoVisu_model.compute(t);
+        PlastoVisu_model(t);
 
         PhenoStage_model.put(t, PhenoStage::BOOL_CROSSED_PLASTO,
                              DD_model.get(Dd::BOOL_CROSSED_PLASTO));
         PhenoStage_model.put(t, PhenoStage::PHASE,
                              ThermalTimeManager_model.get(
                                  ThermalTimeManager::PHASE));
-        PhenoStage_model.compute(t);
+        PhenoStage_model(t);
 
         LiguloVisu_model.put(t, LiguloVisu::EDD, DD_model.get(Dd::EDD));
         LiguloVisu_model.put(t, LiguloVisu::PHASE,
                              ThermalTimeManager_model.get(
                                  ThermalTimeManager::PHASE));
         LiguloVisu_model.put(t, LiguloVisu::PLASTO_DELAY, _plasto_delay);
-        LiguloVisu_model.compute(t);
+        LiguloVisu_model(t);
     }
 
     // virtual void put(double t, unsigned int index, double value)

@@ -42,7 +42,7 @@ public:
     virtual ~Lig()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         // TODO
         if (j == 3 || j == 7 || j == 11 || j == 15 || j == 19 || j == 23 ||

@@ -49,7 +49,7 @@ public:
     virtual ~LiguloVisu()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             _LiguloVisu = _LiguloVisu - _plasto_delay;

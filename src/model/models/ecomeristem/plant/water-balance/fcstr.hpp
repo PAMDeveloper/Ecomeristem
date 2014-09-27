@@ -44,8 +44,16 @@ public:
     virtual ~Fcstr()
     { }
 
-    void compute(double /* t */)
-    { _fcstr = std::sqrt(_cstr); }
+    bool check(double t) const
+    { return is_ready(t, CSTR); }
+
+    void compute(double /* t */, bool /* update */)
+    {
+        _fcstr = std::sqrt(_cstr);
+
+        std::cout << "FCSTR: " << _fcstr << " " << _cstr << std::endl;
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)

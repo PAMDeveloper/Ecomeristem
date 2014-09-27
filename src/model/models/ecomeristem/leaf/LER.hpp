@@ -45,10 +45,15 @@ public:
     virtual ~Ler()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _ler = _predim * _reduction_ler / (_plasto + _index *
                                            (_ligulo - _plasto));
+
+        // std::cout << "LER: " << _ler << " " << _predim << " "
+        //           << _reduction_ler << " " << _plasto
+        //           << " " << _index << " " << _ligulo << std::endl;
+
     }
 
     void init(double /* t */,

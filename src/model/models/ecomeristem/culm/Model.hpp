@@ -30,11 +30,18 @@ namespace ecomeristem { namespace culm {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
+                     LEAF_BLADE_AREA_SUM };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STOP, TEST_IC };
 
     Model(bool is_first_culm) : _is_first_culm(is_first_culm)
     {
+        internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
+        internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
+        internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
+        internal(LEAF_BLADE_AREA_SUM, &Model::_leaf_blade_area_sum);
+
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);
         external(FTSW, &Model::_ftsw);
@@ -59,13 +66,22 @@ public:
 
         first_phytomer->init(t, parameters);
         phytomer_models.push_back(first_phytomer);
+
+        _leaf_biomass_sum = 0;
+        _leaf_last_demand_sum = 0;
+        _leaf_demand_sum = 0;
+        _leaf_blade_area_sum = 0;
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
         std::vector < phytomer::Model* >::iterator it =
             phytomer_models.begin();
 
+        _leaf_biomass_sum = 0;
+        _leaf_last_demand_sum = 0;
+        _leaf_demand_sum = 0;
+        _leaf_blade_area_sum = 0;
         while (it != phytomer_models.end()) {
             (*it)->put(t, phytomer::Model::DD, _dd);
             (*it)->put(t, phytomer::Model::DELTA_T, _delta_t);
@@ -82,7 +98,14 @@ public:
             (*it)->put(t, phytomer::Model::PHASE, _phase);
             (*it)->put(t, phytomer::Model::STOP, _stop);
             (*it)->put(t, phytomer::Model::TEST_IC, _test_ic);
-            (*it)->compute(t);
+            (**it)(t);
+
+            _leaf_biomass_sum += (*it)->get(phytomer::Model::LEAF_BIOMASS);
+            _leaf_last_demand_sum +=
+                (*it)->get(phytomer::Model::LEAF_LAST_DEMAND);
+            _leaf_demand_sum += (*it)->get(phytomer::Model::LEAF_DEMAND);
+            _leaf_blade_area_sum +=
+                (*it)->get(phytomer::Model::LEAF_BLADE_AREA);
             ++it;
         }
     }
@@ -93,6 +116,12 @@ private:
 
 //submodels
     std::vector < phytomer::Model* > phytomer_models;
+
+// internal
+    double _leaf_biomass_sum;
+    double _leaf_last_demand_sum;
+    double _leaf_demand_sum;
+    double _leaf_blade_area_sum;
 
 // external variables
     double _dd;

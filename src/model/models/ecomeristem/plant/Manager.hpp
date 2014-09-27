@@ -94,7 +94,7 @@ public:
         first_leaf = false;
     }
 
-    virtual void compute(double t);
+    virtual void compute(double t, bool /* update */);
 
     virtual void put(double t, unsigned int index, double value);
 

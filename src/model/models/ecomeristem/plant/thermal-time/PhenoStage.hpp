@@ -46,7 +46,7 @@ public:
     virtual ~PhenoStage()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             if (_boolCrossedPlasto >= 0) {

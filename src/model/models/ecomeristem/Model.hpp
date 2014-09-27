@@ -109,14 +109,14 @@ public:
         plant_model.init(t, parameters);
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
         plant_model.put(t, plant::Model::ETP, _etp);
         plant_model.put(t, plant::Model::P, _p);
         plant_model.put(t, plant::Model::RADIATION, _radiation);
         plant_model.put(t, plant::Model::TA, _ta);
         plant_model.put(t, plant::Model::WATER_SUPPLY, _water_supply);
-        plant_model.compute(t);
+        plant_model(t);
     }
 
 private:

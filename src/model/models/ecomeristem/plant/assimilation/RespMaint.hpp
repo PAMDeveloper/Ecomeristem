@@ -43,23 +43,23 @@ public:
         external(LEAF_BIOMASS, &RespMaint::_LeafBiomass);
         external(INTERNODE_BIOMASS, &RespMaint::_InternodeBiomass);
         external(TA, &RespMaint::_Ta);
-
-        _Kresp_leaf = 0.015;
-        _Kresp_internode = 0.007;
-        _Tresp = 25;
     }
 
     virtual ~RespMaint()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, LEAF_BIOMASS) and is_ready(t, INTERNODE_BIOMASS) and
+            is_ready(t, TA); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _RespMaint = (_Kresp_leaf * _LeafBiomass +
                       _Kresp_internode * _InternodeBiomass) *
             std::pow(2., (_Ta - _Tresp) / 10.);
 
-        // std::cout << "RESPMAINT: " << _RespMaint << " " << _LeafBiomass << " "
-        //           << _InternodeBiomass << " " << _Ta << std::endl;
+        std::cout << "RESPMAINT: " << _RespMaint << " " << _LeafBiomass << " "
+                  << _InternodeBiomass << " " << _Ta << std::endl;
 
     }
 

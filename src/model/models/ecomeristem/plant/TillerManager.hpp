@@ -50,7 +50,7 @@ public:
         tae = 0;
     }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_IC > Ict) {
             nbTillers += nbExistingTillers;

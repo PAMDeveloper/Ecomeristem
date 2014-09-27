@@ -46,7 +46,7 @@ public:
     virtual ~ThermalTimeManager()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         state_t old_state;
 
@@ -78,17 +78,18 @@ public:
         } while (old_state != _state);
     }
 
-    void init(double t,
+    void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
         _state = INIT;
-        compute(t);
+        // TODO: why ?
+        _stock = 1e-10;
     }
 
     void put(double t, unsigned int index, double value)
     {
         AbstractAtomicModel < ThermalTimeManager >::put(t, index, value);
-        compute(t);
+        (*this)(t);
     }
 
 private:

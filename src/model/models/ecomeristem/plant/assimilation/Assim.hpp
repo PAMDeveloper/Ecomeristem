@@ -46,12 +46,15 @@ public:
     virtual ~Assim()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, RESP_MAINT) and is_ready(t, ASSIM_POT); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _assim = std::max(0., _assim_pot / _density - _resp_maint);
 
-        // std::cout << "ASSIM: " << _assim << " " << _assim_pot << " "
-        //           << _resp_maint << std::endl;
+        std::cout << "ASSIM: " << _assim << " " << _assim_pot << " "
+                  << _resp_maint << std::endl;
 
     }
 

@@ -50,7 +50,7 @@ public:
     virtual ~Ih()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             _IH = _lig + std::min(1., _TT_lig / _ligulo);

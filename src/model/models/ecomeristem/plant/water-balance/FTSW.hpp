@@ -44,12 +44,12 @@ public:
     virtual ~Ftsw()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _ftsw = _swc_1 / RU1;
 
-        // std::cout << "FTSW: " << _ftsw << " " << _swc << " " << _swc_1 << " "
-        //           << RU1 << std::endl;
+        std::cout << "FTSW: " << _ftsw << " " << _swc << " " << _swc_1 << " "
+                  << RU1 << std::endl;
 
     }
 

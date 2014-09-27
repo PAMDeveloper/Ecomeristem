@@ -49,7 +49,7 @@ public:
     virtual ~PlastoVisu()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             _PlastoVisu = _PlastoVisu - _plasto_delay;

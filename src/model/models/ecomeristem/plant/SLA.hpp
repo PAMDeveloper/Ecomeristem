@@ -44,7 +44,7 @@ public:
     virtual ~Sla()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     { _sla = FSLA - SLAp * std::log(_phenoStage); }
 
     void init(double /* t */,

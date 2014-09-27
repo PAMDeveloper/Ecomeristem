@@ -103,7 +103,7 @@ public:
     virtual ~Model()
     { }
 
-    void compute(double t);
+    void compute(double t, bool update);
 
     void init(double t, const model::models::ModelParameters& parameters)
     {

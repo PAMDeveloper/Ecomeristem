@@ -44,7 +44,7 @@ public:
     virtual ~RootDemandCoef()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         ++_day;
         _rootDemandCoef = _coeff1_R_d * std::exp(_coeff2_R_d * _day) *

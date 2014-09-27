@@ -45,9 +45,14 @@ public:
     virtual ~BladeArea()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _blade_area = _len * _width * _allo_area / _LL_BL;
+
+        // std::cout << "BLADE_AREA: " << _blade_area << " " << _len << " "
+        //           << _width << " " << _allo_area << " "
+        //           << _LL_BL << std::endl;
+
     }
 
     void init(double /* t */,

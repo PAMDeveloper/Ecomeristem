@@ -69,33 +69,38 @@ public:
     virtual ~Model()
     { }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
-        lai_model.put(t, Lai::FCSTR, _fcstr);
-        lai_model.put(t, Lai::PAI, _PAI);
-        lai_model.compute(t);
+        if (is_ready(t, LEAF_BIOMASS) and is_ready(t, INTERNODE_BIOMASS) and
+            is_ready(t, TA)) {
+            respMaint_model.put(t, RespMaint::LEAF_BIOMASS, _leafBiomass);
+            respMaint_model.put(t, RespMaint::INTERNODE_BIOMASS,
+                                _internodeBiomass);
+            respMaint_model.put(t, RespMaint::TA, _Ta);
+            respMaint_model(t);
+            if (is_ready(t, FCSTR) and is_ready(t, PAI)) {
+                lai_model.put(t, Lai::FCSTR, _fcstr);
+                lai_model.put(t, Lai::PAI, _PAI);
+                lai_model(t);
 
-        interc_model.put(t, Interc::LAI,
-                         lai_model.get(Lai::LAI));
-        interc_model.compute(t);
+                interc_model.put(t, Interc::LAI,
+                                 lai_model.get(Lai::LAI));
+                interc_model(t);
+                if (is_ready(t, CSTR) and is_ready(t, RADIATION)) {
+                    assimPot_model.put(t, AssimPot::CSTR, _cstr);
+                    assimPot_model.put(t, AssimPot::RADIATION, _Radiation);
+                    assimPot_model.put(t, AssimPot::INTERC,
+                                       interc_model.get(Interc::INTERC));
+                    assimPot_model(t);
 
-        assimPot_model.put(t, AssimPot::CSTR, _cstr);
-        assimPot_model.put(t, AssimPot::RADIATION, _Radiation);
-        assimPot_model.put(t, AssimPot::INTERC,
-                            interc_model.get(Interc::INTERC));
-        assimPot_model.compute(t);
-
-        respMaint_model.put(t, RespMaint::LEAF_BIOMASS, _leafBiomass);
-        respMaint_model.put(t, RespMaint::INTERNODE_BIOMASS,
-                             _internodeBiomass);
-        respMaint_model.put(t, RespMaint::TA, _Ta);
-        respMaint_model.compute(t);
-
-        assim_model.put(t, Assim::RESP_MAINT,
-                         respMaint_model.get(RespMaint::RESP_MAINT));
-        assim_model.put(t, Assim::ASSIM_POT,
-                         assimPot_model.get(AssimPot::ASSIM_POT));
-        assim_model.compute(t);
+                    assim_model.put(t, Assim::RESP_MAINT,
+                                    respMaint_model.get(RespMaint::RESP_MAINT));
+                    assim_model.put(t, Assim::ASSIM_POT,
+                                    assimPot_model.get(AssimPot::ASSIM_POT));
+                    assim_model(t);
+                }
+            }
+        }
     }
 
     void init(double t, const model::models::ModelParameters& parameters)

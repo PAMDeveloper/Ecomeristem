@@ -45,7 +45,7 @@ public:
         internal(DAY_DEMAND, &DayDemand::_day_demand);
 
         external(DEMAND_SUM, &DayDemand::_demand_sum);
-        external(LEAF_LAST_DEMAND_SUM, &DayDemand::_leaf_last_demand);
+        external(LEAF_LAST_DEMAND_SUM, &DayDemand::_leaf_last_demand_sum);
         external(GROW, &DayDemand::_grow);
         external(PHASE, &DayDemand::_phase);
     }
@@ -53,13 +53,17 @@ public:
     virtual ~DayDemand()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase == ecomeristem::plant::NOGROWTH) {
             _day_demand = 0;
         } else {
-            _day_demand = _demand_sum + _leaf_last_demand;
+            _day_demand = _demand_sum + _leaf_last_demand_sum;
         }
+
+        std::cout << "DAY_DEMAND: " << _day_demand << " " << _demand_sum
+                  << " " << _leaf_last_demand_sum << std::endl;
+
     }
 
     void init(double /* t */,
@@ -74,7 +78,7 @@ private:
 
 // external variables
     double _demand_sum;
-    double _leaf_last_demand;
+    double _leaf_last_demand_sum;
     double _grow;
     double _phase;
 };

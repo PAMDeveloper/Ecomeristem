@@ -35,26 +35,41 @@ template < typename T >
 class AbstractAtomicModel : public AbstractModel
 {
 public:
-    AbstractAtomicModel() : received(0)
+    AbstractAtomicModel()
     { }
 
     virtual ~AbstractAtomicModel()
     { }
 
+    virtual void compute(double t, bool update) = 0;
+
     virtual double get(unsigned int index) const
     { return static_cast < const T* >(this)->*internals.at(index); }
 
-    bool is_ready() const
-    { return received == externals.size(); }
+    virtual void init(double t,
+                      const model::models::ModelParameters& parameters) = 0;
+
+    bool is_computed(double t, unsigned int /* index */) const
+    { return last_time == t; }
 
     bool is_ready(double t, unsigned int index) const
     { return externalDates.at(index) == t; }
 
-    virtual void put(double t, unsigned int index, double value)
+    bool is_stable(double t) const
+    { return last_time == t; }
+
+    void put(double t, unsigned int index, double value)
     {
-        static_cast < T* >(this)->*externals.at(index) = value;
-        externalDates.at(index) = t;
-        ++received;
+        if (externalDates.at(index) != t) {
+            static_cast < T* >(this)->*externals.at(index) = value;
+            externalDates.at(index) = t;
+            updated = true;
+        } else {
+            if (static_cast < T* >(this)->*externals.at(index) != value) {
+                static_cast < T* >(this)->*externals.at(index) = value;
+                updated = true;
+            }
+        }
     }
 
 protected:
@@ -77,10 +92,8 @@ protected:
     }
 
 private:
-    std::vector < double T::* > externals;
-    std::vector < double > externalDates;
     std::vector < double T::* > internals;
-    unsigned int received;
+    std::vector < double T::* > externals;
 };
 
 }

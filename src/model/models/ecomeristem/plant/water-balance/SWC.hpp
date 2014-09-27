@@ -39,6 +39,7 @@ public:
     Swc()
     {
         internal(SWC, &Swc::_swc);
+
         external(DELTA_P, &Swc::_delta_p);
         external(WATER_SUPPLY, &Swc::_water_supply);
     }
@@ -46,12 +47,15 @@ public:
     virtual ~Swc()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, DELTA_P) and is_ready(t, WATER_SUPPLY); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _swc = _swc - _delta_p + _water_supply;
 
-        // std::cout << "SWC: " << _swc << " " << _delta_p << " "
-        //           << _water_supply << " " << RU1 << std::endl;
+        std::cout << "SWC: " << _swc << " " << _delta_p << " "
+                  << _water_supply << " " << RU1 << std::endl;
     }
 
     void init(double /* t */,

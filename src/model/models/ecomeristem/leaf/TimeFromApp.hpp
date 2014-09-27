@@ -47,11 +47,10 @@ public:
     virtual ~TimeFromApp()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_step) {
+        if (_first_day == t) {
             _time_from_app = _dd;
-            _is_first_step = false;
         } else {
             if (_phase != plant::NOGROWTH) {
                 _time_from_app = _time_from_app + _delta_t;
@@ -60,17 +59,17 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
-        _is_first_step = true;
+        _first_day = t;
         _time_from_app = 0;
     }
 
 private:
 // internal variable
     double _time_from_app;
-    bool _is_first_step;
+    double _first_day;
 
 // external variables
     double _dd;

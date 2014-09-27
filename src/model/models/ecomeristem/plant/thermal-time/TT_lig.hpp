@@ -49,7 +49,7 @@ public:
     virtual ~TT_lig()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_isFirstStep) {
             _isFirstStep = false;

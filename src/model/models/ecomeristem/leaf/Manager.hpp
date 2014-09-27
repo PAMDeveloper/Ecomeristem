@@ -48,7 +48,7 @@ public:
     virtual ~Manager()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_phase_ == plant::INITIAL and _len >= _predim) {
             _phase_ = plant::LIG;
@@ -69,7 +69,7 @@ public:
     void put(double t, unsigned int index, double value)
     {
         AbstractAtomicModel < Manager >::put(t, index, value);
-        compute(t);
+        (*this)(t);
     }
 
 private:

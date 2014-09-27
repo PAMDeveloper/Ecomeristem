@@ -49,11 +49,10 @@ public:
     virtual ~ExpTime()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_step) {
+        if (_first_day == t) {
             _exp_time = (_predim - _len_1) / _ler;
-            _is_first_step = false;
         } else {
             if (_is_first_leaf and _is_on_mainstem) {
                 _exp_time = _predim / _ler;
@@ -63,11 +62,11 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
         _exp_time = 0;
-        _is_first_step = true;
+        _first_day = t;
         _len_1 = 0;
         _len = 0;
     }
@@ -87,7 +86,7 @@ private:
 
 // internal variable
     double _exp_time;
-    bool _is_first_step;
+    double _first_day;
 
 // external variables
     double _dd;

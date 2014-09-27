@@ -42,19 +42,19 @@ public:
         internal(LAI, &Lai::_lai);
         external(FCSTR, &Lai::_fcstr);
         external(PAI, &Lai::_PAI);
-         _density = 30;
-        _rolling_A = 0.7;
-        _rolling_B = 0.3;
     }
 
     virtual ~Lai()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, PAI) and is_ready(t, FCSTR); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _lai = _PAI * (_rolling_B + _rolling_A * _fcstr) * _density / 1.e4;
 
-        // std::cout << "LAI=" << _lai << " " << _PAI << std::endl;
+        std::cout << "LAI=" << _lai << " " << _PAI << std::endl;
 
     }
 

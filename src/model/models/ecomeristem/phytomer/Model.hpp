@@ -31,6 +31,8 @@ namespace ecomeristem { namespace phytomer {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum internals { LEAF_BIOMASS,  LEAF_BLADE_AREA,  LEAF_DEMAND,
+                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      SLA, GROW, PHASE, STOP, TEST_IC };
@@ -40,6 +42,13 @@ public:
         _is_on_mainstem(is_on_mainstem),
         leaf_model(_index, _is_on_mainstem)
     {
+        internal(LEAF_BIOMASS, &leaf_model, leaf::Model::BIOMASS);
+        internal(LEAF_BLADE_AREA, &leaf_model, leaf::Model::BLADE_AREA);
+        internal(LEAF_DEMAND, &leaf_model, leaf::Model::DEMAND);
+        internal(LEAF_LAST_DEMAND, &leaf_model, leaf::Model::LAST_DEMAND);
+        internal(PREDIM, &leaf_model, leaf::Model::PREDIM);
+        internal(PLASTO_DELAY, &leaf_model, leaf::Model::PLASTO_DELAY);
+
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);
         external(FTSW, &Model::_ftsw);
@@ -64,9 +73,9 @@ public:
         leaf_model.init(t, parameters);
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
-        internode_model.compute(t);
+        internode_model(t);
 
         leaf_model.put(t, leaf::Model::DD, _dd);
         leaf_model.put(t, leaf::Model::DELTA_T, _delta_t);
@@ -83,7 +92,7 @@ public:
         leaf_model.put(t, leaf::Model::PHASE, _phase);
         leaf_model.put(t, leaf::Model::STOP, _stop);
         leaf_model.put(t, leaf::Model::TEST_IC, _test_ic);
-        leaf_model.compute(t);
+        leaf_model(t);
     }
 
 private:

@@ -50,11 +50,14 @@ public:
     virtual ~Len()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_step) {
+        if (_first_day == t) {
             _len = _ler * _dd;
-            _is_first_step = false;
+
+            // std::cout << "LEN: " << _len << " " << _ler << " "
+            //           << _dd << std::endl;
+
         } else {
             if (_phase != plant::NOGROWTH) {
                 _len_1 = _len;
@@ -65,10 +68,10 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
-        _is_first_step = true;
+        _first_day = t;
         _len = 0;
     }
 
@@ -76,7 +79,7 @@ private:
 // internal variable
     double _len;
     double _len_1;
-    bool _is_first_step;
+    double _first_day;
 
 // external variables
     double _dd;

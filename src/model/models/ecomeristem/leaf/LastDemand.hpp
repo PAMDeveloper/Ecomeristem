@@ -46,11 +46,10 @@ public:
     virtual ~LastDemand()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-       if (_is_first_step) {
-            _last_demand = 0;
-            _is_first_step = false;
+       if (_first_day == t) {
+           _last_demand = 0;
         } else {
             if (_phase != plant::LIG) {
                 _last_demand = _biomass - _biomass_1;
@@ -58,11 +57,18 @@ public:
                 _last_demand = 0;
             }
         }
+
+       // std::cout << "LAST_DEMAND: " << _last_demand << " " << _biomass
+       //           << " " << _biomass_1 << std::endl;
+
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
+        _first_day = t;
+        _biomass_1 = 0;
+        _biomass = 0;
     }
 
     void put(double t, unsigned int index, double value)
@@ -76,7 +82,7 @@ public:
 private:
 // internal variable
     double _last_demand;
-    bool _is_first_step;
+    double _first_day;
 
 // external variables
     double _biomass;

@@ -47,11 +47,10 @@ public:
     virtual ~LeafDemand()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_step) {
+        if (_first_day == t) {
             _demand = _biomass;
-            _is_first_step = false;
         } else {
             if (_phase != plant::LIG) {
                 _demand = _biomass - _biomass_1;
@@ -61,10 +60,10 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
-        _is_first_step = true;
+        _first_day = t;
         _biomass = 0;
         _biomass_1 = 0;
         _demand = 0;
@@ -81,7 +80,7 @@ public:
 private:
 // internal variable
     double _demand;
-    bool _is_first_step;
+    double _first_day;
 
 // external variables
     double _biomass;

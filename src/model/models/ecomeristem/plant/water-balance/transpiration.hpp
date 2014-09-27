@@ -50,9 +50,18 @@ public:
     virtual ~Transpiration()
     { }
 
-    void compute(double /* t */)
-    { _transpiration = std::min(_swc_1, (Kcpot * std::min(_etp, ETPmax) *
+    bool check(double t) const
+    { return is_ready(t, ETP) and is_ready(t, INTERC) and is_ready(t, CSTR); }
+
+    void compute(double /* t */, bool /* update */)
+    {
+        _transpiration = std::min(_swc_1, (Kcpot * std::min(_etp, ETPmax) *
                                         _interc * _cstr) / density);
+
+        std::cout << "TRANSPIRATION: " << _transpiration << " "
+                  << _swc_1 << " " << _etp << " " << _interc << " " << _cstr
+                  << std::endl;
+
     }
 
     void init(double /* t */,
@@ -66,7 +75,7 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
-        if (index == SWC) {
+        if (index == SWC and !is_ready(t, SWC)) {
             _swc_1 = _swc;
         }
         AbstractAtomicModel < Transpiration >::put(t, index, value);

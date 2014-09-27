@@ -47,6 +47,7 @@ public:
         internal(DD, &Dd::_DD);
         internal(EDD, &Dd::_EDD);
         internal(BOOL_CROSSED_PLASTO, &Dd::_BoolCrossedPlasto);
+
         external(DELTA_T, &Dd::_DeltaT);
         external(PLASTO_DELAY, &Dd::_PlastoDelay);
         external(PHASE, &Dd::_phase);
@@ -56,11 +57,20 @@ public:
     virtual ~Dd()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, DELTA_T) and is_ready(t, PLASTO_DELAY) and
+            is_ready(t, PHASE) and is_ready(t, GROW); }
+
+    void compute(double t, bool /* update */)
     {
-       if (_phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
-            double tempDD = _DD + _DeltaT + _PreviousPlastoDelay;
-            double PreviousDD = _DD;
+        if (_last_time != t) {
+            _DD_1 = _DD;
+            _EDD_1 = _EDD;
+            _last_time = t;
+        }
+
+        if (_phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
+            double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
 
             _BoolCrossedPlasto = tempDD - _plasto;
             if (_BoolCrossedPlasto >= 0) {
@@ -69,27 +79,39 @@ public:
                 _DD = tempDD;
             }
             if (_BoolCrossedPlasto <= 0) {
-                _EDD = _DeltaT + _PreviousPlastoDelay;
+                _EDD = _DeltaT + _PlastoDelay_1;
             } else {
-                _EDD = _plasto - PreviousDD;
+                _EDD = _plasto - _DD_1;
             }
-        }
+
+            std::cout << "DD: " << _DD << " " << _BoolCrossedPlasto
+                      << " " << _plasto << " " << tempDD << " "
+                      << _DeltaT << " " << _PlastoDelay_1 << std::endl;
+
+       } else {
+           _DD = _DD_1;
+           _EDD = _EDD_1;
+       }
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         _plasto = parameters.get < double >("plasto_init");
+        _DD_1 = 0;
         _DD = 0;
+        _EDD_1 = 0;
         _EDD = 0;
         _BoolCrossedPlasto = 0;
-        _PreviousPlastoDelay = 0;
+        _PlastoDelay_1 = 0;
+        _PlastoDelay = 0;
+        _last_time = -1;
     }
 
     virtual void put(double t, unsigned int index, double value)
     {
-        if (index == PLASTO_DELAY) {
-            _PreviousPlastoDelay = _PlastoDelay;
+        if (index == PLASTO_DELAY and !is_ready(t, PLASTO_DELAY)) {
+            _PlastoDelay_1 = _PlastoDelay;
         }
         AbstractAtomicModel < Dd >::put(t, index, value);
     }
@@ -101,14 +123,17 @@ private:
     // external variables
     double _DeltaT;
     double _PlastoDelay;
-    double _PreviousPlastoDelay;
+    double _PlastoDelay_1;
     double _phase;
     double _grow;
 
     // internal variable
     double _DD;
+    double _DD_1;
     double _EDD;
+    double _EDD_1;
     double _BoolCrossedPlasto;
+    double _last_time;
 };
 
 } } } // namespace ecomeristem plant thermal_time

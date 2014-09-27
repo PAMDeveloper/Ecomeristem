@@ -48,10 +48,14 @@ public:
     virtual ~Biomass()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_step) {
+        if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
+
+            // std::cout << "BIOMASS: " << _biomass << " " << _G_L << " "
+            //           << _blade_area << " " << _sla << std::endl;
+
         } else {
             if (!_lig and _phase != plant::NOGROWTH) {
                 _lig = _phase == plant::LIG;
@@ -60,11 +64,11 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& parameters)
     {
         _G_L = parameters.get < double >("G_L");
-        _is_first_step = true;
+        _first_day = t;
         _lig = false;
         _biomass = 0;
     }
@@ -75,7 +79,7 @@ private:
 
 // internal variable
     double _biomass;
-    bool _is_first_step;
+    double _first_day;
     bool _lig;
 
 // external variables

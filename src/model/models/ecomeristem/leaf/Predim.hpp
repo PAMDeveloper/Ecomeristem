@@ -50,7 +50,7 @@ public:
     virtual ~Predim()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_is_first_leaf and _is_on_mainstem) {
             _predim = _Lef1;

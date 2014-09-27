@@ -52,7 +52,7 @@ public:
     virtual ~IndexCompetition()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         double resDiv, mean;
         double total = 0.;

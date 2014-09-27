@@ -52,7 +52,7 @@ public:
     virtual ~Surplus()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_seed_res_1 > 0) {
             if (_seed_res_1 > _day_demand) {

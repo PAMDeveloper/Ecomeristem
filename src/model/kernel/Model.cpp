@@ -26,9 +26,9 @@
 
 namespace model { namespace kernel {
 
-void Model::compute(double t)
+void Model::compute(double t, bool /* update */)
 {
-    meteo_model.compute(t);
+    meteo_model(t);
 
     ecomeristem_model.put(t, ecomeristem::Model::ETP, meteo_model.get().Etp);
     ecomeristem_model.put(t, ecomeristem::Model::P, meteo_model.get().P);
@@ -38,7 +38,7 @@ void Model::compute(double t)
                           meteo_model.get().Irrigation);
     ecomeristem_model.put(t, ecomeristem::Model::TA,
                           meteo_model.get().Temperature);
-    ecomeristem_model.compute(t);
+    ecomeristem_model(t);
 }
 
 } }

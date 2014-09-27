@@ -44,12 +44,15 @@ public:
     virtual ~cstr()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, FTSW); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _cstr = (_ftsw < ThresTransp) ?
             std::max(1e-4, _ftsw * 1. / ThresTransp) : 1;
 
-        // std::cout << "CSTR: " << _cstr << " " << _ftsw << std::endl;
+        std::cout << "CSTR: " << _cstr << " " << _ftsw << std::endl;
 
     }
 

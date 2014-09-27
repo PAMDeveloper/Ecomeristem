@@ -45,7 +45,7 @@ public:
     virtual ~ReductionLER()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         if (_ftsw < _thresLER) {
             _reduction_ler = std::max(1e-4, ((1. / _thresLER) * _ftsw) *

@@ -50,7 +50,7 @@ public:
     virtual ~ReservoirDispo()
     { }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
         if (is_ready(t, STOCK)) {
             _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock_1;

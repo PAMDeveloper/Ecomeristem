@@ -58,7 +58,7 @@ public:
     virtual ~Stock()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         double stock = 0;
 
@@ -74,6 +74,10 @@ public:
         }
         _stock = std::max(0., stock);
         _deficit = 0.;
+
+        std::cout << "STOCK: " << _stock << " " << _deficit << " "
+                  << _reservoir_dispo << " " << _supply << std::endl;
+
     }
 
     void init(double /* t */,

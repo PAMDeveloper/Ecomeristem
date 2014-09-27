@@ -46,10 +46,11 @@ public:
     virtual ~DeltaT()
     { }
 
-    void compute(double /* t */)
-    {
-        _deltaT = _Ta - _Tb;
-    }
+    bool check(double t) const
+    { return is_ready(t, TA); }
+
+    void compute(double /* t */, bool /* update */)
+    { _deltaT = _Ta - _Tb; }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)

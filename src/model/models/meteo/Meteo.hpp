@@ -25,7 +25,7 @@
 #ifndef MODEL_MODELS_METEO_METEO_HPP
 #define MODEL_MODELS_METEO_METEO_HPP
 
-#include <model/models/ModelParameters.hpp>
+#include <model/kernel/AbstractAtomicModel.hpp>
 
 namespace meteo {
 
@@ -44,7 +44,7 @@ struct Climate
     { }
 };
 
-class Model
+class Model : public ecomeristem::AbstractAtomicModel < Model >
 {
 public:
     Model();
@@ -52,7 +52,7 @@ public:
     virtual ~Model()
     { }
 
-    void compute(double t);
+    void compute(double t, bool update);
 
     const Climate& get() const
     { return *it; }

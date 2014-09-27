@@ -44,9 +44,13 @@ public:
     virtual ~Width()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _width = _len * _WLR / _LL_BL;
+
+        // std::cout << "WIDTH: " << _width << " " << _len << " "
+        //           << _WLR << " " << _LL_BL << std::endl;
+
     }
 
     void init(double /* t */,

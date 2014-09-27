@@ -44,7 +44,7 @@ public:
     virtual ~Supply()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _supply = _assim;
     }

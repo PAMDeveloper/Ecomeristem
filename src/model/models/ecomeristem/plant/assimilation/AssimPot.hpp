@@ -43,23 +43,24 @@ public:
         external(CSTR, &AssimPot::_cstr);
         external(INTERC, &AssimPot::_interc);
         external(RADIATION, &AssimPot::_radiation);
-        _power_for_cstr = 0.5;
-        _kpar = 1;
-        _epsib = 3.5;
     }
 
     virtual ~AssimPot()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, CSTR) and is_ready(t, INTERC) and
+            is_ready(t, RADIATION); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _assim_pot = std::pow(_cstr, _power_for_cstr) * _interc * _epsib *
             _radiation * _kpar;
 
-        // std::cout << "ASSIMPOT: " << _assim_pot << " " << _cstr << " "
-        //           << _power_for_cstr << " "
-        //           << _interc << " " << _epsib << " " << _radiation << " "
-        //           << _kpar << std::endl;
+        std::cout << "ASSIMPOT: " << _assim_pot << " " << _cstr << " "
+                  << _power_for_cstr << " "
+                  << _interc << " " << _epsib << " " << _radiation << " "
+                  << _kpar << std::endl;
 
     }
 

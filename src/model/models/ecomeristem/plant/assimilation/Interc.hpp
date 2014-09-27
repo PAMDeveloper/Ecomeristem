@@ -44,12 +44,15 @@ public:
     virtual ~Interc()
     { }
 
-    void compute(double /* t */)
+    bool check(double t) const
+    { return is_ready(t, LAI); }
+
+    void compute(double /* t */, bool /* update */)
     {
         _interc = 1. - std::exp(-_Kdf * _lai);
 
-        // std::cout << "INTERC: " << _interc << " " << _Kdf << " " << _lai
-        //           << std::endl;
+        std::cout << "INTERC: " << _interc << " " << _Kdf << " " << _lai
+                  << std::endl;
 
     }
 

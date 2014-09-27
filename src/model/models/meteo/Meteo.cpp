@@ -33,7 +33,7 @@ Model::Model()
 {
 }
 
-void Model::compute(double /* t */)
+void Model::compute(double /* t */, bool /* update */)
 {
     if (it == values.end()) {
         it = values.begin();

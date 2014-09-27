@@ -32,42 +32,40 @@ namespace ecomeristem { namespace leaf {
 class PlastoDelay : public AbstractAtomicModel < PlastoDelay >
 {
 public:
-    // static const unsigned int TT_LIG = 0;
-
-    // static const unsigned int EDD = 0;
+    enum internals { PLASTO_DELAY };
+    enum externals { DELTA_T, EXP_TIME, REDUCTION_LER };
 
     PlastoDelay()
     {
-        // internal(TT_LIG, &TT_lig::_TT_lig);
-        // external(EDD, &TT_lig::_EDD);
+        internal(PLASTO_DELAY, &PlastoDelay::_plasto_delay);
+        external(DELTA_T, &PlastoDelay::_delta_t);
+        external(EXP_TIME, &PlastoDelay::_exp_time);
+        external(REDUCTION_LER, &PlastoDelay::_reduction_ler);
     }
 
     virtual ~PlastoDelay()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
+        _plasto_delay = std::min(((_delta_t > _exp_time) ? _exp_time :
+                                  _delta_t) * (-1. + _reduction_ler), 0.);
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
+        _plasto_delay = 0;
     }
-
-    // void put(double t, unsigned int index, double value)
-    // {
-        // if (index == LIG and !is_ready(t, LIG)) {
-        //     _lig_1 = _lig;
-        // }
-        // AbstractAtomicModel < TT_lig >::put(t, index, value);
-    // }
 
 private:
 // internal variable
-    // double _TT_lig;
+    double _plasto_delay;
 
 // external variables
-    // double _EDD;
+    double _delta_t;
+    double _exp_time;
+    double _reduction_ler;
 };
 
 } } // namespace ecomeristem leaf

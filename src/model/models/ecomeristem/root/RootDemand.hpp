@@ -54,13 +54,17 @@ public:
     virtual ~RootDemand()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_day) {
+        if (_first_day == t) {
             _root_demand = _leaf_demand_sum * _root_demand_coef;
             _last_value = _root_demand;
             _root_biomass = _root_demand;
-            _is_first_day = false;
+
+            // std::cout << "ROOT_DEMAND: " << _root_demand << " "
+            //           << _leaf_demand_sum << " " << _root_demand_coef
+            //           << std::endl;
+
         } else {
             if (_phase == ecomeristem::plant::NOGROWTH) {
                 _root_demand = 0;
@@ -81,13 +85,13 @@ public:
         }
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
         _root_demand = 0;
         _root_biomass = 0;
         _last_value= 0;
-        _is_first_day = true;
+        _first_day = t;
     }
 
     void put(double t, unsigned int index, double value)
@@ -102,7 +106,7 @@ private:
 // internal variable
     double _root_demand;
     double _root_biomass;
-    bool _is_first_day;
+    double _first_day;
     double _last_value;
 
 // external variables

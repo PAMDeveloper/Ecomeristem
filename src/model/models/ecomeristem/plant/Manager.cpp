@@ -56,7 +56,7 @@ namespace ecomeristem { namespace plant {
 // NEW_PHYTOMER_NOGROWTH ---- stock/action1 --------> NEW_PHYTOMER_NOGROWTH4
 // NEW_PHYTOMER_NOGROWTH ---- c6/output3 ------------------------> DEAD
 
-void Manager::compute(double /* t */)
+void Manager::compute(double /* t */, bool /* update */)
 {
     state_t old_state;
 
@@ -106,7 +106,7 @@ void Manager::compute(double /* t */)
 void Manager::put(double t, unsigned int index, double value)
 {
     AbstractAtomicModel < Manager >::put(t, index, value);
-    compute(t);
+    (*this)(t);
 }
 
 } } // namespace ecomeristem plant

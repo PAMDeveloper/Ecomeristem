@@ -92,22 +92,72 @@ public:
         surplus_model.init(t, parameters);
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
-        supply_model.put(t, Supply::ASSIM, _assim);
-        supply_model.compute(t);
+        if (is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM) and
+            is_ready(t, PHASE)) {
+            day_demand_model.put(t, DayDemand::DEMAND_SUM, _demand_sum);
+            day_demand_model.put(t, DayDemand::LEAF_LAST_DEMAND_SUM,
+                                 _leaf_last_demand_sum);
+            day_demand_model.put(t, DayDemand::GROW,
+                                 stock_model.get(Stock::GROW));
+            day_demand_model.put(t, DayDemand::PHASE, _phase);
+            day_demand_model(t);
 
-        day_demand_model.put(t, DayDemand::DEMAND_SUM, _demand_sum);
-        day_demand_model.put(t, DayDemand::LEAF_LAST_DEMAND_SUM,
-                             _leaf_last_demand_sum);
-        day_demand_model.put(t, DayDemand::GROW,
-                             stock_model.get(Stock::GROW));
-        day_demand_model.put(t, DayDemand::PHASE, _phase);
-        day_demand_model.compute(t);
+            seed_res_model.put(t, SeedRes::DAY_DEMAND,
+                               day_demand_model.get(DayDemand::DAY_DEMAND));
+            seed_res_model(t);
 
-        seed_res_model.put(t, SeedRes::DAY_DEMAND,
-                           day_demand_model.get(DayDemand::DAY_DEMAND));
-        seed_res_model.compute(t);
+            if (is_ready(t, ASSIM)) {
+                supply_model.put(t, Supply::ASSIM, _assim);
+                supply_model(t);
+
+                index_competition_model.put(t, IndexCompetition::DAY_DEMAND,
+                                            day_demand_model.get(
+                                                DayDemand::DAY_DEMAND));
+                index_competition_model.put(t, IndexCompetition::SEED_RES,
+                                            seed_res_model.get(
+                                                SeedRes::SEED_RES));
+                index_competition_model.put(t, IndexCompetition::SUPPLY,
+                                            supply_model.get(Supply::SUPPLY));
+                index_competition_model(t);
+
+                reservoir_dispo_model.put(t, ReservoirDispo::STOCK,
+                                          stock_model.get(Stock::STOCK));
+                reservoir_dispo_model.put(t, ReservoirDispo::GROW,
+                                          stock_model.get(Stock::GROW));
+                reservoir_dispo_model.put(t, ReservoirDispo::LEAF_BIOMASS_SUM,
+                                          _leaf_biomass_sum);
+                reservoir_dispo_model(t);
+
+                surplus_model.put(t, Surplus::DAY_DEMAND,
+                                  day_demand_model.get(DayDemand::DAY_DEMAND));
+                surplus_model.put(t, Surplus::RESERVOIR_DISPO,
+                                  reservoir_dispo_model.get(
+                                      ReservoirDispo::RESERVOIR_DISPO));
+                surplus_model.put(t, Surplus::SEED_RES,
+                                  seed_res_model.get(SeedRes::SEED_RES));
+                surplus_model.put(t, Surplus::SUPPLY,
+                                  supply_model.get(Supply::SUPPLY));
+                surplus_model(t);
+
+                stock_model.put(t, Stock::DAY_DEMAND,
+                                day_demand_model.get(DayDemand::DAY_DEMAND));
+                stock_model.put(t, Stock::SEED_RES,
+                                seed_res_model.get(SeedRes::SEED_RES));
+                stock_model.put(t, Stock::SUPPLY,
+                                supply_model.get(Supply::SUPPLY));
+                stock_model.put(t, Stock::RESERVOIR_DISPO,
+                                reservoir_dispo_model.get(
+                                    ReservoirDispo::RESERVOIR_DISPO));
+                stock_model(t);
+
+                reservoir_dispo_model.put(t, ReservoirDispo::STOCK,
+                                          stock_model.get(Stock::STOCK));
+                reservoir_dispo_model.put(t, ReservoirDispo::GROW,
+                                          stock_model.get(Stock::GROW));
+            }
+        }
     }
 
 private:

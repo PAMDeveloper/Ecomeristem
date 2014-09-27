@@ -68,10 +68,10 @@ public:
         root_manager_model.init(t, parameters);
     }
 
-    void compute(double t)
+    void compute(double t, bool /* update */)
     {
         root_demand_coef_model.put(t, RootDemandCoef::P, _p);
-        root_demand_coef_model.compute(t);
+        root_demand_coef_model(t);
 
         root_demand_model.put(t, RootDemand::LEAF_DEMAND_SUM,
                               _leaf_demand_sum);
@@ -80,7 +80,7 @@ public:
                                   RootDemandCoef::ROOT_DEMAND_COEF));
         root_demand_model.put(t, RootDemand::GROW, _grow);
         root_demand_model.put(t, RootDemand::PHASE, _phase);
-        root_demand_model.compute(t);
+        root_demand_model(t);
     }
 
 private:

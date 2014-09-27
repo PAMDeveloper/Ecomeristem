@@ -44,7 +44,7 @@ public:
     virtual ~Tt()
     { }
 
-    void compute(double /* t */)
+    void compute(double /* t */, bool /* update */)
     {
         _TT = _TT + _DeltaT;
     }

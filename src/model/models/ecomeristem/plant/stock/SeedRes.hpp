@@ -44,11 +44,10 @@ public:
     virtual ~SeedRes()
     { }
 
-    void compute(double /* t */)
+    void compute(double t, bool /* update */)
     {
-        if (_is_first_day) {
+        if (_first_day == t) {
             _seed_res = _gdw - _day_demand;
-            _is_first_day = false;
         } else {
             if (_seed_res_1 > 0) {
                 if (_seed_res_1 > _day_demand) {
@@ -63,15 +62,19 @@ public:
                 _seed_res = 0;
             }
         }
+
+        std::cout << "SEED_RES: " << _seed_res << " " << _seed_res_1 << " "
+                  << _gdw << " " << _day_demand << std::endl;
+
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& parameters)
     {
         _gdw = parameters.get < double >("gdw");
         _seed_res_1 = 0;
         _seed_res = 0;
-        _is_first_day = true;
+        _first_day = t;
     }
 
 private:
@@ -81,7 +84,7 @@ private:
 // internal variable
     double _seed_res;
     double _seed_res_1;
-    bool _is_first_day;
+    double _first_day;
 
 // external variables
     double _day_demand;

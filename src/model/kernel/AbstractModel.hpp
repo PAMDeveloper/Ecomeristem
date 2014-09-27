@@ -33,20 +33,42 @@ namespace ecomeristem {
 class AbstractModel
 {
 public:
-    AbstractModel()
+    AbstractModel() : last_time(-1), updated(false)
     { }
 
     virtual ~AbstractModel()
     { }
 
-    virtual void compute(double t) = 0;
+    virtual bool check(double /* t */) const
+    { return true; }
+
+    virtual void operator()(double t)
+    {
+        if (check(t) and ((last_time != t) or (last_time == t and updated))) {
+            compute(t, last_time == t);
+            last_time = t;
+            updated = false;
+        }
+    }
+
+    virtual void compute(double t, bool update) = 0;
 
     virtual double get(unsigned int index) const = 0;
 
     virtual void init(double t,
                       const model::models::ModelParameters& parameters) = 0;
 
-    virtual void put(double t, unsigned int index, double value) = 0;
+    virtual bool is_computed(double t) const
+    { return last_time == t; }
+
+    virtual bool is_stable(double t) const = 0;
+
+    virtual bool is_computed(double t, unsigned int index) const = 0;
+
+protected:
+    double last_time;
+    std::vector < double > externalDates;
+    bool updated;
 };
 
 }
