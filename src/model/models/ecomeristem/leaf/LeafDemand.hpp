@@ -48,13 +48,17 @@ public:
     virtual ~LeafDemand()
     { }
 
-    void compute(double t, bool /* update */)
+    bool check(double t) const
+    { return is_ready(t, BIOMASS); }
+
+    void compute(double t, bool update)
     {
         if (_first_day == t) {
             _demand = _biomass;
         } else {
-            if (_phase != plant::LIG) {
+            if (!_lig) {
                 _demand = _biomass - _biomass_1;
+                _lig = _phase == plant::LIG;
             } else {
                 _demand = 0;
             }
@@ -65,7 +69,9 @@ public:
             << utils::TraceElement("LEAF_DEMAND", t, utils::COMPUTE)
             << "Demand = " << _demand << " ; phase = " << _phase
             << " ; Biomass = " << _biomass
-            << " ; Biomass[-1] = " << _biomass_1;
+            << " ; Biomass[-1] = " << _biomass_1
+            << " ; lig = " << _lig
+            << " ; update = " << update;
         utils::Trace::trace().flush();
 #endif
 
@@ -74,7 +80,9 @@ public:
     void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
+        _lig = false;
         _first_day = t;
+        _grow = 0;
         _biomass = 0;
         _biomass_1 = 0;
         _demand = 0;
@@ -82,6 +90,18 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_DEMAND", t, utils::PUT)
+            << "Index = " << index
+            << " ; value = " << value
+            << " ; biomass = " << _biomass
+            << " ; grow = " << _grow
+            << " ; phase = " << _phase;
+        utils::Trace::trace().flush();
+#endif
+
         if (index == BIOMASS and !is_ready(t, BIOMASS)) {
             _biomass_1 = _biomass;
         }
@@ -92,6 +112,7 @@ private:
 // internal variable
     double _demand;
     double _first_day;
+    bool _lig;
 
 // external variables
     double _biomass;

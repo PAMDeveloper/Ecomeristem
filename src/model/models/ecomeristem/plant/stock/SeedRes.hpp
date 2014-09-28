@@ -48,9 +48,11 @@ public:
     bool check(double t) const
     { return is_ready(t, DAY_DEMAND); }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-        _seed_res_1 =_seed_res;
+        if (not update) {
+            _seed_res_1 =_seed_res;
+        }
         if (_first_day == t) {
             _seed_res = _gdw - _day_demand;
         } else {

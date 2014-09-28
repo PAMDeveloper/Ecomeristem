@@ -26,18 +26,15 @@
 #define __ECOMERISTEM_PLANT_STOCK_INDEX_COMPETITION_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
 class IndexCompetition : public AbstractAtomicModel < IndexCompetition >
 {
 public:
-    static const int IC = 0;
-    static const int TEST_IC = 1;
-
-    static const int DAY_DEMAND = 0;
-    static const int SEED_RES = 1;
-    static const int SUPPLY = 2;
+    enum internals { IC, TEST_IC };
+    enum externals { DAY_DEMAND, SEED_RES, SUPPLY };
 
     IndexCompetition()
     {
@@ -56,7 +53,7 @@ public:
     { return is_ready(t, DAY_DEMAND) and is_ready(t, SEED_RES)
             and is_ready(t, SUPPLY); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         double resDiv, mean;
         double total = 0.;
@@ -107,6 +104,24 @@ public:
             _ic = tmp;
             _test_ic = std::min(1., std::sqrt(tmp));
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("IC", t, utils::COMPUTE)
+            << "IC = " << _ic
+            << " ; testIC = " << _test_ic
+            << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[-1] = " << _seed_res_[1]
+            << " ; SeedRes[-2] = " << _seed_res_[2]
+            << " ; Supply = " << _supply
+            << " ; Supply[-1] = " << _supply_[1]
+            << " ; Supply[-2] = " << _supply_[2]
+            << " ; DayDemand = " << _day_demand
+            << " ; DayDemand[-1] = " << _day_demand_[1]
+            << " ; DayDemand[-2] = " << _day_demand_[2];
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,

@@ -52,10 +52,11 @@ public:
        if (_first_day == t) {
            _last_demand = 0;
         } else {
-            if (_phase == plant::LIG) {
+            if (_lig) {
                 _last_demand = _biomass_1 - _biomass_2;
             } else {
                 _last_demand = 0;
+                _lig = _phase == plant::LIG;
             }
         }
 
@@ -78,10 +79,22 @@ public:
         _biomass_2 = 0;
         _biomass_1 = 0;
         _biomass = 0;
+        _lig = false;
     }
 
     void put(double t, unsigned int index, double value)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_LAST_DEMAND", t, utils::PUT)
+            << "Index = " << index
+            << " ; value = " << value
+            << " ; biomass = " << _biomass
+            << " ; phase = " << _phase;
+        utils::Trace::trace().flush();
+#endif
+
         if (index == BIOMASS and !is_ready(t, BIOMASS)) {
             _biomass_2 = _biomass_1;
             _biomass_1 = _biomass;
@@ -93,6 +106,7 @@ private:
 // internal variable
     double _last_demand;
     double _first_day;
+    double _lig;
 
 // external variables
     double _biomass;

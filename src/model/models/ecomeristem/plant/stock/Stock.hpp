@@ -72,7 +72,7 @@ public:
         } else {
             stock = std::min(_reservoir_dispo, _supply - _day_demand);
         }
-        _stock = std::max(0., stock);
+        _stock += std::max(0., stock);
         _deficit = 0.;
 
 #ifdef WITH_TRACE

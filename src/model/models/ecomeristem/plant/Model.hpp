@@ -66,6 +66,7 @@ private:
     void compute_thermal_time(double t);
     void compute_tiller(double t);
     void compute_water_balance(double t);
+    void create_phytomer(double t);
     bool culms_is_stable(double t);
 
 // internal variables

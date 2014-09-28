@@ -96,8 +96,9 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
 void Model::compute(double t, bool /* update */)
 {
-    _culm_is_computed = false;
+    bool create = false;
 
+    _culm_is_computed = false;
     lig_model(t);
     do {
         compute_assimilation(t);
@@ -109,6 +110,13 @@ void Model::compute(double t, bool /* update */)
         compute_culms(t);
         compute_root(t);
         compute_stock(t);
+        compute_manager(t);
+        if (not create and
+            (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
+             manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
+            create = true;
+            create_phytomer(t);
+        }
     } while (not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or
              not thermal_time_model.is_stable(t) or
@@ -146,6 +154,7 @@ void Model::compute_assimilation(double t)
 void Model::compute_culms(double t)
 {
     std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+    double _predim_leaf_on_mainstem = (*it)->get(t, culm::Model::LEAF_PREDIM);
 
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
@@ -179,8 +188,8 @@ void Model::compute_culms(double t)
                        thermal_time_model.get(
                            t, thermal_time::Model::PHENO_STAGE));
         }
-        //TODO
-        (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM, 0);
+        (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM,
+                   _predim_leaf_on_mainstem);
         (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
         if (stock_model.is_computed(t, stock::Model::GROW)) {
             (*it)->put(t, culm::Model::GROW,
@@ -192,9 +201,10 @@ void Model::compute_culms(double t)
         }
         //TODO
         (*it)->put(t, culm::Model::STOP, 0);
-        (*it)->put(t, culm::Model::TEST_IC,
-                   0);
-                   // stock_model.get(t, stock::Model::TEST_IC));
+        if (stock_model.is_computed(t, stock::Model::TEST_IC)) {
+            (*it)->put(t, culm::Model::TEST_IC,
+                       stock_model.get(t, stock::Model::TEST_IC));
+        }
         (**it)(t);
 
         _leaf_biomass_sum += (*it)->get(t, culm::Model::LEAF_BIOMASS_SUM);
@@ -211,7 +221,7 @@ void Model::compute_culms(double t)
 #ifdef WITH_TRACE
     utils::Trace::trace()
         << utils::TraceElement("PLANT", t, utils::COMPUTE)
-        << "LeafBiomassSum = " << _leaf_blade_area_sum
+        << "LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
         << " ; LeafDemandSum = " << _leaf_demand_sum
         << " ; LeafBlaseAreaSum = " << _leaf_blade_area_sum;
@@ -361,6 +371,16 @@ void Model::compute_water_balance(double t)
     water_balance_model.put(t, water_balance::Model::WATER_SUPPLY,
                             _water_supply);
     water_balance_model(t);
+}
+
+void Model::create_phytomer(double t)
+{
+    std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+
+    while (it != culm_models.end()) {
+        (*it)->create_phytomer(t);
+        ++it;
+    }
 }
 
 bool Model::culms_is_stable(double t)

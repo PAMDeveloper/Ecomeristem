@@ -25,6 +25,7 @@
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/internode/Model.hpp>
 #include <model/models/ecomeristem/leaf/Model.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace phytomer {
 
@@ -75,6 +76,14 @@ public:
 
     void compute(double t, bool /* update */)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PHYTOMER", t, utils::COMPUTE)
+            << "COMPUTE : index = " << _index;
+        utils::Trace::trace().flush();
+#endif
+
         internode_model(t);
 
         leaf_model.put(t, leaf::Model::DD, _dd);
@@ -91,7 +100,9 @@ public:
         leaf_model.put(t, leaf::Model::GROW, _grow);
         leaf_model.put(t, leaf::Model::PHASE, _phase);
         leaf_model.put(t, leaf::Model::STOP, _stop);
-        leaf_model.put(t, leaf::Model::TEST_IC, _test_ic);
+        if (is_ready(t, TEST_IC)) {
+            leaf_model.put(t, leaf::Model::TEST_IC, _test_ic);
+        }
         leaf_model(t);
     }
 

@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_LEAF_BLADE_AREA_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -45,13 +46,20 @@ public:
     virtual ~BladeArea()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _blade_area = _len * _width * _allo_area / _LL_BL;
 
-        // std::cout << "BLADE_AREA: " << _blade_area << " " << _len << " "
-        //           << _width << " " << _allo_area << " "
-        //           << _LL_BL << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_BLADE_AREA", t, utils::COMPUTE)
+            << "BladeArea = " << _blade_area
+            << " ; Len = " << _len
+            << " ; Width = " << _width
+            << " ; allo_area = " << _allo_area
+            << " ; LL_BL = " << _LL_BL;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

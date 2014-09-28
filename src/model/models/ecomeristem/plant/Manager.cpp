@@ -23,6 +23,7 @@
  */
 
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant {
 
@@ -56,7 +57,7 @@ namespace ecomeristem { namespace plant {
 // NEW_PHYTOMER_NOGROWTH ---- stock/action1 --------> NEW_PHYTOMER_NOGROWTH4
 // NEW_PHYTOMER_NOGROWTH ---- c6/output3 ------------------------> DEAD
 
-void Manager::compute(double /* t */, bool /* update */)
+void Manager::compute(double t, bool /* update */)
 {
     state_t old_state;
 
@@ -77,9 +78,22 @@ void Manager::compute(double /* t */, bool /* update */)
             break;
         }
         case PHYTOMER_MORPHO_GENESIS:
+            if (_boolCrossedPlasto > 0 and _stock > 0 and
+                _phenoStage < nbleaf_culm_elong and _phenoStage < nbleaf_pi) {
+                leaf_number += culm_number;
+                _state = NEW_PHYTOMER;
+            }
+            break;
         case NOGROWTH:
         case DEAD:
-        case NEW_PHYTOMER:
+        case NEW_PHYTOMER: {
+            if (_phenoStage == nbleaf_culm_elong) {
+                _state = ELONG;
+            } else if (_phenoStage < nbleaf_culm_elong) {
+                _state = NEW_PHYTOMER3;
+            }
+            break;
+        }
         case ELONG:
         case PI:
         case NOGROWTH_ELONG:
@@ -97,10 +111,32 @@ void Manager::compute(double /* t */, bool /* update */)
         case NOGROWTH4:
         case NOGROWTH5:
         case NEW_PHYTOMER2:
-        case NEW_PHYTOMER3:
+        case NEW_PHYTOMER3: {
+            if (_boolCrossedPlasto <= 0) {
+                _state = PHYTOMER_MORPHO_GENESIS;
+            }
+            break;
+        }
         case LIG: break;
         };
     } while (old_state != _state);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT_MANAGER", t, utils::COMPUTE)
+            << "state = " << _state
+            << " ; stock = " << _stock
+            << " ; phenoStage = " << _phenoStage
+            << " ; boolCrossedPlasto = " << _boolCrossedPlasto
+            << " ; FTSW = " << _FTSW
+            << " ; IC = " << _IC
+            << " ; nbleaf_culm_elong = " << nbleaf_culm_elong
+            << " ; nbleaf_pi = " << nbleaf_pi
+            << " ; leaf_number = " << leaf_number
+            << " ; culm_number = " << culm_number;
+        utils::Trace::trace().flush();
+#endif
+
 }
 
 void Manager::put(double t, unsigned int index, double value)

@@ -90,8 +90,11 @@ public:
         nbleaf_max_after_pi = parameters.get < double >("nb_leaf_max_after_PI");
 
         culm_number = 1;
-        leaf_number = 0;
-        first_leaf = false;
+        leaf_number = 1;
+        first_leaf = true;
+
+        // TODO
+        _stock = 1e-10;
     }
 
     virtual void compute(double t, bool /* update */);

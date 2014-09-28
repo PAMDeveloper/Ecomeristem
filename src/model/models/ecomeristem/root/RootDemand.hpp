@@ -55,8 +55,11 @@ public:
     { return is_ready(t, LEAF_DEMAND_SUM) and is_ready(t, ROOT_DEMAND_COEF) and
             is_ready(t, GROW) and is_ready(t, PHASE); }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
+        if (not update) {
+            _root_biomass_1 = _root_biomass;
+        }
         if (_first_day == t) {
             _root_demand = _leaf_demand_sum * _root_demand_coef;
             _last_value = _root_demand;
@@ -77,7 +80,11 @@ public:
                     _last_value = 0;
                 }
             }
-            _root_biomass += _root_demand;
+            if (update) {
+                _root_biomass = _root_biomass_1 + _root_demand;
+            } else {
+                _root_biomass += _root_demand;
+            }
         }
 
 #ifdef WITH_TRACE
@@ -118,6 +125,7 @@ private:
 // internal variable
     double _root_demand;
     double _root_biomass;
+    double _root_biomass_1;
     double _first_day;
     double _last_value;
 

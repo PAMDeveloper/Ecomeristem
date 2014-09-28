@@ -32,15 +32,8 @@ namespace ecomeristem { namespace root {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    static const unsigned int ROOT_DEMAND_COEF = 0;
-    static const unsigned int ROOT_DEMAND = 1;
-    static const unsigned int ROOT_BIOMASS = 2;
-
-    static const unsigned int LEAF_DEMAND_SUM = 0;
-    static const unsigned int P = 1;
-    static const unsigned int STOCK = 2;
-    static const unsigned int GROW = 3;
-    static const unsigned int PHASE = 4;
+    enum internals { ROOT_DEMAND_COEF, ROOT_DEMAND, ROOT_BIOMASS };
+    enum externals { LEAF_DEMAND_SUM, P, STOCK, GROW, PHASE };
 
     Model()
     {

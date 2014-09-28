@@ -51,7 +51,9 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_phase_ == plant::INITIAL and _len >= _predim) {
+        if (_phase_ == plant::INIT) {
+            _phase_ = plant::INITIAL;
+        } else if (_phase_ == plant::INITIAL and _len >= _predim) {
             _phase_ = plant::LIG;
         } else if (_phase_ == plant::INITIAL and _phase == plant::NOGROWTH) {
             _phase_ = plant::NOGROWTH;
@@ -74,13 +76,14 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _phase = plant::INIT;
-        _phase_ = plant::INITIAL;
+        _phase_ = plant::INIT;
     }
 
     void put(double t, unsigned int index, double value)
     {
         AbstractAtomicModel < Manager >::put(t, index, value);
-        if (is_ready(t, LEN) and is_ready(t, PREDIM)) {
+        if (_phase_ == plant::INIT or
+            (is_ready(t, LEN) and is_ready(t, PREDIM))) {
             (*this)(t);
         }
     }

@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -52,16 +53,26 @@ public:
     {
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
-
-            // std::cout << "BIOMASS: " << _biomass << " " << _G_L << " "
-            //           << _blade_area << " " << _sla << std::endl;
-
+            _sla_cste = _sla;
         } else {
             if (!_lig and _phase != plant::NOGROWTH) {
                 _lig = _phase == plant::LIG;
-                _biomass = (1. / _G_L) * _blade_area / _sla;
+                // _biomass = (1. / _G_L) * _blade_area / _sla;
+                _biomass = (1. / _G_L) * _blade_area / _sla_cste;
             }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_BIOMASS", t, utils::COMPUTE)
+            << "Biomass = " << _biomass
+            << " ; phase = " << _phase
+            << " ; BladeArea = " << _blade_area
+            << " ; SLA = " << _sla
+            << " ; G_L = " << _G_L;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double t,
@@ -85,6 +96,7 @@ private:
 // external variables
     double _blade_area;
     double _sla;
+    double _sla_cste;
     double _grow;
     double _phase;
 };

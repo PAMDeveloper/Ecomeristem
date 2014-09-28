@@ -26,17 +26,15 @@
 #define __ECOMERISTEM_PLANT_STOCK_RESERVOIR_DISPO_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
 class ReservoirDispo : public AbstractAtomicModel < ReservoirDispo >
 {
 public:
-    static const int RESERVOIR_DISPO = 0;
-
-    static const int LEAF_BIOMASS_SUM = 0;
-    static const int STOCK = 1;
-    static const int GROW = 2;
+    enum internals { RESERVOIR_DISPO };
+    enum externals { LEAF_BIOMASS_SUM, STOCK, GROW };
 
     ReservoirDispo()
     {
@@ -50,8 +48,26 @@ public:
     virtual ~ReservoirDispo()
     { }
 
-    void compute(double /* t */, bool /* update */)
-    { _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock_1; }
+    void compute(double t, bool /* update */)
+    {
+        if (is_ready(t, STOCK)) {
+            _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock_1;
+        } else {
+            _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock;
+        }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("RESERVOIR_DISPO", t, utils::COMPUTE)
+            << "ReservoirDispo = " << _reservoir_dispo
+            << " ; stock = " << _stock
+            << " ; stock[-1] = " << _stock_1
+            << " ; LeafBiomassSum = " << _leaf_biomass_sum
+            << " ; LeafStockMax = " << _leaf_stock_max;
+        utils::Trace::trace().flush();
+#endif
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)

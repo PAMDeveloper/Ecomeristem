@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -34,7 +35,7 @@ class Len : public AbstractAtomicModel < Len >
 {
 public:
     enum internals { LEN };
-    enum externals { DD, DELTA_T, GROW, PHASE, LER, EXP_TIME };
+    enum externals { DD, DELTA_T, GROW, PHASE, LER, EXP_TIME, PREDIM };
 
     Len()
     {
@@ -45,6 +46,7 @@ public:
         external(PHASE, &Len::_phase);
         external(LER, &Len::_ler);
         external(EXP_TIME, &Len::_exp_time);
+        external(PREDIM, &Len::_predim);
     }
 
     virtual ~Len()
@@ -54,18 +56,29 @@ public:
     {
         if (_first_day == t) {
             _len = _ler * _dd;
-
-            // std::cout << "LEN: " << _len << " " << _ler << " "
-            //           << _dd << std::endl;
-
         } else {
             if (_phase != plant::NOGROWTH) {
                 _len_1 = _len;
-                _len = _len_1 + _ler * std::min(_delta_t, _exp_time);
+                _len = std::min(_predim,
+                                _len_1 + _ler * std::min(_delta_t, _exp_time));
             } else {
                 _len_1 = _len;
             }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_LEN", t, utils::COMPUTE)
+            << "Len = " << _len
+            << " ; len[-1] = " << _len_1
+            << " ; phase = " << _phase
+            << " ; DeltaT = " << _delta_t
+            << " ; ExpTime = " << _exp_time
+            << " ; LER = " << _ler
+            << " ; DD = " << _dd;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double t,
@@ -88,6 +101,7 @@ private:
     double _phase;
     double _ler;
     double _exp_time;
+    double _predim;
 };
 
 } } // namespace ecomeristem leaf

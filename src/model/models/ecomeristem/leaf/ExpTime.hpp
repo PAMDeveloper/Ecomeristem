@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_LEAF_EXP_TIME_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -51,15 +52,39 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_first_day == t) {
+/*        if (_first_day == t) {
             _exp_time = (_predim - _len_1) / _ler;
+            // TODO: why ?
+            _is_first_leaf = false;
         } else {
             if (_is_first_leaf and _is_on_mainstem) {
                 _exp_time = _predim / _ler;
             } else {
                 _exp_time = (_predim - _ler * _dd) / _ler;
             }
+            } */
+
+        if (_is_first_leaf and _is_on_mainstem) {
+            _exp_time = _predim / _ler;
+            _is_first_leaf = false;
+        } else {
+            _exp_time = (_predim - _len) / _ler;
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_EXP_TIME", t, utils::COMPUTE)
+            << "ExpTime = " << _exp_time
+            << " ; len = " << _len
+            << " ; len[-1] = " << _len_1
+            << " ; Predim = " << _predim
+            << " ; LER = " << _ler
+            << " ; DD = " << _dd
+            << " ; is_first_leaf = " << _is_first_leaf
+            << " ; is_on_mainstem = " << _is_on_mainstem;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double t,

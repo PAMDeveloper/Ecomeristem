@@ -24,6 +24,7 @@
 
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/phytomer/Model.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace culm {
 
@@ -31,7 +32,7 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
-                     LEAF_BLADE_AREA_SUM };
+                     LEAF_BLADE_AREA_SUM, LEAF_PREDIM };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STOP, TEST_IC };
 
@@ -41,6 +42,7 @@ public:
         internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
         internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
         internal(LEAF_BLADE_AREA_SUM, &Model::_leaf_blade_area_sum);
+        internal(LEAF_PREDIM, &Model::_leaf_predim);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);
@@ -67,16 +69,35 @@ public:
         first_phytomer->init(t, parameters);
         phytomer_models.push_back(first_phytomer);
 
+        _parameters = &parameters;
+
         _leaf_biomass_sum = 0;
         _leaf_last_demand_sum = 0;
         _leaf_demand_sum = 0;
         _leaf_blade_area_sum = 0;
+
+        _grow = 0;
+    }
+
+    bool is_stable(double t) const
+    {
+        std::vector < phytomer::Model* >::const_iterator it =
+            phytomer_models.begin();
+        bool stable = true;
+
+        while (stable and it != phytomer_models.end()) {
+            stable = (*it)->is_stable(t);
+            ++it;
+        }
+        return stable;
     }
 
     void compute(double t, bool /* update */)
     {
         std::vector < phytomer::Model* >::iterator it =
             phytomer_models.begin();
+        std::vector < phytomer::Model* >::iterator previous_it;
+        int i = 0;
 
         _leaf_biomass_sum = 0;
         _leaf_last_demand_sum = 0;
@@ -91,13 +112,19 @@ public:
             (*it)->put(t, phytomer::Model::PHENO_STAGE, _pheno_stage);
             (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
                 _predim_leaf_on_mainstem);
-            // TODO
-            (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
+            if (i == 0) {
+                (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
+            } else {
+                (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
+                           (*previous_it)->get(t, phytomer::Model::PREDIM));
+            }
             (*it)->put(t, phytomer::Model::SLA, _sla);
             (*it)->put(t, phytomer::Model::GROW, _grow);
             (*it)->put(t, phytomer::Model::PHASE, _phase);
             (*it)->put(t, phytomer::Model::STOP, _stop);
-            (*it)->put(t, phytomer::Model::TEST_IC, _test_ic);
+            if (is_ready(t, TEST_IC)) {
+                (*it)->put(t, phytomer::Model::TEST_IC, _test_ic);
+            }
             (**it)(t);
 
             _leaf_biomass_sum += (*it)->get(t, phytomer::Model::LEAF_BIOMASS);
@@ -106,13 +133,38 @@ public:
             _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
             _leaf_blade_area_sum +=
                 (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
+            // TODO
+            if (i == 0) {
+                _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+            }
+            previous_it = it;
             ++it;
+            ++i;
         }
+    }
+
+    void create_phytomer(double t)
+    {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << "CREATE PHYTOMER: " << (phytomer_models.size() + 1);
+        utils::Trace::trace().flush();
+#endif
+
+        phytomer::Model* phytomer = new phytomer::Model(
+            phytomer_models.size() + 1, _is_first_culm);
+
+        phytomer->init(t, *_parameters);
+        phytomer_models.push_back(phytomer);
+        compute(t, true);
     }
 
 private:
 // parameters
     bool _is_first_culm;
+    const model::models::ModelParameters* _parameters;
 
 //submodels
     std::vector < phytomer::Model* > phytomer_models;
@@ -122,6 +174,7 @@ private:
     double _leaf_last_demand_sum;
     double _leaf_demand_sum;
     double _leaf_blade_area_sum;
+    double _leaf_predim;
 
 // external variables
     double _dd;

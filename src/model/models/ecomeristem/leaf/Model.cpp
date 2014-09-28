@@ -23,6 +23,7 @@
  */
 
 #include <model/models/ecomeristem/leaf/Model.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -80,23 +81,29 @@ void Model::compute(double t, bool /* update */)
                      _predim_leaf_on_mainstem);
     predim_model.put(t, Predim::PREDIM_PREVIOUS_LEAF,
                      _predim_previous_leaf);
-    predim_model.put(t, Predim::TEST_IC, _test_ic);
+    if (is_ready(t, TEST_IC)) {
+        predim_model.put(t, Predim::TEST_IC, _test_ic);
+    }
     predim_model(t);
 
     reduction_ler_model.put(t, ReductionLER::FTSW, _ftsw);
     reduction_ler_model.put(t, ReductionLER::P, _p);
     reduction_ler_model(t);
 
-    ler_model.put(t, Ler::PREDIM,
-                  predim_model.get(t, Predim::PREDIM));
+    if (predim_model.is_computed(t, Predim::PREDIM)) {
+        ler_model.put(t, Ler::PREDIM,
+                      predim_model.get(t, Predim::PREDIM));
+    }
     ler_model.put(t, Ler::REDUCTION_LER,
                   reduction_ler_model.get(t, ReductionLER::REDUCTION_LER));
     ler_model(t);
 
     exp_time_model.put(t, ExpTime::LER, ler_model.get(t, Ler::LER));
     exp_time_model.put(t, ExpTime::DD, _dd);
-    exp_time_model.put(t, ExpTime::PREDIM,
-                       predim_model.get(t, Predim::PREDIM));
+    if (predim_model.is_computed(t, Predim::PREDIM)) {
+        exp_time_model.put(t, ExpTime::PREDIM,
+                           predim_model.get(t, Predim::PREDIM));
+    }
     exp_time_model(t);
 
     len_model.put(t, Len::DD, _dd);
@@ -106,18 +113,25 @@ void Model::compute(double t, bool /* update */)
     len_model.put(t, Len::LER, ler_model.get(t, Ler::LER));
     len_model.put(t, Len::GROW, _grow);
     len_model.put(t, Len::PHASE, _phase);
+    if (predim_model.is_computed(t, Predim::PREDIM)) {
+        len_model.put(t, Len::PREDIM,
+                      predim_model.get(t, Predim::PREDIM));
+    }
     len_model(t);
     exp_time_model.put(t, ExpTime::LEN, len_model.get(t, Len::LEN));
 
     manager_model.put(t, Manager::LEN, len_model.get(t, Len::LEN));
-    manager_model.put(t, Manager::PREDIM, predim_model.get(t, Predim::PREDIM));
+    if (predim_model.is_computed(t, Predim::PREDIM)) {
+        manager_model.put(t, Manager::PREDIM,
+                          predim_model.get(t, Predim::PREDIM));
+    }
     manager_model.put(t, Manager::PHASE, _phase);
     manager_model.put(t, Manager::STOP, _stop);
 
     plasto_delay_model.put(t, PlastoDelay::DELTA_T, _delta_t);
     plasto_delay_model.put(t, PlastoDelay::REDUCTION_LER,
-                           reduction_ler_model.get(t,
-                                                   ReductionLER::REDUCTION_LER));
+                           reduction_ler_model.get(
+                               t, ReductionLER::REDUCTION_LER));
     plasto_delay_model.put(t, PlastoDelay::EXP_TIME,
                            exp_time_model.get(t, ExpTime::EXP_TIME));
     plasto_delay_model(t);
@@ -156,6 +170,18 @@ void Model::compute(double t, bool /* update */)
     time_from_app_model.put(t, TimeFromApp::DD, _dd);
     time_from_app_model.put(t, TimeFromApp::DELTA_T, _delta_t);
     time_from_app_model(t);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF", t, utils::COMPUTE)
+            << "index = " << _index
+            << " ; predim = "
+            << (predim_model.is_computed(t, Predim::PREDIM) ?
+                predim_model.get(t, Predim::PREDIM) : -1);
+        utils::Trace::trace().flush();
+#endif
+
+
 }
 
 } } // namespace ecomeristem leaf

@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_LEAF_PREDIM_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -50,7 +51,24 @@ public:
     virtual ~Predim()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    bool check(double t) const
+    {
+        if (_is_first_leaf and _is_on_mainstem) {
+            return true;
+        } else if (not _is_first_leaf and _is_on_mainstem) {
+            return is_ready(t, PREDIM_LEAF_ON_MAINSTEM) and
+                is_ready(t, TEST_IC) and is_ready(t, FCSTR);
+        } else if (_is_first_leaf and not _is_on_mainstem) {
+            return is_ready(t, PREDIM_LEAF_ON_MAINSTEM) and
+                is_ready(t, TEST_IC) and is_ready(t, FCSTR);
+        } else {
+            return is_ready(t, PREDIM_LEAF_ON_MAINSTEM) and
+                is_ready(t, PREDIM_PREVIOUS_LEAF) and
+                is_ready(t, TEST_IC) and is_ready(t, FCSTR);
+        }
+    }
+
+    void compute(double t, bool /* update */)
     {
         if (_is_first_leaf and _is_on_mainstem) {
             _predim = _Lef1;
@@ -64,6 +82,22 @@ public:
                              _predim_previous_leaf) +
                 _MGR * _test_ic * _fcstr;
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_PREDIM", t, utils::COMPUTE)
+            << "Predim = " << _predim
+            << " ; Lef1 = " << _Lef1
+            << " ; is_first_leaf = " << _is_first_leaf
+            << " ; is_on_mainstem = " << _is_on_mainstem
+            << " ; MGR = " << _MGR
+            << " ; testIC = " << _test_ic
+            << " ; fcstr = " << _fcstr
+            << " ; predim_previous_leaf = " << _predim_previous_leaf
+            << " ; predim_leaf_on_mainstem = " << _predim_leaf_on_mainstem;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,

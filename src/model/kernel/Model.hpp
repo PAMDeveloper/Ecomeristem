@@ -34,32 +34,12 @@ namespace model { namespace kernel {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
-    static const int LAI = 0;
-    static const int DELTA_T = 1;
-    static const int DD = 2;
-    static const int EDD = 3;
-    static const int IH = 4;
-    static const int LIGULO_VISU = 5;
-    static const int PHENO_STAGE = 6;
-    static const int PLASTO_VISU = 7;
-    static const int TT = 8;
-    static const int TT_LIG = 9;
-    static const int BOOL_CROSSED_PLASTO = 10;
-    static const int ASSIM = 11;
-    static const int CSTR = 12;
-    static const int ROOT_DEMAND_COEF = 13;
-    static const int ROOT_DEMAND = 14;
-    static const int ROOT_BIOMASS = 15;
-    static const int STOCK = 16;
-    static const int GROW = 17;
-    static const int SUPPLY = 18;
-    static const int DEFICIT = 19;
-    static const int IC = 20;
-    static const int SURPLUS = 21;
-    static const int TEST_IC = 22;
-    static const int DAY_DEMAND = 23;
-    static const int RESERVOIR_DISPO = 24;
-    static const int SEED_RES = 25;
+    enum internals { LAI, DELTA_T, DD, EDD, IH, LIGULO_VISU, PHENO_STAGE,
+                     PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO,
+                     ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
+                     ROOT_BIOMASS, STOCK, GROW, SUPPLY, DEFICIT,
+                     IC, SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
+                     SEED_RES };
 
     Model()
     {

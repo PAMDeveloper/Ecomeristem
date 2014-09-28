@@ -65,6 +65,7 @@ void check_values(const std::string& file_name,
 
         std::string info = (boost::format("[%1%] %2% => %3%") % var_name %
                             utils::DateTime::toJulianDay(begin + j) % j).str();
+
         CAPTURE(info);
         REQUIRE(boost::lexical_cast < double >(
                     columns[2]) == Approx(view.get(t, var_name))
@@ -82,7 +83,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
                                  end);
 }
 
-TEST_CASE("Thermal time tests", "variables")
+TEST_CASE("Thermal_time_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -128,7 +129,7 @@ TEST_CASE("Thermal time tests", "variables")
                  "plant", "TT_LIG");
 }
 
-TEST_CASE("Water balance tests", "variables")
+TEST_CASE("Water_balance_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -149,7 +150,7 @@ TEST_CASE("Water balance tests", "variables")
                  "plant", "CSTR");
 }
 
-TEST_CASE("Assimilation tests", "variables")
+TEST_CASE("Assimilation_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -170,7 +171,7 @@ TEST_CASE("Assimilation tests", "variables")
                  "plant", "ASSIM");
 }
 
-TEST_CASE("Root tests", "variables")
+TEST_CASE("Root_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -195,7 +196,7 @@ TEST_CASE("Root tests", "variables")
                  "plant", "ROOT_BIOMASS");
 }
 
-TEST_CASE("Stock tests", "variables")
+TEST_CASE("Stock_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -210,14 +211,14 @@ TEST_CASE("Stock tests", "variables")
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
                   utils::DateTime::toJulianDayNumber(end));
 
-/*    check_values("supply_out.txt",
+    check_values("supply_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "SUPPLY");
-    check_values("stock_mainstem_out.txt",
+/*    check_values("stock_mainstem_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "STOCK");
+                 "plant", "STOCK"); */
     check_values("reservoirDispo_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
@@ -225,7 +226,7 @@ TEST_CASE("Stock tests", "variables")
     check_values("deficit_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "DEFICIT"); */
+                 "plant", "DEFICIT");
     check_values("dayDemand_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,

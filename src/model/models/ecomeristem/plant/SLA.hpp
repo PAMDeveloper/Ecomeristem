@@ -26,14 +26,15 @@
 #define __ECOMERISTEM_PLANT_SLA_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant {
 
 class Sla : public AbstractAtomicModel < Sla >
 {
 public:
-    static const unsigned int SLA = 0;
-    static const unsigned int PHENO_STAGE = 0;
+    enum internals { SLA };
+    enum externals { PHENO_STAGE };
 
     Sla()
     {
@@ -44,8 +45,21 @@ public:
     virtual ~Sla()
     { }
 
-    void compute(double /* t */, bool /* update */)
-    { _sla = FSLA - SLAp * std::log(_phenoStage); }
+    void compute(double t, bool /* update */)
+    {
+        _sla = FSLA - SLAp * std::log(_phenoStage);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("SLA", t, utils::COMPUTE)
+            << "SLA = " << _sla
+            << " ; Phenostage = " << _phenoStage
+            << " ; FSLA = " << FSLA
+            << " ; SLAp = " << SLAp;
+        utils::Trace::trace().flush();
+#endif
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
