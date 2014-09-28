@@ -50,19 +50,17 @@ public:
 
     void compute(double t, bool /* update */)
     {
+        _seed_res_1 =_seed_res;
         if (_first_day == t) {
             _seed_res = _gdw - _day_demand;
         } else {
             if (_seed_res_1 > 0) {
                 if (_seed_res_1 > _day_demand) {
-                    _seed_res_1 = _seed_res;
                     _seed_res = _seed_res_1 - _day_demand;
                 } else {
-                    _seed_res_1 = _seed_res;
                     _seed_res = 0;
                 }
             } else {
-                _seed_res_1 = _seed_res;
                 _seed_res = 0;
             }
         }
