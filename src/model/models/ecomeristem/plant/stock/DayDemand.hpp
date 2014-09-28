@@ -33,12 +33,8 @@ namespace ecomeristem { namespace plant { namespace stock {
 class DayDemand : public AbstractAtomicModel < DayDemand >
 {
 public:
-    static const int DAY_DEMAND = 0;
-
-    static const int DEMAND_SUM = 0;
-    static const int LEAF_LAST_DEMAND_SUM = 1;
-    static const int GROW = 2;
-    static const int PHASE = 3;
+    enum internals { DAY_DEMAND };
+    enum externals { DEMAND_SUM, LEAF_LAST_DEMAND_SUM, GROW, PHASE };
 
     DayDemand()
     {
@@ -52,6 +48,10 @@ public:
 
     virtual ~DayDemand()
     { }
+
+    bool check(double t) const
+    { return is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM)
+            and is_ready(t, PHASE); }
 
     void compute(double /* t */, bool /* update */)
     {

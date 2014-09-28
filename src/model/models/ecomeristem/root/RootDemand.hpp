@@ -45,6 +45,7 @@ public:
     {
         internal(ROOT_DEMAND, &RootDemand::_root_demand);
         internal(ROOT_BIOMASS, &RootDemand::_root_biomass);
+
         external(LEAF_DEMAND_SUM, &RootDemand::_leaf_demand_sum);
         external(ROOT_DEMAND_COEF, &RootDemand::_root_demand_coef);
         external(GROW, &RootDemand::_grow);
@@ -53,6 +54,10 @@ public:
 
     virtual ~RootDemand()
     { }
+
+    bool check(double t) const
+    { return is_ready(t, LEAF_DEMAND_SUM) and is_ready(t, ROOT_DEMAND_COEF) and
+            is_ready(t, GROW) and is_ready(t, PHASE); }
 
     void compute(double t, bool /* update */)
     {

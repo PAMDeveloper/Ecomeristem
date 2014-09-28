@@ -44,7 +44,7 @@ public:
 
     virtual void compute(double t, bool update) = 0;
 
-    virtual double get(unsigned int index) const
+    virtual double get(double t, unsigned int index) const
     {
         std::map < int, std::pair < AbstractModel*,
                                     int > >::const_iterator it =
@@ -54,7 +54,7 @@ public:
             return static_cast < const T* >(this)->*(
                 internals.find(index)->second);
         } else {
-            return it->second.first->get(it->second.second);
+            return it->second.first->get(t, it->second.second);
         }
     }
 

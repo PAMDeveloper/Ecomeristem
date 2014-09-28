@@ -52,6 +52,10 @@ public:
     virtual ~IndexCompetition()
     { }
 
+    bool check(double t) const
+    { return is_ready(t, DAY_DEMAND) and is_ready(t, SEED_RES)
+            and is_ready(t, SUPPLY); }
+
     void compute(double /* t */, bool /* update */)
     {
         double resDiv, mean;

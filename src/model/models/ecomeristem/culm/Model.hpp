@@ -100,12 +100,12 @@ public:
             (*it)->put(t, phytomer::Model::TEST_IC, _test_ic);
             (**it)(t);
 
-            _leaf_biomass_sum += (*it)->get(phytomer::Model::LEAF_BIOMASS);
+            _leaf_biomass_sum += (*it)->get(t, phytomer::Model::LEAF_BIOMASS);
             _leaf_last_demand_sum +=
-                (*it)->get(phytomer::Model::LEAF_LAST_DEMAND);
-            _leaf_demand_sum += (*it)->get(phytomer::Model::LEAF_DEMAND);
+                (*it)->get(t, phytomer::Model::LEAF_LAST_DEMAND);
+            _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
             _leaf_blade_area_sum +=
-                (*it)->get(phytomer::Model::LEAF_BLADE_AREA);
+                (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
             ++it;
         }
     }

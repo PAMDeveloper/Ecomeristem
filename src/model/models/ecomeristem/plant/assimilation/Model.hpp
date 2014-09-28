@@ -84,19 +84,19 @@ public:
                 lai_model(t);
 
                 interc_model.put(t, Interc::LAI,
-                                 lai_model.get(Lai::LAI));
+                                 lai_model.get(t, Lai::LAI));
                 interc_model(t);
                 if (is_ready(t, CSTR) and is_ready(t, RADIATION)) {
                     assimPot_model.put(t, AssimPot::CSTR, _cstr);
                     assimPot_model.put(t, AssimPot::RADIATION, _Radiation);
                     assimPot_model.put(t, AssimPot::INTERC,
-                                       interc_model.get(Interc::INTERC));
+                                       interc_model.get(t, Interc::INTERC));
                     assimPot_model(t);
 
                     assim_model.put(t, Assim::RESP_MAINT,
-                                    respMaint_model.get(RespMaint::RESP_MAINT));
+                                    respMaint_model.get(t, RespMaint::RESP_MAINT));
                     assim_model.put(t, Assim::ASSIM_POT,
-                                    assimPot_model.get(AssimPot::ASSIM_POT));
+                                    assimPot_model.get(t, AssimPot::ASSIM_POT));
                     assim_model(t);
                 }
             }

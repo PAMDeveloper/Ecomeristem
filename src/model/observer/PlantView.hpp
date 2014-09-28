@@ -73,49 +73,49 @@ public:
 
     virtual void observe(double t)
     {
-        values["LAI"][t] = model->get(model::kernel::Model::LAI);
-        values["DELTA_T"][t] = model->get(model::kernel::Model::DELTA_T);
+        values["LAI"][t] = model->get(t, model::kernel::Model::LAI);
+        values["DELTA_T"][t] = model->get(t, model::kernel::Model::DELTA_T);
         values["BOOL_CROSSED_PLASTO"][t] =
-            model->get(model::kernel::Model::BOOL_CROSSED_PLASTO);
-        values["DD"][t] = model->get(model::kernel::Model::DD);
-        values["EDD"][t] = model->get(model::kernel::Model::EDD);
-        values["IH"][t] = model->get(model::kernel::Model::IH);
+            model->get(t, model::kernel::Model::BOOL_CROSSED_PLASTO);
+        values["DD"][t] = model->get(t, model::kernel::Model::DD);
+        values["EDD"][t] = model->get(t, model::kernel::Model::EDD);
+        values["IH"][t] = model->get(t, model::kernel::Model::IH);
         values["LIGULO_VISU"][t] =
-            model->get(model::kernel::Model::LIGULO_VISU);
+            model->get(t, model::kernel::Model::LIGULO_VISU);
         values["PHENO_STAGE"][t] =
-            model->get(model::kernel::Model::PHENO_STAGE);
+            model->get(t, model::kernel::Model::PHENO_STAGE);
         values["PLASTO_VISU"][t] =
-            model->get(model::kernel::Model::PLASTO_VISU);
-        values["TT"][t] = model->get(model::kernel::Model::TT);
-        values["TT_LIG"][t] = model->get(model::kernel::Model::TT_LIG);
-        values["ASSIM"][t] = model->get(model::kernel::Model::ASSIM);
-        values["CSTR"][t] = model->get(model::kernel::Model::CSTR);
+            model->get(t, model::kernel::Model::PLASTO_VISU);
+        values["TT"][t] = model->get(t, model::kernel::Model::TT);
+        values["TT_LIG"][t] = model->get(t, model::kernel::Model::TT_LIG);
+        values["ASSIM"][t] = model->get(t, model::kernel::Model::ASSIM);
+        values["CSTR"][t] = model->get(t, model::kernel::Model::CSTR);
         values["ROOT_DEMAND_COEF"][t] =
-            model->get(model::kernel::Model::ROOT_DEMAND_COEF);
+            model->get(t, model::kernel::Model::ROOT_DEMAND_COEF);
         values["ROOT_DEMAND"][t] =
-            model->get(model::kernel::Model::ROOT_DEMAND);
+            model->get(t, model::kernel::Model::ROOT_DEMAND);
         values["ROOT_BIOMASS"][t] =
-            model->get(model::kernel::Model::ROOT_BIOMASS);
+            model->get(t, model::kernel::Model::ROOT_BIOMASS);
         values["STOCK"][t] =
-            model->get(model::kernel::Model::STOCK);
+            model->get(t, model::kernel::Model::STOCK);
         values["SURPLUS"][t] =
-            model->get(model::kernel::Model::SURPLUS);
+            model->get(t, model::kernel::Model::SURPLUS);
         values["SUPPLY"][t] =
-            model->get(model::kernel::Model::SUPPLY);
+            model->get(t, model::kernel::Model::SUPPLY);
         values["RESERVOIR_DISPO"][t] =
-            model->get(model::kernel::Model::RESERVOIR_DISPO);
+            model->get(t, model::kernel::Model::RESERVOIR_DISPO);
         values["SEED_RES"][t] =
-            model->get(model::kernel::Model::SEED_RES);
+            model->get(t, model::kernel::Model::SEED_RES);
         values["IC"][t] =
-            model->get(model::kernel::Model::IC);
+            model->get(t, model::kernel::Model::IC);
         values["TEST_IC"][t] =
-            model->get(model::kernel::Model::TEST_IC);
+            model->get(t, model::kernel::Model::TEST_IC);
         values["DAY_DEMAND"][t] =
-            model->get(model::kernel::Model::DAY_DEMAND);
+            model->get(t, model::kernel::Model::DAY_DEMAND);
         values["GROW"][t] =
-            model->get(model::kernel::Model::GROW);
+            model->get(t, model::kernel::Model::GROW);
         values["DEFICIT"][t] =
-            model->get(model::kernel::Model::DEFICIT);
+            model->get(t, model::kernel::Model::DEFICIT);
     }
 
 private:

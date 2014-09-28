@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_ABSTRACT_ATOMIC_MODEL_HPP
 
 #include <model/kernel/AbstractModel.hpp>
+#include <utils/Exception.hpp>
 
 #include <vector>
 
@@ -43,8 +44,13 @@ public:
 
     virtual void compute(double t, bool update) = 0;
 
-    virtual double get(unsigned int index) const
-    { return static_cast < const T* >(this)->*internals.at(index); }
+    virtual double get(double t, unsigned int index) const
+    {
+        if (last_time != t) {
+            throw utils::InvalidGet("Variable not computed");
+        }
+        return static_cast < const T* >(this)->*internals.at(index);
+    }
 
     virtual void init(double t,
                       const model::models::ModelParameters& parameters) = 0;

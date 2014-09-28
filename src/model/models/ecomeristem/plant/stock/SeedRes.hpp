@@ -32,8 +32,8 @@ namespace ecomeristem { namespace plant { namespace stock {
 class SeedRes : public AbstractAtomicModel < SeedRes >
 {
 public:
-    static const int SEED_RES = 0;
-    static const int DAY_DEMAND = 0;
+    enum internals { SEED_RES };
+    enum externals { DAY_DEMAND };
 
     SeedRes()
     {
@@ -43,6 +43,9 @@ public:
 
     virtual ~SeedRes()
     { }
+
+    bool check(double t) const
+    { return is_ready(t, DAY_DEMAND); }
 
     void compute(double t, bool /* update */)
     {

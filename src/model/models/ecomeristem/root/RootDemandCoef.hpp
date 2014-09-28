@@ -44,6 +44,9 @@ public:
     virtual ~RootDemandCoef()
     { }
 
+    bool check(double t) const
+    { return is_ready(t, P); }
+
     void compute(double /* t */, bool /* update */)
     {
         ++_day;

@@ -44,9 +44,15 @@ public:
     virtual ~Supply()
     { }
 
+    bool check(double t) const
+    { return is_ready(t, ASSIM); }
+
     void compute(double /* t */, bool /* update */)
     {
         _supply = _assim;
+
+        std::cout << "SUPPLY: " << _supply << " " << _assim << std::endl;
+
     }
 
     void init(double /* t */,

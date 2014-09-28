@@ -53,7 +53,7 @@ public:
 
     virtual void compute(double t, bool update) = 0;
 
-    virtual double get(unsigned int index) const = 0;
+    virtual double get(double t, unsigned int index) const = 0;
 
     virtual void init(double t,
                       const model::models::ModelParameters& parameters) = 0;

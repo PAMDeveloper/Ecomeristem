@@ -52,6 +52,10 @@ public:
     virtual ~Surplus()
     { }
 
+    bool check(double t) const
+    { return is_ready(t, DAY_DEMAND) and is_ready(t, RESERVOIR_DISPO) and
+            is_ready(t, SEED_RES) and is_ready(t, SUPPLY); }
+
     void compute(double /* t */, bool /* update */)
     {
         if (_seed_res_1 > 0) {

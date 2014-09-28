@@ -50,20 +50,15 @@ public:
     virtual ~ReservoirDispo()
     { }
 
-    void compute(double t, bool /* update */)
-    {
-        if (is_ready(t, STOCK)) {
-            _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock_1;
-        } else {
-            _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock;
-        }
-    }
+    void compute(double /* t */, bool /* update */)
+    { _reservoir_dispo = _leaf_stock_max * _leaf_biomass_sum - _stock_1; }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
         _leaf_stock_max = parameters.get < double >("leaf_stock_max");
         _reservoir_dispo = 0;
+        _stock = 0;
         _stock_1 = 0;
     }
 

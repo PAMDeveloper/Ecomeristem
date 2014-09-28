@@ -38,122 +38,17 @@ namespace ecomeristem { namespace plant { namespace thermal_time {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    static const int DD = 0;
-    static const int DELTA_T = 1;
-    static const int EDD = 2;
-    static const int IH = 3;
-    static const int LIGULO_VISU = 4;
-    static const int PHENO_STAGE = 5;
-    static const int PLASTO_VISU = 6;
-    static const int TT = 7;
-    static const int TT_LIG = 8;
-    static const int BOOL_CROSSED_PLASTO = 9;
+    enum internals { DD, DELTA_T, EDD, IH, LIGULO_VISU, PHENO_STAGE,
+                     PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO };
+    enum externals { STOCK, TA, GROW, LIG, PLASTO_DELAY };
 
-    static const int STOCK = 0;
-    static const int TA = 1;
-    static const int GROW = 2;
-    static const int LIG = 3;
-    static const int PLASTO_DELAY = 4;
-
-    Model()
-    {
-        internal(DD, &DD_model, Dd::DD);
-        internal(DELTA_T, &DeltaT_model, DeltaT::DELTA_T);
-        internal(EDD, &DD_model, Dd::EDD);
-        internal(IH, &IH_model, Ih::IH);
-        internal(LIGULO_VISU, &LiguloVisu_model, LiguloVisu::LIGULO_VISU);
-        internal(PHENO_STAGE, &PhenoStage_model, PhenoStage::PHENO_STAGE);
-        internal(PLASTO_VISU, &PlastoVisu_model, PlastoVisu::PLASTO_VISU);
-        internal(TT, &TT_model, Tt::TT);
-        internal(TT_LIG, &TT_lig_model, TT_lig::TT_LIG);
-        internal(BOOL_CROSSED_PLASTO, &DD_model, Dd::BOOL_CROSSED_PLASTO);
-
-        external(STOCK, &Model::_stock);
-        external(TA, &Model::_Ta);
-        external(GROW, &Model::_grow);
-        external(LIG, &Model::_lig);
-        external(PLASTO_DELAY, &Model::_plasto_delay);
-    }
+    Model();
 
     virtual ~Model()
     { }
 
-    void init(double t, const model::models::ModelParameters& parameters)
-    {
-        DeltaT_model.init(t, parameters);
-        DD_model.init(t, parameters);
-        IH_model.init(t, parameters);
-        LiguloVisu_model.init(t, parameters);
-        TT_model.init(t, parameters);
-        TT_lig_model.init(t, parameters);
-        PlastoVisu_model.init(t, parameters);
-        ThermalTimeManager_model.init(t, parameters);
-        PhenoStage_model.init(t, parameters);
-    }
-
-    void compute(double t, bool /* update */)
-    {
-        DeltaT_model.put(t, DeltaT::TA, _Ta);
-        DeltaT_model(t);
-
-        TT_model.put(t, Tt::DELTA_T, DeltaT_model.get(DeltaT::DELTA_T));
-        TT_model(t);
-
-        if (is_ready(t, STOCK)) {
-            ThermalTimeManager_model.put(t, ThermalTimeManager::STOCK, _stock);
-        } else {
-            ThermalTimeManager_model(t);
-        }
-
-        DD_model.put(t, Dd::DELTA_T, DeltaT_model.get(DeltaT::DELTA_T));
-        DD_model.put(t, Dd::GROW, _grow);
-        DD_model.put(t, Dd::PHASE,
-                     ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
-        DD_model.put(t, Dd::PLASTO_DELAY, _plasto_delay);
-        DD_model(t);
-
-        TT_lig_model.put(t, TT_lig::PHASE,
-                         ThermalTimeManager_model.get(
-                             ThermalTimeManager::PHASE));
-        TT_lig_model.put(t, TT_lig::EDD, DD_model.get(Dd::EDD));
-        TT_lig_model.put(t, TT_lig::LIG, _lig);
-        TT_lig_model(t);
-
-        IH_model.put(t, Ih::TT_LIG, TT_lig_model.get(TT_lig::TT_LIG));
-        IH_model.put(t, Ih::LIG, _lig);
-        IH_model.put(t, Ih::PHASE,
-                     ThermalTimeManager_model.get(ThermalTimeManager::PHASE));
-        IH_model(t);
-
-        PlastoVisu_model.put(t, PlastoVisu::EDD, DD_model.get(Dd::EDD));
-        PlastoVisu_model.put(t, PlastoVisu::PHASE,
-                             ThermalTimeManager_model.get(
-                                 ThermalTimeManager::PHASE));
-        PlastoVisu_model.put(t, PlastoVisu::PLASTO_DELAY, _plasto_delay);
-        PlastoVisu_model(t);
-
-        PhenoStage_model.put(t, PhenoStage::BOOL_CROSSED_PLASTO,
-                             DD_model.get(Dd::BOOL_CROSSED_PLASTO));
-        PhenoStage_model.put(t, PhenoStage::PHASE,
-                             ThermalTimeManager_model.get(
-                                 ThermalTimeManager::PHASE));
-        PhenoStage_model(t);
-
-        LiguloVisu_model.put(t, LiguloVisu::EDD, DD_model.get(Dd::EDD));
-        LiguloVisu_model.put(t, LiguloVisu::PHASE,
-                             ThermalTimeManager_model.get(
-                                 ThermalTimeManager::PHASE));
-        LiguloVisu_model.put(t, LiguloVisu::PLASTO_DELAY, _plasto_delay);
-        LiguloVisu_model(t);
-    }
-
-    // virtual void put(double t, unsigned int index, double value)
-    // {
-    //     AbstractAtomicModel < Model >::put(t, index, value);
-    //     if (index == GROW) {
-    //     } else if (index == PHASE) {
-    //     }
-    // }
+    void compute(double t, bool /* update */);
+    void init(double t, const model::models::ModelParameters& parameters);
 
 private:
 // external variables
@@ -171,7 +66,8 @@ private:
     ecomeristem::plant::thermal_time::Tt TT_model;
     ecomeristem::plant::thermal_time::TT_lig TT_lig_model;
     ecomeristem::plant::thermal_time::PlastoVisu PlastoVisu_model;
-    ecomeristem::plant::thermal_time::ThermalTimeManager ThermalTimeManager_model;
+    ecomeristem::plant::thermal_time::ThermalTimeManager
+    ThermalTimeManager_model;
     ecomeristem::plant::thermal_time::PhenoStage PhenoStage_model;
 
 };

@@ -95,55 +95,63 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
 void Model::compute(double t, bool /* update */)
 {
-    lig_model(t);
+    _culm_is_computed = false;
 
-    // for (int i = 0; i < 2; ++i) {
+    lig_model(t);
     do {
         compute_assimilation(t);
         compute_water_balance(t);
+        compute_thermal_time(t);
+        compute_sla(t);
+        compute_manager(t);
+        compute_tiller(t);
+        compute_culms(t);
+        compute_root(t);
+        compute_stock(t);
+
+        // std::cout << "ASSIMILATION: " << assimilation_model.is_stable(t)
+        //           << std::endl;
+        // std::cout << "WATER BALANCE: " << water_balance_model.is_stable(t)
+        //           << std::endl;
+        // std::cout << "THERMAL TIME: " << thermal_time_model.is_stable(t)
+        //           << std::endl;
+        // std::cout << "SLA: " << sla_model.is_stable(t) << std::endl;
+        // std::cout << "MANAGER: " << manager_model.is_stable(t) << std::endl;
+        // std::cout << "TILLER MANAGER: " << tiller_manager_model.is_stable(t)
+        //           << std::endl;
+        // std::cout << "CULMS: " << culms_is_stable(t) << std::endl;
+        // std::cout << "ROOT: " << root_model.is_stable(t) << std::endl;
+        // std::cout << "STOCK: " << stock_model.is_stable(t) << std::endl;
+
     } while (not assimilation_model.is_stable(t) or
-             not water_balance_model.is_stable(t));
-
-    compute_thermal_time(t);
-
-    compute_sla(t);
-
-    compute_manager(t);
-    compute_tiller(t);
-
-    compute_culms(t);
-    compute_root(t);
-
-    compute_stock(t);
-    // }
-
-    std::cout << "[" << utils::DateTime::toJulianDay(t)
-              << "] - STOCK: " << stock_model.get(stock::Model::STOCK)
-              << std::endl;
-
+             not water_balance_model.is_stable(t) or
+             not thermal_time_model.is_stable(t) or
+             not sla_model.is_stable(t) or not manager_model.is_stable(t) or
+             not tiller_manager_model.is_stable(t) or not culms_is_stable(t) or
+             not root_model.is_stable(t) or not stock_model.is_stable(t));
 }
 
 void Model::compute_assimilation(double t)
 {
     if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
         assimilation_model.put(t, assimilation::Model::FCSTR,
-                               water_balance_model.get(
+                               water_balance_model.get(t,
                                    water_balance::Model::FCSTR));
     };
     //TODO
     assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS, 0);
-    assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
-                           9.40183908045977E-5);
-    // _leaf_biomass_sum);
-    assimilation_model.put(t, assimilation::Model::PAI,
-                           0.0253849655172414);
-    // _leaf_blade_area_sum);
+    if (_culm_is_computed) {
+        assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
+                               _leaf_biomass_sum);
+        assimilation_model.put(t, assimilation::Model::PAI,
+                               _leaf_blade_area_sum);
+    }
     assimilation_model.put(t,
                            assimilation::Model::RADIATION, _radiation);
     assimilation_model.put(t, assimilation::Model::TA, _ta);
     if (water_balance_model.is_computed(t, water_balance::Model::CSTR)) {
         assimilation_model.put(t, assimilation::Model::CSTR,
-                               water_balance_model.get(
+                               water_balance_model.get(t,
                                    water_balance::Model::CSTR));
     }
     assimilation_model(t);
@@ -158,92 +166,129 @@ void Model::compute_culms(double t)
     _leaf_demand_sum = 0;
     _leaf_blade_area_sum = 0;
     while (it != culm_models.end()) {
-        (*it)->put(t, culm::Model::DD,
-                   thermal_time_model.get(
-                       thermal_time::Model::DD));
-        (*it)->put(t, culm::Model::DELTA_T,
-                   thermal_time_model.get(
-                       thermal_time::Model::DELTA_T));
-        (*it)->put(t, culm::Model::FTSW,
-                   water_balance_model.get(
-                       water_balance::Model::FTSW));
-        (*it)->put(t, culm::Model::FCSTR,
-                   water_balance_model.get(
-                       water_balance::Model::FCSTR));
+        if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
+            (*it)->put(t, culm::Model::DD,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::DD));
+        }
+        if (thermal_time_model.is_computed(t, thermal_time::Model::DELTA_T)) {
+            (*it)->put(t, culm::Model::DELTA_T,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::DELTA_T));
+        }
+        if (water_balance_model.is_computed(t, water_balance::Model::FTSW)) {
+            (*it)->put(t, culm::Model::FTSW,
+                       water_balance_model.get(
+                           t, water_balance::Model::FTSW));
+        }
+        if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
+            (*it)->put(t, culm::Model::FCSTR,
+                       water_balance_model.get(
+                           t, water_balance::Model::FCSTR));
+        }
         (*it)->put(t, culm::Model::P, _p);
-        (*it)->put(t, culm::Model::PHENO_STAGE,
-                   thermal_time_model.get(
-                       thermal_time::Model::PHENO_STAGE));
+        if (thermal_time_model.is_computed(
+                t, thermal_time::Model::PHENO_STAGE)) {
+            (*it)->put(t, culm::Model::PHENO_STAGE,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::PHENO_STAGE));
+        }
         //TODO
         (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM, 0);
-        (*it)->put(t, culm::Model::SLA, sla_model.get(Sla::SLA));
-        (*it)->put(t, culm::Model::GROW,
-                   stock_model.get(stock::Model::GROW));
-        (*it)->put(t, culm::Model::PHASE,
-                   manager_model.get(Manager::PHASE));
+        (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
+        if (stock_model.is_computed(t, stock::Model::GROW)) {
+            (*it)->put(t, culm::Model::GROW,
+                       stock_model.get(t, stock::Model::GROW));
+        }
+        if (manager_model.is_computed(t, Manager::PHASE)) {
+            (*it)->put(t, culm::Model::PHASE,
+                       manager_model.get(t, Manager::PHASE));
+        }
         //TODO
         (*it)->put(t, culm::Model::STOP, 0);
         (*it)->put(t, culm::Model::TEST_IC,
-                   stock_model.get(stock::Model::TEST_IC));
+                   0);
+                   // stock_model.get(t, stock::Model::TEST_IC));
         (**it)(t);
 
-        _leaf_biomass_sum += (*it)->get(culm::Model::LEAF_BIOMASS_SUM);
+        _leaf_biomass_sum += (*it)->get(t, culm::Model::LEAF_BIOMASS_SUM);
         _leaf_last_demand_sum +=
-            (*it)->get(culm::Model::LEAF_LAST_DEMAND_SUM);
-        _leaf_demand_sum += (*it)->get(culm::Model::LEAF_DEMAND_SUM);
+            (*it)->get(t, culm::Model::LEAF_LAST_DEMAND_SUM);
+        _leaf_demand_sum += (*it)->get(t, culm::Model::LEAF_DEMAND_SUM);
         _leaf_blade_area_sum +=
-            (*it)->get(culm::Model::LEAF_BLADE_AREA_SUM);
+            (*it)->get(t, culm::Model::LEAF_BLADE_AREA_SUM);
 
         ++it;
     }
+    _culm_is_computed = true;
 
-    // std::cout << "LEAF_BIOMASS_SUM = " << _leaf_biomass_sum << std::endl;
-    // std::cout << "LEAF_LAST_DEMAND_SUM = " << _leaf_last_demand_sum
-    //           << std::endl;
-    // std::cout << "LEAF_DEMAND_SUM = " << _leaf_demand_sum << std::endl;
-    // std::cout << "LEAF_BLADE_AREA_SUM = " << _leaf_blade_area_sum
-    //           << std::endl;
+    std::cout << "LEAF_BIOMASS_SUM = " << _leaf_biomass_sum << std::endl;
+    std::cout << "LEAF_LAST_DEMAND_SUM = " << _leaf_last_demand_sum
+              << std::endl;
+    std::cout << "LEAF_DEMAND_SUM = " << _leaf_demand_sum << std::endl;
+    std::cout << "LEAF_BLADE_AREA_SUM = " << _leaf_blade_area_sum
+              << std::endl;
 
 }
 
 void Model::compute_manager(double t)
 {
-    manager_model.put(t, Manager::STOCK,
-                      3.76074e-05);
-                      // stock_model.get(stock::Model::STOCK));
-    manager_model.put(t, Manager::PHENO_STAGE, thermal_time_model.get(
-                          thermal_time::Model::PHENO_STAGE));
-    manager_model.put(t, Manager::BOOL_CROSSED_PLASTO,
-                      thermal_time_model.get(
-                          thermal_time::Model::BOOL_CROSSED_PLASTO));
-    manager_model.put(t, Manager::FTSW,
-                      water_balance_model.get(water_balance::Model::FTSW));
-    manager_model.put(t, Manager::IC, stock_model.get(stock::Model::IC));
+    if (stock_model.is_computed(t, stock::Model::STOCK)) {
+        manager_model.put(t, Manager::STOCK,
+                          stock_model.get(t, stock::Model::STOCK));
+    }
+    if (thermal_time_model.is_computed(t, thermal_time::Model::PHENO_STAGE)) {
+        manager_model.put(t, Manager::PHENO_STAGE, thermal_time_model.get(
+                              t, thermal_time::Model::PHENO_STAGE));
+    }
+    if (thermal_time_model.is_computed(
+            t, thermal_time::Model::BOOL_CROSSED_PLASTO)) {
+        manager_model.put(
+            t, Manager::BOOL_CROSSED_PLASTO,
+            thermal_time_model.get(t,
+                                   thermal_time::Model::BOOL_CROSSED_PLASTO));
+    }
+    if (water_balance_model.is_computed(t, water_balance::Model::FTSW)) {
+        manager_model.put(
+            t, Manager::FTSW,
+            water_balance_model.get(t, water_balance::Model::FTSW));
+    }
+    if (stock_model.is_computed(t, stock::Model::IC)) {
+        manager_model.put(t, Manager::IC,
+                          stock_model.get(t, stock::Model::IC));
+    }
 }
 
 void Model::compute_root(double t)
 {
     root_model.put(t, root::Model::P, _p);
-    root_model.put(t, root::Model::STOCK,
-                   3.76074e-05);
-                   // stock_model.get(stock::Model::STOCK));
+    if (stock_model.is_computed(t, stock::Model::STOCK)) {
+        root_model.put(t, root::Model::STOCK,
+                       stock_model.get(t, stock::Model::STOCK));
+    }
     root_model.put(t, root::Model::LEAF_DEMAND_SUM,
-                   9.40183908045977E-5);
-    // _leaf_demand_sum);
-    root_model.put(t, root::Model::GROW,
-                   stock_model.get(stock::Model::GROW));
-    root_model.put(t, root::Model::PHASE,
-                   manager_model.get(Manager::PHASE));
+                   _leaf_demand_sum);
+    if (stock_model.is_computed(t, stock::Model::GROW)) {
+        root_model.put(t, root::Model::GROW,
+                       stock_model.get(t, stock::Model::GROW));
+    }
+    if (manager_model.is_computed(t, Manager::PHASE)) {
+        root_model.put(t, root::Model::PHASE,
+                       manager_model.get(t, Manager::PHASE));
+    }
     root_model(t);
 
     _demand_sum = _leaf_demand_sum +
-        root_model.get(root::Model::ROOT_DEMAND);
+        root_model.get(t, root::Model::ROOT_DEMAND);
+
+    // std::cout << "DEMAND_SUM = " << _demand_sum << std::endl;
+
 }
 
 void Model::compute_sla(double t)
 {
     if (thermal_time_model.is_computed(t, thermal_time::Model::PHENO_STAGE)) {
-        sla_model.put(t, Sla::PHENO_STAGE, thermal_time_model.get(
+        sla_model.put(t, Sla::PHENO_STAGE, thermal_time_model.get(t,
                           thermal_time::Model::PHENO_STAGE));
         sla_model(t);
     }
@@ -251,33 +296,38 @@ void Model::compute_sla(double t)
 
 void Model::compute_stock(double t)
 {
-    stock_model.put(t, stock::Model::ASSIM,
-                    assimilation_model.get(assimilation::Model::ASSIM));
+    if (assimilation_model.is_computed(t, assimilation::Model::ASSIM)) {
+        stock_model.put(t, stock::Model::ASSIM,
+                        assimilation_model.get(t, assimilation::Model::ASSIM));
+    }
+    if (manager_model.is_computed(t, Manager::PHASE)) {
+        stock_model.put(t, stock::Model::PHASE,
+                        manager_model.get(t, Manager::PHASE));
+    }
     stock_model.put(t, stock::Model::DEMAND_SUM,
-                    0.0001866323682075451);
-                    // _demand_sum);
-    stock_model.put(t, stock::Model::LEAF_BIOMASS_SUM, _leaf_biomass_sum);
+                    _demand_sum);
+    stock_model.put(t, stock::Model::LEAF_BIOMASS_SUM,
+                    _leaf_biomass_sum);
     stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
-                   0);
-                    // _leaf_last_demand_sum);
+                    _leaf_last_demand_sum);
     //TODO
     stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0);
-    stock_model.put(t, stock::Model::PHASE,
-                    manager_model.get(Manager::PHASE));
     stock_model(t);
 }
 
 void Model::compute_thermal_time(double t)
 {
-    thermal_time_model.put(t, thermal_time::Model::STOCK,
-                           3.76074e-05);
-    // stock_model.get(stock::Model::STOCK));
-    thermal_time_model.put(t, thermal_time::Model::GROW,
-                           0);
-    // stock_model.get(stock::Model::GROW));
+    if (stock_model.is_computed(t, stock::Model::STOCK)) {
+        thermal_time_model.put(t, thermal_time::Model::STOCK,
+                               stock_model.get(t, stock::Model::STOCK));
+    }
+    if (stock_model.is_computed(t, stock::Model::GROW)) {
+        thermal_time_model.put(t, thermal_time::Model::GROW,
+                               stock_model.get(t, stock::Model::GROW));
+    }
     thermal_time_model.put(t, thermal_time::Model::TA, _ta);
     thermal_time_model.put(t, thermal_time::Model::LIG,
-                           lig_model.get(Lig::LIG));
+                           lig_model.get(t, Lig::LIG));
     // TODO
     thermal_time_model.put(t, thermal_time::Model::PLASTO_DELAY, 0);
     thermal_time_model(t);
@@ -285,28 +335,50 @@ void Model::compute_thermal_time(double t)
 
 void Model::compute_tiller(double t)
 {
-    tiller_manager_model.put(t, TillerManager::BOOL_CROSSED_PLASTO,
-                             thermal_time_model.get(
-                                 thermal_time::Model::BOOL_CROSSED_PLASTO));
-    tiller_manager_model.put(t, TillerManager::PHENO_STAGE,
-                             thermal_time_model.get(
-                                 thermal_time::Model::PHENO_STAGE));
-    tiller_manager_model.put(t, TillerManager::IC,
-                             stock_model.get(stock::Model::IC));
+    if (thermal_time_model.is_computed(
+            t, thermal_time::Model::BOOL_CROSSED_PLASTO)) {
+        tiller_manager_model.put(
+            t, TillerManager::BOOL_CROSSED_PLASTO,
+            thermal_time_model.get(
+                t, thermal_time::Model::BOOL_CROSSED_PLASTO));
+    }
+    if (thermal_time_model.get(
+            t, thermal_time::Model::PHENO_STAGE)) {
+        tiller_manager_model.put(
+            t, TillerManager::PHENO_STAGE,
+            thermal_time_model.get(
+                t, thermal_time::Model::PHENO_STAGE));
+    }
+    if (stock_model.is_computed(t, stock::Model::IC)) {
+        tiller_manager_model.put(t, TillerManager::IC,
+                                 stock_model.get(t, stock::Model::IC));
+    }
     tiller_manager_model(t);
 }
 
 void Model::compute_water_balance(double t)
 {
-    water_balance_model.put(t, water_balance::Model::ETP, _etp);
     if (assimilation_model.is_computed(t, assimilation::Model::INTERC)) {
         water_balance_model.put(t, water_balance::Model::INTERC,
-                                assimilation_model.get(
+                                assimilation_model.get(t,
                                     assimilation::Model::INTERC));
     }
+    water_balance_model.put(t, water_balance::Model::ETP, _etp);
     water_balance_model.put(t, water_balance::Model::WATER_SUPPLY,
                             _water_supply);
     water_balance_model(t);
+}
+
+bool Model::culms_is_stable(double t)
+{
+    std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+    bool stable = true;
+
+    while (it != culm_models.end() and stable) {
+        stable = (*it)->is_stable(t);
+        ++it;
+    }
+    return stable;
 }
 
 } } // namespace ecomeristem plant

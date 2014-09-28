@@ -42,14 +42,14 @@ public:
     { }
 };
 
-class FileError : public BaseError
+class InvalidGet : public BaseError
 {
 public:
-    explicit FileError(const std::string& argv = std::string())
+    explicit InvalidGet(const std::string& argv = std::string())
         : BaseError(argv)
     { }
 
-    explicit FileError(const boost::format& argv)
+    explicit InvalidGet(const boost::format& argv)
         : BaseError(argv)
     { }
 };
@@ -62,42 +62,6 @@ public:
     { }
 
     explicit ParseError(const boost::format& argv)
-        : BaseError(argv)
-    { }
-};
-
-class ReadError : public BaseError
-{
-public:
-    explicit ReadError(const std::string& argv = std::string())
-        : BaseError(argv)
-    { }
-
-    explicit ReadError(const boost::format& argv)
-        : BaseError(argv)
-    { }
-};
-
-class InvalidFileFormat : public BaseError
-{
-public:
-    explicit InvalidFileFormat(const std::string& argv = std::string())
-        : BaseError(argv)
-    { }
-
-    explicit InvalidFileFormat(const boost::format& argv)
-        : BaseError(argv)
-    { }
-};
-
-class ErrorInContextFile : public BaseError
-{
-public:
-    explicit ErrorInContextFile(const std::string& argv = std::string())
-        : BaseError(argv)
-    { }
-
-    explicit ErrorInContextFile(const boost::format& argv)
         : BaseError(argv)
     { }
 };

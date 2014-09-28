@@ -66,6 +66,7 @@ private:
     void compute_thermal_time(double t);
     void compute_tiller(double t);
     void compute_water_balance(double t);
+    bool culms_is_stable(double t);
 
 // internal variables
     double _leaf_biomass_sum;
@@ -73,6 +74,7 @@ private:
     double _leaf_demand_sum;
     double _leaf_blade_area_sum;
     double _demand_sum;
+    bool _culm_is_computed;
 
 // external variables
     double _etp;

@@ -58,7 +58,12 @@ public:
     virtual ~Stock()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    bool check(double t) const
+    { return is_ready(t, DAY_DEMAND) and is_ready(t,RESERVOIR_DISPO)
+            and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
+            and is_ready(t, DELETED_LEAF_BIOMASS); }
+
+     void compute(double /* t */, bool /* update */)
     {
         double stock = 0;
 
