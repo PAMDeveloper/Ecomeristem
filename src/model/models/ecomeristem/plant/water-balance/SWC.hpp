@@ -26,15 +26,15 @@
 #define __ECOMERISTEM_PLANT_WATER_BALANCE_SWC_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
 class Swc : public AbstractAtomicModel < Swc >
 {
 public:
-    static const unsigned int SWC = 0;
-    static const unsigned int DELTA_P = 0;
-    static const unsigned int WATER_SUPPLY = 1;
+    enum internals { SWC };
+    enum externals { DELTA_P, WATER_SUPPLY };
 
     Swc()
     {
@@ -50,12 +50,19 @@ public:
     bool check(double t) const
     { return is_ready(t, DELTA_P) and is_ready(t, WATER_SUPPLY); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _swc = _swc - _delta_p + _water_supply;
 
-        std::cout << "SWC: " << _swc << " " << _delta_p << " "
-                  << _water_supply << " " << RU1 << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("SWC", t, utils::COMPUTE)
+            << "swc = " << _swc << " ; delta_p = " << _delta_p
+            << " ; water_supply = " << _water_supply << " ; RU1 = "
+            << RU1;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,

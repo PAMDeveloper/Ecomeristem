@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -51,15 +52,22 @@ public:
        if (_first_day == t) {
            _last_demand = 0;
         } else {
-            if (_phase != plant::LIG) {
-                _last_demand = _biomass - _biomass_1;
+            if (_phase == plant::LIG) {
+                _last_demand = _biomass_1 - _biomass_2;
             } else {
                 _last_demand = 0;
             }
         }
 
-       // std::cout << "LAST_DEMAND: " << _last_demand << " " << _biomass
-       //           << " " << _biomass_1 << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_LAST_DEMAND", t, utils::COMPUTE)
+            << "LastDemand = " << _last_demand << " ; phase = " << _phase
+            << " ; Biomass = " << _biomass
+            << " ; Biomass[-1] = " << _biomass_1
+            << " ; Biomass[-2] = " << _biomass_2;
+        utils::Trace::trace().flush();
+#endif
 
     }
 
@@ -67,6 +75,7 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _first_day = t;
+        _biomass_2 = 0;
         _biomass_1 = 0;
         _biomass = 0;
     }
@@ -74,6 +83,7 @@ public:
     void put(double t, unsigned int index, double value)
     {
         if (index == BIOMASS and !is_ready(t, BIOMASS)) {
+            _biomass_2 = _biomass_1;
             _biomass_1 = _biomass;
         }
         AbstractAtomicModel < LastDemand >::put(t, index, value);
@@ -86,6 +96,7 @@ private:
 
 // external variables
     double _biomass;
+    double _biomass_2;
     double _biomass_1;
     double _phase;
 };

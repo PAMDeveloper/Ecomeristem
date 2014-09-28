@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -48,7 +49,7 @@ public:
     virtual ~Manager()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         if (_phase_ == plant::INITIAL and _len >= _predim) {
             _phase_ = plant::LIG;
@@ -58,18 +59,30 @@ public:
                    _phase == plant::PHYTOMER_MORPHO_GENESIS) {
             _phase_ = plant::INITIAL;
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_MANAGER", t, utils::COMPUTE)
+            << "phase = " << _phase_ << " ; phase = " << _phase
+            << " ; len = " << _len << " ; predim = " << _predim;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
+        _phase = plant::INIT;
         _phase_ = plant::INITIAL;
     }
 
     void put(double t, unsigned int index, double value)
     {
         AbstractAtomicModel < Manager >::put(t, index, value);
-        (*this)(t);
+        if (is_ready(t, LEN) and is_ready(t, PREDIM)) {
+            (*this)(t);
+        }
     }
 
 private:

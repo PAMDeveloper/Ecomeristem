@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_PLANT_STOCK_SUPPLY_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
@@ -47,11 +48,16 @@ public:
     bool check(double t) const
     { return is_ready(t, ASSIM); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _supply = _assim;
 
-        std::cout << "SUPPLY: " << _supply << " " << _assim << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("SUPPLY", t, utils::COMPUTE)
+            << "supply = " << _supply << " ; Assim = " << _assim;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

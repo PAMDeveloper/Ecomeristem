@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_PLANT_STOCK_SEED_RES_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
@@ -66,8 +67,14 @@ public:
             }
         }
 
-        std::cout << "SEED_RES: " << _seed_res << " " << _seed_res_1 << " "
-                  << _gdw << " " << _day_demand << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("SEED_RES", t, utils::COMPUTE)
+            << "seedRes = " << _seed_res << " ; seed_res[-1] = " << _seed_res_1
+            << " ; gdw = " << _gdw << " ; DayDemand = "
+            << _day_demand;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

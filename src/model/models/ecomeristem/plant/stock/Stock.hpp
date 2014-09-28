@@ -26,21 +26,16 @@
 #define __ECOMERISTEM_PLANT_STOCK_STOCK_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
 class Stock : public AbstractAtomicModel < Stock >
 {
 public:
-    static const int STOCK = 0;
-    static const int GROW = 1;
-    static const int DEFICIT = 2;
-
-    static const int DAY_DEMAND = 0;
-    static const int RESERVOIR_DISPO = 1;
-    static const int SEED_RES = 2;
-    static const int SUPPLY = 3;
-    static const int DELETED_LEAF_BIOMASS = 4;
+    enum internals { STOCK, GROW, DEFICIT };
+    enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
+                     DELETED_LEAF_BIOMASS };
 
     Stock()
     {
@@ -63,7 +58,7 @@ public:
             and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
             and is_ready(t, DELETED_LEAF_BIOMASS); }
 
-     void compute(double /* t */, bool /* update */)
+     void compute(double t, bool /* update */)
     {
         double stock = 0;
 
@@ -80,8 +75,15 @@ public:
         _stock = std::max(0., stock);
         _deficit = 0.;
 
-        std::cout << "STOCK: " << _stock << " " << _deficit << " "
-                  << _reservoir_dispo << " " << _supply << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("STOCK", t, utils::COMPUTE)
+            << "stock = " << _stock << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[-1] = " << _seed_res_1 << " ; deficit = "
+            << _deficit << " ; ReservoirDispo = " << _reservoir_dispo
+            << " ; Supply = " << _supply << " ; DayDemand = " << _day_demand;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

@@ -69,6 +69,20 @@ static void run(const std::string& /* path */, int /* verbose */)
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
                   utils::DateTime::toJulianDayNumber(end));
+
+    std::string date;
+
+    std::cout << "**************** 20-01-2010 *******************" << std::endl;
+    utils::DateTime::format_date("20-01-2010", date);
+    std::cout << utils::Trace::trace().elements().filter_time(
+        utils::DateTime::toJulianDayNumber(date)).to_string()
+              << std::endl;
+
+    std::cout << "**************** 21-01-2010 *******************" << std::endl;
+    utils::DateTime::format_date("21-01-2010", date);
+    std::cout << utils::Trace::trace().elements().filter_time(
+        utils::DateTime::toJulianDayNumber(date)).to_string()
+              << std::endl;
 }
 
 static int show_infos()

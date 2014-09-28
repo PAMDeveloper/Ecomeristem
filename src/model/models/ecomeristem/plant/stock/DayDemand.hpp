@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
 
@@ -53,7 +54,7 @@ public:
     { return is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM)
             and is_ready(t, PHASE); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         if (_phase == ecomeristem::plant::NOGROWTH) {
             _day_demand = 0;
@@ -61,8 +62,14 @@ public:
             _day_demand = _demand_sum + _leaf_last_demand_sum;
         }
 
-        std::cout << "DAY_DEMAND: " << _day_demand << " " << _demand_sum
-                  << " " << _leaf_last_demand_sum << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("DAY_DEMAND", t, utils::COMPUTE)
+            << "dayDemand = " << _day_demand << " ; phase = " << _phase
+            << " ; DemandSum = " << _demand_sum << " ; Leaflastdemand = "
+            << _leaf_last_demand_sum;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

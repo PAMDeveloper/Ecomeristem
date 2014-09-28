@@ -26,19 +26,20 @@
 #define __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
 class Assim : public AbstractAtomicModel < Assim >
 {
 public:
-    static const unsigned int ASSIM = 0;
-    static const unsigned int RESP_MAINT = 0;
-    static const unsigned int ASSIM_POT = 1;
+    enum internals { ASSIM };
+    enum externals { RESP_MAINT, ASSIM_POT };
 
     Assim() : _assim(0)
     {
         internal(ASSIM, &Assim::_assim);
+
         external(RESP_MAINT, &Assim::_resp_maint);
         external(ASSIM_POT, &Assim::_assim_pot);
     }
@@ -49,12 +50,18 @@ public:
     bool check(double t) const
     { return is_ready(t, RESP_MAINT) and is_ready(t, ASSIM_POT); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _assim = std::max(0., _assim_pot / _density - _resp_maint);
 
-        std::cout << "ASSIM: " << _assim << " " << _assim_pot << " "
-                  << _resp_maint << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("ASSIM", t, utils::COMPUTE)
+            << "assim = " << _assim << " ; assim_pot = " << _assim_pot
+            << " ; resp_maint = " << _resp_maint << " ; density = "
+            << _density;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

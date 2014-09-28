@@ -26,16 +26,15 @@
 #define __ECOMERISTEM_PLANT_ASSIMILATION_RESP_MAINT_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
 class RespMaint : public AbstractAtomicModel < RespMaint >
 {
 public:
-    static const unsigned int RESP_MAINT = 0;
-    static const unsigned int LEAF_BIOMASS = 0;
-    static const unsigned int INTERNODE_BIOMASS = 1;
-    static const unsigned int TA = 2;
+    enum internals { RESP_MAINT };
+    enum externals { LEAF_BIOMASS, INTERNODE_BIOMASS, TA };
 
     RespMaint()
     {
@@ -52,14 +51,22 @@ public:
     { return is_ready(t, LEAF_BIOMASS) and is_ready(t, INTERNODE_BIOMASS) and
             is_ready(t, TA); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _RespMaint = (_Kresp_leaf * _LeafBiomass +
                       _Kresp_internode * _InternodeBiomass) *
             std::pow(2., (_Ta - _Tresp) / 10.);
 
-        std::cout << "RESPMAINT: " << _RespMaint << " " << _LeafBiomass << " "
-                  << _InternodeBiomass << " " << _Ta << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("RESPMAINT", t, utils::COMPUTE)
+            << "respMaint = " << _RespMaint << " ; LeafBiomass = "
+            << _LeafBiomass << " ; InternodeBiomass = "
+            << _InternodeBiomass << " ; TA = "
+            << _Ta << " ; Tresp = " << _Tresp << " ; Kresp_leaf = "
+            << _Kresp_leaf << " ; Kresp_internode = " << _Kresp_internode;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

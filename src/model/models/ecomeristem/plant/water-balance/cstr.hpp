@@ -26,14 +26,15 @@
 #define __ECOMERISTEM_PLANT_WATER_BALANCE_CSTR_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
 class cstr : public AbstractAtomicModel < cstr >
 {
 public:
-    static const unsigned int CSTR = 0;
-    static const unsigned int FTSW = 0;
+    enum internals { CSTR };
+    enum externals { FTSW };
 
     cstr()
     {
@@ -47,12 +48,18 @@ public:
     bool check(double t) const
     { return is_ready(t, FTSW); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _cstr = (_ftsw < ThresTransp) ?
             std::max(1e-4, _ftsw * 1. / ThresTransp) : 1;
 
-        std::cout << "CSTR: " << _cstr << " " << _ftsw << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CSTR", t, utils::COMPUTE)
+            << "cstr = " << _cstr << " ; FTSW = " << _ftsw
+            << " ; ThresTransp = " << ThresTransp;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

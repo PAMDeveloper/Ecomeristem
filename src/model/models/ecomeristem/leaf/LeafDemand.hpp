@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -58,6 +59,16 @@ public:
                 _demand = 0;
             }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_DEMAND", t, utils::COMPUTE)
+            << "Demand = " << _demand << " ; phase = " << _phase
+            << " ; Biomass = " << _biomass
+            << " ; Biomass[-1] = " << _biomass_1;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double t,

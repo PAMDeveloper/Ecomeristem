@@ -5,11 +5,10 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(
   ${Boost_LIBRARY_DIRS})
 
-SET(ECOMERISTEM_UTILS_CPP
-    Connections.cpp ParametersReader.cpp)
+SET(ECOMERISTEM_UTILS_CPP Connections.cpp ParametersReader.cpp Trace.cpp)
 
 SET(ECOMERISTEM_UTILS_HPP Connections.hpp Exception.hpp DateTime.hpp
-  ParametersReader.hpp)
+  ParametersReader.hpp Trace.hpp Trace.cpp)
 
 ADD_LIBRARY(ecomeristem-utils SHARED ${ECOMERISTEM_UTILS_CPP} ${ECOMERISTEM_UTILS_HPP})
 

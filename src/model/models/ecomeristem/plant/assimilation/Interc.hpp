@@ -26,14 +26,15 @@
 #define __ECOMERISTEM_PLANT_ASSIMILATION_INTERC_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
 class Interc : public AbstractAtomicModel < Interc >
 {
 public:
-    static const unsigned int INTERC = 0;
-    static const unsigned int LAI = 0;
+    enum internals { INTERC };
+    enum externals { LAI };
 
     Interc()
     {
@@ -47,12 +48,17 @@ public:
     bool check(double t) const
     { return is_ready(t, LAI); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _interc = 1. - std::exp(-_Kdf * _lai);
 
-        std::cout << "INTERC: " << _interc << " " << _Kdf << " " << _lai
-                  << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("INTERC", t, utils::COMPUTE)
+            << "interc = " << _interc << " ; Kdf = " << _Kdf
+            << " ; LAI = " << _lai;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

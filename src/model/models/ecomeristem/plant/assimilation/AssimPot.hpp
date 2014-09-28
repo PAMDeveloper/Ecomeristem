@@ -26,20 +26,20 @@
 #define __ECOMERISTEM_PLANT_ASSIMILATION_ASSIM_POT_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
 class AssimPot : public AbstractAtomicModel < AssimPot >
 {
 public:
-    static const unsigned int ASSIM_POT = 0;
-    static const unsigned int CSTR = 0;
-    static const unsigned int INTERC = 1;
-    static const unsigned int RADIATION = 2;
+    enum internals { ASSIM_POT };
+    enum externals { CSTR, INTERC, RADIATION };
 
     AssimPot()
     {
         internal(ASSIM_POT, &AssimPot::_assim_pot);
+
         external(CSTR, &AssimPot::_cstr);
         external(INTERC, &AssimPot::_interc);
         external(RADIATION, &AssimPot::_radiation);
@@ -52,15 +52,20 @@ public:
     { return is_ready(t, CSTR) and is_ready(t, INTERC) and
             is_ready(t, RADIATION); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _assim_pot = std::pow(_cstr, _power_for_cstr) * _interc * _epsib *
             _radiation * _kpar;
 
-        std::cout << "ASSIMPOT: " << _assim_pot << " " << _cstr << " "
-                  << _power_for_cstr << " "
-                  << _interc << " " << _epsib << " " << _radiation << " "
-                  << _kpar << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("ASSIM_POT", t, utils::COMPUTE)
+            << "assim_pot = " << _assim_pot << " ; cstr = " << _cstr
+            << " ; power_for_cstr = " << _power_for_cstr << " ; interc = "
+            << _interc << " ; epsib = " << _epsib << " ; radiation = "
+            << _radiation << " ; kpar = " << _kpar;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

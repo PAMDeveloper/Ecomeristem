@@ -27,19 +27,15 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace root {
 
 class RootDemand : public AbstractAtomicModel < RootDemand >
 {
 public:
-    static const unsigned int ROOT_DEMAND = 0;
-    static const unsigned int ROOT_BIOMASS = 1;
-
-    static const unsigned int LEAF_DEMAND_SUM = 0;
-    static const unsigned int ROOT_DEMAND_COEF = 1;
-    static const unsigned int GROW = 2;
-    static const unsigned int PHASE = 3;
+    enum internals { ROOT_DEMAND, ROOT_BIOMASS };
+    enum externals { LEAF_DEMAND_SUM, ROOT_DEMAND_COEF, GROW, PHASE };
 
     RootDemand()
     {
@@ -65,15 +61,10 @@ public:
             _root_demand = _leaf_demand_sum * _root_demand_coef;
             _last_value = _root_demand;
             _root_biomass = _root_demand;
-
-            // std::cout << "ROOT_DEMAND: " << _root_demand << " "
-            //           << _leaf_demand_sum << " " << _root_demand_coef
-            //           << std::endl;
-
         } else {
             if (_phase == ecomeristem::plant::NOGROWTH) {
                 _root_demand = 0;
-                _last_value= 0;
+                _last_value = 0;
             } else {
                 if (_leaf_demand_sum_1 == 0) {
                     _root_demand = _last_value * _root_demand_coef;
@@ -82,20 +73,36 @@ public:
                 }
                 if (_leaf_demand_sum_1 != 0) {
                     _last_value = _leaf_demand_sum_1;
-            } else {
+                } else {
                     _last_value = 0;
                 }
             }
-            _root_biomass = _root_demand;
+            _root_biomass += _root_demand;
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("ROOT_DEMAND", t, utils::COMPUTE)
+            << "RootDemand = " << _root_demand
+            << " ; RootBiomass = " << _root_biomass
+            << " ; phase = " << _phase
+            << " ; LastValue = " << _last_value
+            << " ; LeafDemandSum = " << _leaf_demand_sum
+            << " ; LeafDemandSum[-1] = " << _leaf_demand_sum_1
+            << " ; RootDemandCoef = " << _root_demand_coef
+            << " ; Grow = " << _grow;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
+        _leaf_demand_sum = 0;
         _root_demand = 0;
         _root_biomass = 0;
-        _last_value= 0;
+        _last_value = 0;
         _first_day = t;
     }
 

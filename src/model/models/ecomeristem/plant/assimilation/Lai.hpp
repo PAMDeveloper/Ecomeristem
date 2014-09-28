@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_PLANT_ASSIMILATION_LAI_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
@@ -50,11 +51,18 @@ public:
     bool check(double t) const
     { return is_ready(t, PAI) and is_ready(t, FCSTR); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _lai = _PAI * (_rolling_B + _rolling_A * _fcstr) * _density / 1.e4;
 
-        std::cout << "LAI=" << _lai << " " << _PAI << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LAI", t, utils::COMPUTE)
+            << "lai = " << _lai << " ; fcstr = " << _fcstr
+            << " ; PAI = " << _PAI << " ; rollingA = "
+            << _rolling_A << " ; rollingB = " << _rolling_B;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

@@ -23,6 +23,7 @@
  */
 
 #include <model/models/ecomeristem/plant/Model.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant {
 
@@ -108,21 +109,6 @@ void Model::compute(double t, bool /* update */)
         compute_culms(t);
         compute_root(t);
         compute_stock(t);
-
-        // std::cout << "ASSIMILATION: " << assimilation_model.is_stable(t)
-        //           << std::endl;
-        // std::cout << "WATER BALANCE: " << water_balance_model.is_stable(t)
-        //           << std::endl;
-        // std::cout << "THERMAL TIME: " << thermal_time_model.is_stable(t)
-        //           << std::endl;
-        // std::cout << "SLA: " << sla_model.is_stable(t) << std::endl;
-        // std::cout << "MANAGER: " << manager_model.is_stable(t) << std::endl;
-        // std::cout << "TILLER MANAGER: " << tiller_manager_model.is_stable(t)
-        //           << std::endl;
-        // std::cout << "CULMS: " << culms_is_stable(t) << std::endl;
-        // std::cout << "ROOT: " << root_model.is_stable(t) << std::endl;
-        // std::cout << "STOCK: " << stock_model.is_stable(t) << std::endl;
-
     } while (not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or
              not thermal_time_model.is_stable(t) or
@@ -222,12 +208,15 @@ void Model::compute_culms(double t)
     }
     _culm_is_computed = true;
 
-    std::cout << "LEAF_BIOMASS_SUM = " << _leaf_biomass_sum << std::endl;
-    std::cout << "LEAF_LAST_DEMAND_SUM = " << _leaf_last_demand_sum
-              << std::endl;
-    std::cout << "LEAF_DEMAND_SUM = " << _leaf_demand_sum << std::endl;
-    std::cout << "LEAF_BLADE_AREA_SUM = " << _leaf_blade_area_sum
-              << std::endl;
+#ifdef WITH_TRACE
+    utils::Trace::trace()
+        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << "LeafBiomassSum = " << _leaf_blade_area_sum
+        << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
+        << " ; LeafDemandSum = " << _leaf_demand_sum
+        << " ; LeafBlaseAreaSum = " << _leaf_blade_area_sum;
+    utils::Trace::trace().flush();
+#endif
 
 }
 
@@ -281,7 +270,12 @@ void Model::compute_root(double t)
     _demand_sum = _leaf_demand_sum +
         root_model.get(t, root::Model::ROOT_DEMAND);
 
-    // std::cout << "DEMAND_SUM = " << _demand_sum << std::endl;
+#ifdef WITH_TRACE
+    utils::Trace::trace()
+        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << "DemandSum = " << _demand_sum;
+    utils::Trace::trace().flush();
+#endif
 
 }
 

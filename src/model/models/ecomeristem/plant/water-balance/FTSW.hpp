@@ -26,14 +26,15 @@
 #define __ECOMERISTEM_PLANT_WATER_BALANCE_FTSW_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
 class Ftsw : public AbstractAtomicModel < Ftsw >
 {
 public:
-    static const unsigned int FTSW = 0;
-    static const unsigned int SWC = 0;
+    enum internals { FTSW };
+    enum externals { SWC };
 
     Ftsw()
     {
@@ -44,12 +45,18 @@ public:
     virtual ~Ftsw()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _ftsw = _swc_1 / RU1;
 
-        std::cout << "FTSW: " << _ftsw << " " << _swc << " " << _swc_1 << " "
-                  << RU1 << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("FTSW", t, utils::COMPUTE)
+            << "FTSW = " << _ftsw << " ; swc_1 = " << _swc_1
+            << " ; swc = " << _swc << " ; RU1 = "
+            << RU1;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

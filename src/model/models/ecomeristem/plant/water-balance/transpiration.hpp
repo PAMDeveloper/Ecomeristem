@@ -26,17 +26,15 @@
 #define __ECOMERISTEM_PLANT_WATER_BALANCE_TRANSPIRATION_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
 class Transpiration : public AbstractAtomicModel < Transpiration >
 {
 public:
-    static const unsigned int TRANSPIRATION = 0;
-    static const unsigned int ETP = 0;
-    static const unsigned int INTERC = 1;
-    static const unsigned int SWC = 2;
-    static const unsigned int CSTR = 3;
+    enum internals { TRANSPIRATION };
+    enum externals { ETP, INTERC, SWC, CSTR };
 
     Transpiration()
     {
@@ -53,14 +51,21 @@ public:
     bool check(double t) const
     { return is_ready(t, ETP) and is_ready(t, INTERC) and is_ready(t, CSTR); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _transpiration = std::min(_swc_1, (Kcpot * std::min(_etp, ETPmax) *
                                         _interc * _cstr) / density);
 
-        std::cout << "TRANSPIRATION: " << _transpiration << " "
-                  << _swc_1 << " " << _etp << " " << _interc << " " << _cstr
-                  << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("TRANSPIRATION", t, utils::COMPUTE)
+            << "transpiration = " << _transpiration << " ; SCW[-1] = "
+            << _swc_1 << " ; SWC = " << _swc << " ; ETP = "
+            << _etp << " ; Interc = " << _interc << " ; cstr = "
+            << _cstr << " ; Kcpot = " << Kcpot << " ; ETPmax = " << ETPmax
+            << " ; density = " << density;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

@@ -27,20 +27,15 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/thermal-time/ThermalTimeManager.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
 class Dd : public AbstractAtomicModel < Dd >
 {
 public:
-    static const unsigned int DD = 0;
-    static const unsigned int EDD = 1;
-    static const unsigned int BOOL_CROSSED_PLASTO = 2;
-
-    static const unsigned int DELTA_T = 0;
-    static const unsigned int PLASTO_DELAY = 1;
-    static const unsigned int PHASE = 2;
-    static const unsigned int GROW = 3;
+    enum internals { DD, EDD, BOOL_CROSSED_PLASTO };
+    enum externals { DELTA_T, PLASTO_DELAY, PHASE, GROW };
 
     Dd()
     {
@@ -84,9 +79,17 @@ public:
                 _EDD = _plasto - _DD_1;
             }
 
-            std::cout << "DD: " << _DD << " " << _BoolCrossedPlasto
-                      << " " << _plasto << " " << tempDD << " "
-                      << _DeltaT << " " << _PlastoDelay_1 << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("DD", t, utils::COMPUTE)
+            << "DD = " << _DD << " ; EDD = " << _EDD
+            << " ; DD[-1] = " << _DD_1 << " ; EDD[-1] = " << _EDD_1
+            << " ; DeltaT = " << _DeltaT << " ; PlastoDelay = "
+            << _PlastoDelay << " ; PlastoDelay[-1] = " << _PlastoDelay_1
+            << " ; BoolCrossedPlasto = " << _BoolCrossedPlasto
+            << " ; plasto = " << _plasto;
+        utils::Trace::trace().flush();
+#endif
 
        } else {
            _DD = _DD_1;
