@@ -58,22 +58,27 @@ public:
             and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
             and is_ready(t, DELETED_LEAF_BIOMASS); }
 
-     void compute(double t, bool /* update */)
+     void compute(double t, bool update)
     {
         double stock = 0;
 
+        if (not update) {
+            _stock_1 = _stock;
+        }
         if (_seed_res > 0) {
             if (_seed_res > _day_demand) {
-                stock = std::min(_reservoir_dispo, _supply);
+                stock = _stock_1 + std::min(_reservoir_dispo, _supply);
             } else {
-                stock = std::min(_reservoir_dispo,
-                                 _supply - (_day_demand - _seed_res_1));
+                stock = _stock_1 +
+                    std::min(_reservoir_dispo,
+                             _supply - (_day_demand - _seed_res_1));
             }
         } else {
-            stock = std::min(_reservoir_dispo, _supply - _day_demand);
+            stock = _stock_1 + std::min(_reservoir_dispo,
+                                        _supply - _day_demand);
         }
-        _stock += std::max(0., stock);
-        _deficit = 0.;
+        _stock = std::max(0., _deficit + stock);
+        _deficit = std::min(0., _deficit + stock);
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -90,6 +95,7 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
+        _stock_1 = 0;
         _stock = 0;
         _grow = 0;
         _deficit = 0;
@@ -106,6 +112,7 @@ public:
 private:
 // internal variables
     double _stock;
+    double _stock_1;
     double _grow;
     double _deficit;
 
