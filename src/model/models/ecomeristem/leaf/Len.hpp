@@ -52,17 +52,17 @@ public:
     virtual ~Len()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
         if (_first_day == t) {
             _len = _ler * _dd;
         } else {
-            if (_phase != plant::NOGROWTH) {
+            if (not update) {
                 _len_1 = _len;
+            }
+            if (_phase != plant::NOGROWTH) {
                 _len = std::min(_predim,
                                 _len_1 + _ler * std::min(_delta_t, _exp_time));
-            } else {
-                _len_1 = _len;
             }
         }
 

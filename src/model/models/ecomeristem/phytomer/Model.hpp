@@ -33,7 +33,8 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS,  LEAF_BLADE_AREA,  LEAF_DEMAND,
-                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY };
+                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY, REALLOC_BIOMASS,
+                     SENESC_DW };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      SLA, GROW, PHASE, STOP, TEST_IC };
@@ -49,6 +50,8 @@ public:
         internal(LEAF_LAST_DEMAND, &leaf_model, leaf::Model::LAST_DEMAND);
         internal(PREDIM, &leaf_model, leaf::Model::PREDIM);
         internal(PLASTO_DELAY, &leaf_model, leaf::Model::PLASTO_DELAY);
+        internal(REALLOC_BIOMASS, &leaf_model, leaf::Model::REALLOC_BIOMASS);
+        internal(SENESC_DW, &leaf_model, leaf::Model::SENESC_DW);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);

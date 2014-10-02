@@ -38,14 +38,8 @@ void ParametersReader::load(const std::string& id,
 
     load_simulation(id, connection, parameters);
     parameters.set < std::string >("BeginDate", "20-01-2010");
-    parameters.set < std::string >("EndDate", "23-01-2010");
+    parameters.set < std::string >("EndDate", "27-01-2010");
     // parameters.set < std::string >("EndDate", "08-05-2010");
-
-/*    std::cout << "Simulation:" << std::endl;
-    std::cout << " - begin = " << parameters.get < std::string >("BeginDate")
-              << std::endl;
-    std::cout << " - end = " << parameters.get < std::string >("EndDate")
-    << std::endl; */
 }
 
 void ParametersReader::load_data(pqxx::connection& connection,

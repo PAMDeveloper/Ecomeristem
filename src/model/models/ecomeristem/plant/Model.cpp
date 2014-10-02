@@ -160,6 +160,8 @@ void Model::compute_culms(double t)
     _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
     _leaf_blade_area_sum = 0;
+    _realloc_biomass_sum = 0;
+    _senesc_dw_sum = 0;
     while (it != culm_models.end()) {
         if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
             (*it)->put(t, culm::Model::DD,
@@ -213,7 +215,10 @@ void Model::compute_culms(double t)
         _leaf_demand_sum += (*it)->get(t, culm::Model::LEAF_DEMAND_SUM);
         _leaf_blade_area_sum +=
             (*it)->get(t, culm::Model::LEAF_BLADE_AREA_SUM);
-
+        _realloc_biomass_sum +=
+            (*it)->get(t, culm::Model::REALLOC_BIOMASS_SUM);
+        _senesc_dw_sum +=
+            (*it)->get(t, culm::Model::SENESC_DW_SUM);
         ++it;
     }
     _culm_is_computed = true;
@@ -224,7 +229,9 @@ void Model::compute_culms(double t)
         << "LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
         << " ; LeafDemandSum = " << _leaf_demand_sum
-        << " ; LeafBlaseAreaSum = " << _leaf_blade_area_sum;
+        << " ; LeafBlaseAreaSum = " << _leaf_blade_area_sum
+        << " ; ReallocBiomassSum = " << _realloc_biomass_sum
+        << " ; SenescDWSum = " << _senesc_dw_sum;
     utils::Trace::trace().flush();
 #endif
 
@@ -314,6 +321,8 @@ void Model::compute_stock(double t)
                     _leaf_biomass_sum);
     stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
                     _leaf_last_demand_sum);
+    stock_model.put(t, stock::Model::REALLOC_BIOMASS_SUM,
+                    _realloc_biomass_sum);
     //TODO
     stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0);
     stock_model(t);

@@ -32,7 +32,8 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
-                     LEAF_BLADE_AREA_SUM, LEAF_PREDIM };
+                     LEAF_BLADE_AREA_SUM, LEAF_PREDIM, REALLOC_BIOMASS_SUM,
+                     SENESC_DW_SUM };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STOP, TEST_IC };
 
@@ -43,6 +44,8 @@ public:
         internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
         internal(LEAF_BLADE_AREA_SUM, &Model::_leaf_blade_area_sum);
         internal(LEAF_PREDIM, &Model::_leaf_predim);
+        internal(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
+        internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);
@@ -103,6 +106,8 @@ public:
         _leaf_last_demand_sum = 0;
         _leaf_demand_sum = 0;
         _leaf_blade_area_sum = 0;
+        _realloc_biomass_sum = 0;
+        _senesc_dw_sum = 0;
         while (it != phytomer_models.end()) {
             (*it)->put(t, phytomer::Model::DD, _dd);
             (*it)->put(t, phytomer::Model::DELTA_T, _delta_t);
@@ -133,6 +138,10 @@ public:
             _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
             _leaf_blade_area_sum +=
                 (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
+            _realloc_biomass_sum +=
+                (*it)->get(t, phytomer::Model::REALLOC_BIOMASS);
+            _senesc_dw_sum +=
+                (*it)->get(t, phytomer::Model::SENESC_DW);
             // TODO
             if (i == 0) {
                 _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
@@ -175,6 +184,8 @@ private:
     double _leaf_demand_sum;
     double _leaf_blade_area_sum;
     double _leaf_predim;
+    double _realloc_biomass_sum;
+    double _senesc_dw_sum;
 
 // external variables
     double _dd;

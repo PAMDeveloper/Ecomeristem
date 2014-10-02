@@ -34,31 +34,55 @@ namespace ecomeristem { namespace leaf {
 class Biomass : public AbstractAtomicModel < Biomass >
 {
 public:
-    enum internals { BIOMASS };
-    enum externals { BLADE_AREA, SLA, GROW, PHASE };
+    enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW };
+    enum externals { BLADE_AREA, SLA, GROW, PHASE, TT, LIFE_SPAN };
 
-    Biomass()
+    Biomass(int index) : _index(index)
     {
         internal(BIOMASS, &Biomass::_biomass);
+        internal(REALLOC_BIOMASS, &Biomass::_realloc_biomass);
+        internal(SENESC_DW, &Biomass::_senesc_dw);
+
         external(BLADE_AREA, &Biomass::_blade_area);
         external(SLA, &Biomass::_sla);
         external(GROW, &Biomass::_grow);
         external(PHASE, &Biomass::_phase);
+        external(TT, &Biomass::_TT);
+        external(LIFE_SPAN, &Biomass::_life_span);
     }
 
     virtual ~Biomass()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
+        double _old_biomass = 0;
+
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
+            _realloc_biomass = 0;
             _sla_cste = _sla;
         } else {
-            if (!_lig and _phase != plant::NOGROWTH) {
-                _lig = _phase == plant::LIG;
-                // _biomass = (1. / _G_L) * _blade_area / _sla;
-                _biomass = (1. / _G_L) * _blade_area / _sla_cste;
+            if (_phase != plant::NOGROWTH) {
+                if (not _lig) {
+                    _lig = _phase == plant::LIG;
+                    _biomass = (1. / _G_L) * _blade_area / _sla_cste;
+                    _realloc_biomass = 0;
+                    _old_biomass = _biomass;
+                } else {
+                    if (not update) {
+                        _old_biomass = _corrected_biomass;
+                    }
+                    // TODO : strange !!!!
+                    // _biomass -= _blade_area * (1 + _G_L) *
+                    //     (_TT / _life_span) / _sla_cste;
+                    _corrected_biomass = _biomass - _blade_area * (1 + _G_L) *
+                        (_TT / (_life_span - _TT)) / _sla_cste;
+                    _realloc_biomass = (_old_biomass - _corrected_biomass) *
+                        _realocationCoeff;
+                    _senesc_dw = (_old_biomass - _corrected_biomass) *
+                        (1 - _realocationCoeff);
+                }
             }
         }
 
@@ -66,10 +90,17 @@ public:
         utils::Trace::trace()
             << utils::TraceElement("LEAF_BIOMASS", t, utils::COMPUTE)
             << "Biomass = " << _biomass
+            << " ; correctedBiomass = " << _corrected_biomass
+            << " ; index = " << _index
             << " ; phase = " << _phase
             << " ; BladeArea = " << _blade_area
-            << " ; SLA = " << _sla
-            << " ; G_L = " << _G_L;
+            << " ; SLA = " << _sla_cste
+            << " ; G_L = " << _G_L
+            << " ; TT = " << _TT
+            << " ; life_span = " << _life_span
+            << " ; old_biomass = " << _old_biomass
+            << " ; realloc_biomass = " << _realloc_biomass
+            << " ; senesc_dw = " << _senesc_dw;
         utils::Trace::trace().flush();
 #endif
 
@@ -79,19 +110,26 @@ public:
               const model::models::ModelParameters& parameters)
     {
         _G_L = parameters.get < double >("G_L");
+        _realocationCoeff = parameters.get < double >("realocationCoeff");
         _first_day = t;
         _lig = false;
         _biomass = 0;
+        _corrected_biomass = 0;
     }
 
 private:
 // parameters
     double _G_L;
+    double _realocationCoeff;
 
 // internal variable
     double _biomass;
+    double _corrected_biomass;
+    double _realloc_biomass;
+    double _senesc_dw;
     double _first_day;
     bool _lig;
+    int _index;
 
 // external variables
     double _blade_area;
@@ -99,6 +137,8 @@ private:
     double _sla_cste;
     double _grow;
     double _phase;
+    double _life_span;
+    double _TT;
 };
 
 } } // namespace ecomeristem leaf

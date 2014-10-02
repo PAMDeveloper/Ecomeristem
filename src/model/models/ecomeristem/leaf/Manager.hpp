@@ -77,13 +77,18 @@ public:
     {
         _phase = plant::INIT;
         _phase_ = plant::INIT;
+        _predim_init = false;
     }
 
     void put(double t, unsigned int index, double value)
     {
+        if (index == PREDIM) {
+            _predim_init = true;
+        }
+
         AbstractAtomicModel < Manager >::put(t, index, value);
         if (_phase_ == plant::INIT or
-            (is_ready(t, LEN) and is_ready(t, PREDIM))) {
+            (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }
     }
@@ -91,6 +96,7 @@ public:
 private:
 // internal variable
     double _phase_;
+    bool _predim_init;
 
 // external variables
     double _phase;

@@ -35,7 +35,7 @@ class Stock : public AbstractAtomicModel < Stock >
 public:
     enum internals { STOCK, GROW, DEFICIT };
     enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
-                     DELETED_LEAF_BIOMASS };
+                     DELETED_LEAF_BIOMASS, REALLOC_BIOMASS_SUM };
 
     Stock()
     {
@@ -48,6 +48,7 @@ public:
         external(SEED_RES, &Stock::_seed_res);
         external(SUPPLY, &Stock::_supply);
         external(DELETED_LEAF_BIOMASS, &Stock::_deleted_leaf_biomass);
+        external(REALLOC_BIOMASS_SUM, &Stock::_realloc_biomass_sum);
     }
 
     virtual ~Stock()
@@ -56,7 +57,8 @@ public:
     bool check(double t) const
     { return is_ready(t, DAY_DEMAND) and is_ready(t,RESERVOIR_DISPO)
             and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
-            and is_ready(t, DELETED_LEAF_BIOMASS); }
+            and is_ready(t, DELETED_LEAF_BIOMASS)
+            and is_ready(t, REALLOC_BIOMASS_SUM); }
 
      void compute(double t, bool update)
     {
@@ -80,13 +82,22 @@ public:
         _stock = std::max(0., _deficit + stock);
         _deficit = std::min(0., _deficit + stock);
 
+        if (_realloc_biomass_sum > 0) {
+            _stock += _realloc_biomass_sum;
+        }
+
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("STOCK", t, utils::COMPUTE)
-            << "stock = " << _stock << " ; SeedRes = " << _seed_res
-            << " ; SeedRes[-1] = " << _seed_res_1 << " ; deficit = "
-            << _deficit << " ; ReservoirDispo = " << _reservoir_dispo
-            << " ; Supply = " << _supply << " ; DayDemand = " << _day_demand;
+            << "stock = " << _stock
+            << " ; Stock[-1] = " << _stock_1
+            << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[-1] = " << _seed_res_1
+            << " ; deficit = " << _deficit
+            << " ; ReservoirDispo = " << _reservoir_dispo
+            << " ; Supply = " << _supply
+            << " ; DayDemand = " << _day_demand
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
         utils::Trace::trace().flush();
 #endif
 
@@ -123,6 +134,7 @@ private:
     double _seed_res_1;
     double _supply;
     double _deleted_leaf_biomass;
+    double _realloc_biomass_sum;
 };
 
 } } } // namespace ecomeristem plant stock

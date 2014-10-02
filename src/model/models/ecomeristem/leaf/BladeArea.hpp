@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_LEAF_BLADE_AREA_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <model/models/ecomeristem/plant/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -34,13 +35,16 @@ class BladeArea : public AbstractAtomicModel < BladeArea >
 {
 public:
     enum internals { BLADE_AREA };
-    enum externals { LEN, WIDTH };
+    enum externals { LEN, WIDTH, PHASE, LIFE_SPAN, TT };
 
-    BladeArea()
+    BladeArea(int index) : _index(index)
     {
         internal(BLADE_AREA, &BladeArea::_blade_area);
         external(LEN, &BladeArea::_len);
         external(WIDTH, &BladeArea::_width);
+        external(PHASE, &BladeArea::_phase);
+        external(LIFE_SPAN, &BladeArea::_life_span);
+        external(TT, &BladeArea::_TT);
     }
 
     virtual ~BladeArea()
@@ -49,15 +53,26 @@ public:
     void compute(double t, bool /* update */)
     {
         _blade_area = _len * _width * _allo_area / _LL_BL;
+        if (not _lig) {
+            _lig = _phase == plant::LIG;
+        } else {
+            _blade_area *=  1 - _TT / _life_span;
+            if (_blade_area < 0) {
+                _blade_area = 0;
+            }
+        }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("LEAF_BLADE_AREA", t, utils::COMPUTE)
             << "BladeArea = " << _blade_area
+            << " ; index = " << _index
             << " ; Len = " << _len
             << " ; Width = " << _width
             << " ; allo_area = " << _allo_area
-            << " ; LL_BL = " << _LL_BL;
+            << " ; LL_BL = " << _LL_BL
+            << " ; TT = " << _TT
+            << " ; life_span = " << _life_span;
         utils::Trace::trace().flush();
 #endif
 
@@ -69,6 +84,8 @@ public:
         _allo_area = parameters.get < double >("allo_area");
         _LL_BL = parameters.get < double >("LL_BL_init");
         _width = 0;
+        _phase = plant::INITIAL;
+        _lig = false;
     }
 
 private:
@@ -78,10 +95,16 @@ private:
 
 // internal variable
     double _blade_area;
+    double _blade_area_1;
+    bool _lig;
+    int _index;
 
 // external variables
     double _len;
     double _width;
+    double _phase;
+    double _life_span;
+    double _TT;
 };
 
 } } // namespace ecomeristem leaf

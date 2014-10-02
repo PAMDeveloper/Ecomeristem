@@ -26,6 +26,7 @@
 #define __ECOMERISTEM_LEAF_WIDTH_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -44,12 +45,19 @@ public:
     virtual ~Width()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         _width = _len * _WLR / _LL_BL;
 
-        // std::cout << "WIDTH: " << _width << " " << _len << " "
-        //           << _WLR << " " << _LL_BL << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_LEN", t, utils::COMPUTE)
+            << "Width = " << _width
+            << " ; len = " << _len
+            << " ; WLR = " << _WLR
+            << " ; LL_BL = " << _LL_BL;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

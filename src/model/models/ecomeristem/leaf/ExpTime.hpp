@@ -68,7 +68,7 @@ public:
             _exp_time = _predim / _ler;
             _is_first_leaf = false;
         } else {
-            _exp_time = (_predim - _len) / _ler;
+            _exp_time = (_predim - _len_1) / _ler;
         }
 
 #ifdef WITH_TRACE

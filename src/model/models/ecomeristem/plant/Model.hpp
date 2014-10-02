@@ -76,6 +76,8 @@ private:
     double _leaf_blade_area_sum;
     double _demand_sum;
     bool _culm_is_computed;
+    double _realloc_biomass_sum;
+    double _senesc_dw_sum;
 
 // external variables
     double _etp;

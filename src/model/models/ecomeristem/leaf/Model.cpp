@@ -30,9 +30,12 @@ namespace ecomeristem { namespace leaf {
 Model::Model(int index, bool is_on_mainstem) :
     _index(index),
     _is_first_leaf(_index == 1), _is_on_mainstem(is_on_mainstem),
+    biomass_model(index),
     exp_time_model(_is_first_leaf, _is_on_mainstem),
     predim_model(_is_first_leaf, _is_on_mainstem),
-    ler_model(index)
+    blade_area_model(index),
+    ler_model(index),
+    life_span_model(index)
 {
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
     internal(BLADE_AREA, &blade_area_model, BladeArea::BLADE_AREA);
@@ -40,6 +43,8 @@ Model::Model(int index, bool is_on_mainstem) :
     internal(LAST_DEMAND, &last_demand_model, LastDemand::LAST_DEMAND);
     internal(PREDIM, &predim_model, Predim::PREDIM);
     internal(PLASTO_DELAY, &plasto_delay_model, PlastoDelay::PLASTO_DELAY);
+    internal(REALLOC_BIOMASS, &biomass_model, Biomass::REALLOC_BIOMASS);
+    internal(SENESC_DW, &biomass_model, Biomass::SENESC_DW);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);
@@ -72,10 +77,14 @@ void Model::init(double t,
     leaf_demand_model.init(t, parameters);
     manager_model.init(t, parameters);
     plasto_delay_model.init(t, parameters);
+    life_span_model.init(t, parameters);
+    thermal_time_since_ligulation_model.init(t, parameters);
 }
 
 void Model::compute(double t, bool /* update */)
 {
+    life_span_model(t);
+
     predim_model.put(t, Predim::FCSTR, _fcstr);
     predim_model.put(t, Predim::PREDIM_LEAF_ON_MAINSTEM,
                      _predim_leaf_on_mainstem);
@@ -139,9 +148,25 @@ void Model::compute(double t, bool /* update */)
     width_model.put(t, Width::LEN, len_model.get(t, Len::LEN));
     width_model(t);
 
+    thermal_time_since_ligulation_model.put(
+        t, ThermalTimeSinceLigulation::DELTA_T, _delta_t);
+    thermal_time_since_ligulation_model.put(
+        t, ThermalTimeSinceLigulation::PHASE,
+        manager_model.get(t, Manager::LEAF_PHASE));
+    thermal_time_since_ligulation_model(t);
+
     blade_area_model.put(t, BladeArea::LEN, len_model.get(t, Len::LEN));
     blade_area_model.put(t, BladeArea::WIDTH,
                          width_model.get(t, Width::WIDTH));
+    blade_area_model.put(
+        t, BladeArea::PHASE,
+        manager_model.get(t, Manager::LEAF_PHASE));
+    blade_area_model.put(
+        t, BladeArea::TT,
+        thermal_time_since_ligulation_model.get(
+            t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
+    blade_area_model.put(t, BladeArea::LIFE_SPAN,
+                         life_span_model.get(t, LifeSpan::LIFE_SPAN));
     blade_area_model(t);
 
     biomass_model.put(t, Biomass::GROW, _grow);
@@ -150,6 +175,12 @@ void Model::compute(double t, bool /* update */)
                       manager_model.get(t, Manager::LEAF_PHASE));
     biomass_model.put(t, Biomass::BLADE_AREA,
                       blade_area_model.get(t, BladeArea::BLADE_AREA));
+    biomass_model.put(
+        t, Biomass::TT,
+        thermal_time_since_ligulation_model.get(
+            t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
+    biomass_model.put(t, Biomass::LIFE_SPAN,
+                         life_span_model.get(t, LifeSpan::LIFE_SPAN));
     biomass_model(t);
 
     leaf_demand_model.put(t, LeafDemand::GROW, _grow);

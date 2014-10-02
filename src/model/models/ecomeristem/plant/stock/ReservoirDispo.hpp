@@ -80,6 +80,15 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("RESERVOIR_DISPO", t, utils::PUT)
+            << "index  = " << index
+            << " ; value = " << value;
+        utils::Trace::trace().flush();
+#endif
+
         if (index == STOCK and !is_ready(t, STOCK)) {
             _stock_1 = _stock;
         }

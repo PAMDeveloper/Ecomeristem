@@ -47,6 +47,7 @@ Model::Model()
     external(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
     external(DELETED_LEAF_BIOMASS, &Model::_deleted_leaf_biomass);
     external(PHASE, &Model::_phase);
+    external(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
 }
 
 void Model::init(double t, const model::models::ModelParameters& parameters)
@@ -119,6 +120,7 @@ void Model::compute_stock(double t)
     stock_model.put(t, Stock::RESERVOIR_DISPO,
                     reservoir_dispo_model.get(
                         t, ReservoirDispo::RESERVOIR_DISPO));
+    stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
     stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
     stock_model(t);
     if (stock_model.is_computed(t, Stock::GROW)) {

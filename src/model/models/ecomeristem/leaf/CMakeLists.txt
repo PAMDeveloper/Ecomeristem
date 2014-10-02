@@ -3,9 +3,10 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_LEAF_HPP Biomass.hpp ExpTime.hpp Len.hpp Predim.hpp
+SET(ECOMERISTEM_LEAF_HPP Biomass.hpp ExpTime.hpp Len.hpp LifeSpan.hpp Predim.hpp
   Width.hpp BladeArea.hpp LastDemand.hpp LER.hpp Model.hpp ReductionLER.hpp
-  LeafDemand.hpp Manager.hpp PlastoDelay.hpp TimeFromApp.hpp)
+  LeafDemand.hpp Manager.hpp PlastoDelay.hpp TimeFromApp.hpp
+  ThermalTimeSinceLigulation.hpp)
 
 SET(ECOMERISTEM_LEAF_CPP Model.cpp)
 

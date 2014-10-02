@@ -215,14 +215,14 @@ TEST_CASE("Stock_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "SUPPLY");
-    check_values("stock_out.txt",
-                 utils::DateTime::toJulianDayNumber(begin),
-                 utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "STOCK");
     check_values("reservoirDispo_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "RESERVOIR_DISPO");
+    check_values("stock_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "STOCK");
     check_values("deficit_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,

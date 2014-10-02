@@ -37,6 +37,8 @@
 #include <model/models/ecomeristem/leaf/LeafDemand.hpp>
 #include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <model/models/ecomeristem/leaf/PlastoDelay.hpp>
+#include <model/models/ecomeristem/leaf/LifeSpan.hpp>
+#include <model/models/ecomeristem/leaf/ThermalTimeSinceLigulation.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -44,7 +46,7 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { BIOMASS, BLADE_AREA, DEMAND, LAST_DEMAND, PREDIM,
-                     PLASTO_DELAY };
+                     PLASTO_DELAY, REALLOC_BIOMASS, SENESC_DW };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      SLA, GROW, PHASE, STOP, TEST_IC };
@@ -78,6 +80,8 @@ private:
     LeafDemand leaf_demand_model;
     Manager manager_model;
     PlastoDelay plasto_delay_model;
+    LifeSpan life_span_model;
+    ThermalTimeSinceLigulation thermal_time_since_ligulation_model;
 
 // external variables
     double _dd;
