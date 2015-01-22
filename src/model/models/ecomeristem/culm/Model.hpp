@@ -115,13 +115,27 @@ public:
             (*it)->put(t, phytomer::Model::FCSTR, _fcstr);
             (*it)->put(t, phytomer::Model::P, _p);
             (*it)->put(t, phytomer::Model::PHENO_STAGE, _pheno_stage);
-            (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
+            if (_is_first_culm) {
+                if (i == 0) {
+                    (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM, 0);
+                } else {
+                    if ((*previous_it)->is_stable(t)) {
+                        (*it)->put(
+                            t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
+                            (*previous_it)->get(t, phytomer::Model::PREDIM));
+                    }
+                }
+            } else {
+                (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
                 _predim_leaf_on_mainstem);
+            }
             if (i == 0) {
                 (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
             } else {
-                (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
-                           (*previous_it)->get(t, phytomer::Model::PREDIM));
+                if ((*previous_it)->is_stable(t)) {
+                    (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
+                               (*previous_it)->get(t, phytomer::Model::PREDIM));
+                }
             }
             (*it)->put(t, phytomer::Model::SLA, _sla);
             (*it)->put(t, phytomer::Model::GROW, _grow);

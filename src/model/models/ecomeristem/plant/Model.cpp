@@ -108,6 +108,8 @@ void Model::compute(double t, bool /* update */)
         compute_manager(t);
         compute_tiller(t);
         compute_culms(t);
+        //TODO: c'est genant !
+        compute_assimilation(t);
         compute_root(t);
         compute_stock(t);
         compute_manager(t);
@@ -132,7 +134,7 @@ void Model::compute_assimilation(double t)
                                water_balance_model.get(t,
                                    water_balance::Model::FCSTR));
     };
-    //TODO
+//TODO
     assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS, 0);
     if (_culm_is_computed) {
         assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
@@ -229,7 +231,7 @@ void Model::compute_culms(double t)
         << "LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
         << " ; LeafDemandSum = " << _leaf_demand_sum
-        << " ; LeafBlaseAreaSum = " << _leaf_blade_area_sum
+        << " ; LeafBladeAreaSum = " << _leaf_blade_area_sum
         << " ; ReallocBiomassSum = " << _realloc_biomass_sum
         << " ; SenescDWSum = " << _senesc_dw_sum;
     utils::Trace::trace().flush();
