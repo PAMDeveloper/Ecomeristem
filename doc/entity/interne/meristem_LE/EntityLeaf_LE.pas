@@ -326,6 +326,9 @@ begin
   attributeTmp := TAttributeTmp.Create('oldCorrectedBiomass');
   entityLeaf.AddTAttribute(attributeTmp);
 
+  attributeTmp := TAttributeTmp.Create('dailySenescedLeafBiomass');
+  entityLeaf.AddTAttribute(attributeTmp);  
+
   /////////////////////////////////////////////////////////////////////////////
   // Connections internes des ports
   /////////////////////////////////////////////////////////////////////////////

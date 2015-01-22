@@ -1506,7 +1506,7 @@ begin
       begin
         if (currentTEntityInstance.GetTAttribute('stockIN') <> nil) then
         begin
-          entityContribution := (currentTEntityInstance.GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample().value;
+          entityContribution := currentTEntityInstance.GetTAttribute('stockIN').GetCurrentSample().value;
           SRwriteln(' contribution de ' + currentTEntityInstance.GetName() + ' : ' + floattostr(entityContribution));
           total := total + entityContribution;
         end;

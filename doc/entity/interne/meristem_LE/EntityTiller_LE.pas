@@ -279,6 +279,9 @@ begin
   attributeTmp := TAttributeTmp.Create('PAI');
   entityTiller.AddTAttribute(attributeTmp);
 
+  attributeTmp := TAttributeTmp.Create('sumOfDailySenescedLeafBiomassTiller');
+  entityTiller.AddTAttribute(attributeTmp);
+
   // ---------------------------------------------------
   // connection port <-> attribut pour 'EntityTiller'
   // ---------------------------------------------------
@@ -354,6 +357,36 @@ begin
   // connection port <-> attribut pour 'sumOfTillerLeafBiomass'
   XprocTmp.ExternalConnect(['sumOfTillerLeafBiomass']);
 
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm1',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10008);
+  XprocTmp.SetActiveState(1);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
+
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm2',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10009);
+  XprocTmp.SetActiveState(2);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
+
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm3',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10010);
+  XprocTmp.SetActiveState(3);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
+
 
 
   //---------------------------------------//
@@ -362,7 +395,7 @@ begin
 
   XprocTmp := TExtraProcInstanceInternal.Create('sumOfBladeAreaOnTillerInLeafRec4', SumOfBladeAreaOnTillerInLeafRecDyn,['total', 'kOut']);
   XprocTmp.SetExeStep(1); // pas journalier
-  XprocTmp.SetExeOrder(10010);
+  XprocTmp.SetExeOrder(10015);
   XprocTmp.SetActiveState(4);
   entityTiller.AddTInstance(XprocTmp);
 
@@ -511,6 +544,17 @@ begin
 
   // connection port <-> attribut pour 'supply_tiller' 'demand_tiller' 'reservoir_dispo_tiller' 'surplus_tiller'
   procTmp.ExternalConnect(['supply_tiller', 'demandOfNonINTiller', 'reservoir_dispo_tiller', 'surplus_tiller']);
+
+
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm4',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10160);
+  XprocTmp.SetActiveState(4);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
 
   //-------------------------------------------//
   // procedure a l etat 5, c est a dire PRE_PI //
@@ -668,6 +712,16 @@ begin
   // connection port <-> attribut pour 'supply_tiller' 'demand_tiller' 'reservoir_dispo_tiller' 'surplus_tiller'
   procTmp.ExternalConnect(['supply_tiller', 'demandOfNonINTiller', 'reservoir_dispo_tiller', 'surplus_tiller']);
 
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm5',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10360);
+  XprocTmp.SetActiveState(5);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
+
   //--------------------------------------------//
   // procedure a l etat 6, c est a dire PRE_FLO //
   //--------------------------------------------//
@@ -823,6 +877,16 @@ begin
 
   // connection port <-> attribut pour 'supply_tiller' 'demand_tiller' 'reservoir_dispo_tiller' 'surplus_tiller'
   procTmp.ExternalConnect(['supply_tiller', 'demandOfNonINTiller', 'reservoir_dispo_tiller', 'surplus_tiller']);
+
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm6',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10560);
+  XprocTmp.SetActiveState(6);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
 
   //----------------------------------------//
   // procedure a l etat 7, c est a dire FLO //
@@ -980,6 +1044,16 @@ begin
   // connection port <-> attribut pour 'supply_tiller' 'demand_tiller' 'reservoir_dispo_tiller' 'surplus_tiller'
   procTmp.ExternalConnect(['supply_tiller', 'demandOfNonINTiller', 'reservoir_dispo_tiller', 'surplus_tiller']);
 
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm7',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10760);
+  XprocTmp.SetActiveState(7);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
+
   //------------------------------------------//
   // procedure a l etat 9, c est a dire ELONG //
   //------------------------------------------//
@@ -1135,6 +1209,16 @@ begin
 
   // connection port <-> attribut pour 'supply_tiller' 'demand_tiller' 'reservoir_dispo_tiller' 'surplus_tiller'
   procTmp.ExternalConnect(['supply_tiller', 'demandOfNonINTiller', 'reservoir_dispo_tiller', 'surplus_tiller']);
+
+  // calcule de la somme des biomasses liees a la senescence des feuille sur la talle
+  XprocTmp := TExtraProcInstanceInternal.Create('SumOfDailySenescedLeafBiomassOnCulm9',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomassTiller', 'kOut']);
+  XprocTmp.SetExeStep(1); // pas journalier
+  XprocTmp.SetExeOrder(10960);
+  XprocTmp.SetActiveState(9);
+  entityTiller.AddTInstance(XprocTmp);
+
+  // connection port <-> attribut pour 'sumOfDailySenescedLeafBiomassTiller'
+  XprocTmp.ExternalConnect(['sumOfDailySenescedLeafBiomassTiller']);
 
 
   // retourne la talle créée

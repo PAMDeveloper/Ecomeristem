@@ -179,6 +179,7 @@ var
    stock : Double;
    newStateStr, oldStateStr : string;
 begin
+
   case state of
     VEGETATIVE :
       begin
@@ -607,8 +608,16 @@ begin
     TRANSITION :
       begin
         oldStateStr := 'TRANSITION';
-        newState := REALIZATION;
-        newStateStr := 'REALIZATION';
+        if (stock = 0) then
+        begin
+          newState := REALIZATION_NOSTOCK;
+          newStateStr := 'REALIZATION_NOSTOCK';
+        end
+        else
+        begin
+          newState := REALIZATION;
+          newStateStr := 'REALIZATION';
+        end;
       end;
 
     // ETAT REALIZATION
@@ -4010,6 +4019,11 @@ begin
             newStateStr := 'PRE_FLO';
             StorePhenostageAtPre_Flo(instance, date, n);
           end;
+        end
+        else
+        begin
+          newState := PI;
+          newStateStr := 'PI';
         end;
       end;
     end;
@@ -4161,18 +4175,25 @@ begin
             begin
               if (n = nbleaf_pi) then
               begin
-                MeristemManagerUpdatePlasto(instance);
+                SRwriteln('n = nbleaf_pi, on passe a PI');
                 MeristemManagerPhytomerLeafCreation(instance, date, n, false);
                 MeristemManagerPhytomerInternodeCreation(instance, date, true, n , stock);
-                MeristemManagerStartInternodeElongation(instance, date, Trunc(n), false);
+                MeristemManagerStartInternodeElongation(instance, date, Trunc(n), true);
                 MeristemManagerPhytomerPanicleCreation(instance, date);
                 MeristemManagerPhytomerPeduncleCreation(instance, date);
+                MeristemManagerPhytomerPanicleActivation(instance);
                 TillersTransitionToPre_PI_LE(instance);
+                StoreThermalTimeAtPI(instance, date);
                 RootTransitionToPI(instance);
                 newState := PI;
                 newStateStr := 'PI';
               end;
             end;
+          end
+          else
+          begin
+            newState := ELONG;
+            newStateStr := 'ELONG';
           end;
         end;
       end;
@@ -4213,15 +4234,15 @@ begin
             begin
               if (boolCrossedPlasto >= 0) then
               begin
-                MeristemManagerUpdatePlasto(instance);
+                SRwriteln('n = nbleaf_pi, on passe a PI');
                 MeristemManagerPhytomerLeafCreation(instance, date, n, false);
                 MeristemManagerPhytomerInternodeCreation(instance, date, true, n , stock);
-                TillersStockIndividualization(instance, date);
-                MeristemManagerStartInternodeElongation(instance, date, Trunc(n), false);
+                MeristemManagerStartInternodeElongation(instance, date, Trunc(n), true);
                 MeristemManagerPhytomerPanicleCreation(instance, date);
-                MeristemManagerPhytomerPanicleActivation(instance);
                 MeristemManagerPhytomerPeduncleCreation(instance, date);
+                MeristemManagerPhytomerPanicleActivation(instance);
                 TillersTransitionToPre_PI_LE(instance);
+                StoreThermalTimeAtPI(instance, date);
                 RootTransitionToPI(instance);
                 newState := PI;
                 newStateStr := 'PI';
@@ -4591,7 +4612,7 @@ begin
   end;
   if (minName <> '') then
   begin
-    //SRwriteln('last ligulated leaf name : ' + minName);
+    SRwriteln('last ligulated leaf name : ' + minName);
     if (instance.GetCategory() <> 'Tiller') then
     begin
       //SRwriteln('Sur brin maitre');
@@ -4828,17 +4849,57 @@ const
   TRANSITION_TO_FLO = 2;
   FLO = 3;
   ENDFILLING = 12;
+  PI_NOSTOCK = 11;
+  FLO_NOSTOCK = 13;
+
   VEGETATIVE = 2000;
 var
   newState : Integer;
   oldStateStr, newStateStr : string;
+  name : string;
+  stock : Double;
 begin
+  name := instance.GetFather().GetName();
+  if (AnsiContainsStr(name, 'T')) then
+  begin
+    SRwriteln('Sur talle');
+    stock := (instance.GetFather().GetFather() as TEntityInstance).GetTAttribute('stock').GetSample(date).value;
+  end
+  else
+  begin
+    SRwriteln('Mainstem');
+    stock := (instance.GetFather() as TEntityInstance).GetTAttribute('stock').GetSample(date).value;
+  end;
+  SRwriteln('stock --> ' + FloatToStr(stock));
   case state of
     PI :
       begin
         oldStateStr := 'PI';
-        newState := PI;
-        newStateStr := 'PI';
+        if (stock > 0) then
+        begin
+          newState := PI;
+          newStateStr := 'PI';
+        end
+        else
+        begin
+          newState := PI_NOSTOCK;
+          newStateStr := 'PI_NOSTOCK';
+        end;
+      end;
+
+    PI_NOSTOCK :
+      begin
+        oldStateStr := 'PI_NOSTOCK';
+        if (stock > 0) then
+        begin
+          newState := PI;
+          newStateStr := 'PI';
+        end
+        else
+        begin
+          newState := PI_NOSTOCK;
+          newStateStr := 'PI_NOSTOCK';
+        end;
       end;
 
     TRANSITION_TO_FLO :
@@ -4851,8 +4912,31 @@ begin
     FLO :
       begin
         oldStateStr := 'FLO';
-        newState := FLO;
-        newStateStr := 'FLO';
+        if (stock > 0) then
+        begin
+          newState := FLO;
+          newStateStr := 'FLO';
+        end
+        else
+        begin
+          newState := FLO_NOSTOCK;
+          newStateStr := 'FLO_NOSTOCK';
+        end;
+      end;
+
+    FLO_NOSTOCK :
+      begin
+        oldStateStr := 'FLO_NOSTOCK';
+        if (stock > 0) then
+        begin
+          newState := FLO;
+          newStateStr := 'FLO';
+        end
+        else
+        begin
+          newState := FLO_NOSTOCK;
+          newStateStr := 'FLO_NOSTOCK';
+        end;
       end;
 
     VEGETATIVE :
@@ -4878,17 +4962,34 @@ const
   PREDIM = 1;
   TRANSITION = 10;
   REALIZATION = 2;
+  REALIZATION_NOSTOCK = 3;
   MATURITY = 4;
+  MATURITY_NOSTOCK = 5;
   ENDFILLING = 12;
   UNKNOWN = -1;
   DEAD = 1000;
   FLO = 500;
+  FLO_NOSTOCK = 501;
   VEGETATIVE = 2000;
 var
    newState : Integer;
    stockPeduncle : Double;
    newStateStr, oldStateStr : string;
+   name : string;
+   stock : Double;
 begin
+  name := instance.GetFather().GetName();
+  if (AnsiContainsStr(name, 'T')) then
+  begin
+    SRwriteln('Sur talle');
+    stock := (instance.GetFather().GetFather() as TEntityInstance).GetTAttribute('stock').GetSample(date).value
+  end
+  else
+  begin
+    SRwriteln('Mainstem');
+    stock := (instance.GetFather() as TEntityInstance).GetTAttribute('stock').GetSample(date).value
+  end;
+  SRwriteln('stock --> ' + FloatToStr(stock));
   case state of
     // ETAT PREDIMENSIONNEMENT :
     // -----------------------
@@ -4913,8 +5014,31 @@ begin
     REALIZATION :
       begin
         oldStateStr := 'REALIZATION';
-        newState := REALIZATION;
-        newStateStr := 'REALIZATION';
+        if (stock > 0) then
+        begin
+          newState := REALIZATION;
+          newStateStr := 'REALIZATION';
+        end
+        else
+        begin
+          newState := REALIZATION_NOSTOCK;
+          newStateStr := 'REALIZATION_NOSTOCK';
+        end;
+      end;
+
+    REALIZATION_NOSTOCK :
+      begin
+        oldStateStr := 'REALIZATION_NOSTOCK';
+        if (stock > 0) then
+        begin
+          newState := REALIZATION;
+          newStateStr := 'REALIZATION';
+        end
+        else
+        begin
+          newState := REALIZATION_NOSTOCK;
+          newStateStr := 'REALIZATION_NOSTOCK';
+        end;
       end;
 
     // ETAT LIGULE
@@ -4922,9 +5046,33 @@ begin
     MATURITY :
       begin
         oldStateStr := 'MATURITY';
-        newState := MATURITY;
-        newStateStr := 'MATURITY';
+        if (stock > 0) then
+        begin
+          newState := MATURITY;
+          newStateStr := 'MATURITY';
+        end
+        else
+        begin
+          newState := MATURITY_NOSTOCK;
+          newStateStr := 'MATURITY_NOSTOCK';
+        end;
       end;
+
+    MATURITY_NOSTOCK :
+      begin
+        oldStateStr := 'MATURITY_NOSTOCK';
+        if (stock > 0) then
+        begin
+          newState := MATURITY;
+          newStateStr := 'MATURITY';
+        end
+        else
+        begin
+          newState := MATURITY_NOSTOCK;
+          newStateStr := 'MATURITY_NOSTOCK';
+        end;
+      end;
+
 
     DEAD :
       begin
@@ -4936,8 +5084,31 @@ begin
     FLO :
       begin
         oldStateStr := 'FLO';
-        newState := FLO;
-        newStateStr := 'FLO';
+        if (stock > 0) then
+        begin
+          newState := FLO;
+          newStateStr := 'FLO';
+        end
+        else
+        begin
+          newState := FLO_NOSTOCK;
+          newStateStr := 'FLO_NOSTOCK';
+        end;
+      end;
+
+    FLO_NOSTOCK :
+      begin
+        oldStateStr := 'FLO_NOSTOCK';
+        if (stock > 0) then
+        begin
+          newState := FLO;
+          newStateStr := 'FLO';
+        end
+        else
+        begin
+          newState := FLO_NOSTOCK;
+          newStateStr := 'FLO_NOSTOCK';
+        end;
       end;
 
     VEGETATIVE :

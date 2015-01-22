@@ -234,7 +234,7 @@ procedure ComputeStockInternodeOnCulms_LE(var instance : TInstance);
 procedure ComputeNbActiveInternodesOnMainstem(var instance : TInstance; var nbActiveInternodesOnMainstem : Double);
 procedure ComputeStockMainstemOutput(var instance : TInstance; var stockMainstem : Double);
 procedure SumOfInternodeLengthOnMainstem(var instance : TInstance; var internodeLengthOnMainstem : Double);
-procedure ComputeFirstLastExpandedInternodeDiameterMainstem(var instance : TInstance; var firstDiameter, lastDiameter : Double);
+procedure ComputeFirstLastExpandedInternodeDiameterMainstem(var instance : TInstance; var firstDiameter, lastDiameter, lastLength, lastRank : Double);
 procedure ComputeStockInternodeMainstem(var instance : TInstance; var stock : Double);
 procedure ComputeStockInternodeTillers(var instance : TInstance; var stock : Double);
 procedure SetAliveToDead(var instance : TInstance; var alive : Double);
@@ -256,7 +256,7 @@ procedure ComputePeduncleDiameterPredim(var instance : TInstance; const peduncle
 procedure ComputeStructLeaf(var instance : TInstance; var structLeaf : Double);
 procedure ComputeSumOfBiomass(var instance : TInstance; var sumOfBiomass : Double);
 procedure ComputeWeightPanicle(var instance : TInstance; var weightPanicle, weightPanicleMainstem : Double);
-
+procedure SumOfDailySenescedLeafBiomassOnCulm(var instance : TInstance; var sumOfDailySenescedLeafBiomass : Double);
 
 
 
@@ -329,7 +329,7 @@ procedure ComputePeduncleDiameterPredimDyn(var instance : TInstance; var T : TPo
 procedure ComputeStructLeafDyn(var instance : TInstance; var T : TPointerProcParam);
 procedure ComputeSumOfBiomassDyn(var instance : TInstance; var T : TPointerProcParam);
 procedure ComputeWeightPanicleDyn(var instance : TInstance; var T : TPointerProcParam);
-
+procedure SumOfDailySenescedLeafBiomassOnCulmDyn(var instance : TInstance; var T : TPointerProcParam);
 
 
 
@@ -2910,7 +2910,7 @@ begin
       begin
         if ((currentInstance as TEntityInstance).GetCurrentState() <> 2000) then
         begin
-          internodeLength := (currentInstance as TEntityInstance).GetTAttribute('LIN').GetCurrentSample().value;
+          internodeLength := ((currentInstance as TEntityInstance).GetTAttribute('LIN') as TAttributeTableOut).GetCurrentSample().value;
           sumOfInternodeLength := sumOfInternodeLength + internodeLength;
         end;
       end;
@@ -3329,7 +3329,7 @@ begin
       begin
         if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
         begin
-          contribution := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetCurrentSample().value;
+          contribution := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetCurrentSample().value;
           SRwriteln('Stock ' + currentInstance.GetName() + ' --> ' + FloatToStr(contribution));
           total := total + contribution;
         end;
@@ -3436,63 +3436,61 @@ var
   date : TDateTime;
 begin
   stateMeristem := (instance as TEntityInstance).GetCurrentState();
-  case stateMeristem of
-    4, 5, 6, 9 :
+  if (stateMeristem >= 4) then
+  begin
+    SRwriteln('state meristem : ' + IntToStr(stateMeristem));
+    stockCulm := ((instance as TEntityInstance).GetTAttribute('stock_mainstem') as TAttributeTableOut).GetCurrentSample().value;
+    maxReservoirOnCulm := (instance as TEntityInstance).GetTAttribute('max_reservoir_mainstem').GetCurrentSample().value;
+    sumDemandINCulm := (instance as TEntityInstance).GetTAttribute('sumOfMainstemInternodeDemand').GetCurrentSample().value;
+    sumDemandNonINCulm := (instance as TEntityInstance).GetTAttribute('sumOfMainstemNonInternodeDemand').GetCurrentSample().value;
+    sumOfLastDemandCulm := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample().value;
+    supplyCulm := (instance as TEntityInstance).GetTAttribute('supply_mainstem').GetCurrentSample().value;
+    SRwriteln('stockMainstem                   --> ' + FloatToStr(stockCulm));
+    SRwriteln('maxReservoirDispoOnMainstem     --> ' + FloatToStr(maxReservoirOnCulm));
+    SRwriteln('sumOfMainstemInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
+    SRwriteln('sumOfMainstemNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
+    SRwriteln('sumOfLastDemandMainstem         --> ' + FloatToStr(sumOfLastDemandCulm));
+    SRwriteln('supplyMainstem                  --> ' + FloatToStr(supplyCulm));
+    surplusCulm := Max(0, stockCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + supplyCulm - maxReservoirOnCulm);
+    SRwriteln('surplusCulm                     --> ' + FloatToStr(surplusCulm));
+    date := (instance as TEntityInstance).GetNextDate();
+    sample := (instance as TEntityInstance).GetTAttribute('surplus_mainstem').GetSample(date);
+    sample.date := date;
+    sample.value := surplusCulm;
+    (instance as TEntityInstance).GetTAttribute('surplus_mainstem').SetSample(sample);
+    le := (instance as TEntityInstance).LengthTInstanceList();
+    for i := 0 to le - 1 do
     begin
-      SRwriteln('state meristem : ' + IntToStr(stateMeristem));
-      stockCulm := ((instance as TEntityInstance).GetTAttribute('stock_mainstem') as TAttributeTableOut).GetCurrentSample().value;
-      maxReservoirOnCulm := (instance as TEntityInstance).GetTAttribute('max_reservoir_mainstem').GetCurrentSample().value;
-      sumDemandINCulm := (instance as TEntityInstance).GetTAttribute('sumOfMainstemInternodeDemand').GetCurrentSample().value;
-      sumDemandNonINCulm := (instance as TEntityInstance).GetTAttribute('sumOfMainstemNonInternodeDemand').GetCurrentSample().value;
-      sumOfLastDemandCulm := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample().value;
-      supplyCulm := (instance as TEntityInstance).GetTAttribute('supply_mainstem').GetCurrentSample().value;
-      SRwriteln('stockMainstem                   --> ' + FloatToStr(stockCulm));
-      SRwriteln('maxReservoirDispoOnMainstem     --> ' + FloatToStr(maxReservoirOnCulm));
-      SRwriteln('sumOfMainstemInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
-      SRwriteln('sumOfMainstemNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
-      SRwriteln('sumOfLastDemandMainstem         --> ' + FloatToStr(sumOfLastDemandCulm));
-      SRwriteln('supplyMainstem                  --> ' + FloatToStr(supplyCulm));
-      surplusCulm := Max(0, stockCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + supplyCulm - maxReservoirOnCulm);
-      SRwriteln('surplusCulm                     --> ' + FloatToStr(surplusCulm));
-      date := (instance as TEntityInstance).GetNextDate();
-      sample := (instance as TEntityInstance).GetTAttribute('surplus_mainstem').GetSample(date);
-      sample.date := date;
-      sample.value := surplusCulm;
-      (instance as TEntityInstance).GetTAttribute('surplus_mainstem').SetSample(sample);
-      le := (instance as TEntityInstance).LengthTInstanceList();
-      for i := 0 to le - 1 do
+      currentInstance := (instance as TEntityInstance).GetTInstance(i);
+      if (currentInstance is TEntityInstance) then
       begin
-        currentInstance := (instance as TEntityInstance).GetTInstance(i);
-        if (currentInstance is TEntityInstance) then
+        if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
         begin
-          if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
-          begin
-            stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
-            case stateTiller of
-              4, 6, 7, 9, 10 :
-              begin
-                SRwriteln('Tiller                 --> ' + currentInstance.GetName());
-                SRwriteln('state tiller           --> ' + IntToStr(stateTiller));
-                stockCulm := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetCurrentSample().value;
-                maxReservoirOnCulm := (currentInstance as TEntityInstance).GetTAttribute('max_reservoir_tiller').GetCurrentSample().value;
-                sumDemandINCulm := (currentInstance as TEntityInstance).GetTAttribute('sumOfTillerInternodeDemand').GetCurrentSample().value;
-                sumDemandNonINCulm := (currentInstance as TEntityInstance).GetTAttribute('demandOfNonINTiller').GetCurrentSample().value;
-                sumOfLastDemandCulm := (currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller').GetCurrentSample().value;
-                supplyCulm := (currentInstance as TEntityInstance).GetTAttribute('supply_tiller').GetCurrentSample().value;
-                SRwriteln('stockTiller                   --> ' + FloatToStr(stockCulm));
-                SRwriteln('maxReservoirDispoOnTiller     --> ' + FloatToStr(maxReservoirOnCulm));
-                SRwriteln('sumOfTillerInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
-                SRwriteln('sumOfTillerNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
-                SRwriteln('sumOfLastDemandTiller         --> ' + FloatToStr(sumOfLastDemandCulm));
-                SRwriteln('supplyTiller                  --> ' + FloatToStr(supplyCulm));
-                surplusCulm := Max(0, stockCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + supplyCulm - maxReservoirOnCulm);
-                SRwriteln('surplusCulm                     --> ' + FloatToStr(surplusCulm));
-                date := (currentInstance as TEntityInstance).GetNextDate();
-                sample := (currentInstance as TEntityInstance).GetTAttribute('surplus_tiller').GetSample(date);
-                sample.date := date;
-                sample.value := surplusCulm;
-                (currentInstance as TEntityInstance).GetTAttribute('surplus_tiller').SetSample(sample);
-              end;
+          stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
+          case stateTiller of
+            4, 6, 7, 9, 10 :
+            begin
+              SRwriteln('Tiller                 --> ' + currentInstance.GetName());
+              SRwriteln('state tiller           --> ' + IntToStr(stateTiller));
+              stockCulm := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetCurrentSample().value;
+              maxReservoirOnCulm := (currentInstance as TEntityInstance).GetTAttribute('max_reservoir_tiller').GetCurrentSample().value;
+              sumDemandINCulm := (currentInstance as TEntityInstance).GetTAttribute('sumOfTillerInternodeDemand').GetCurrentSample().value;
+              sumDemandNonINCulm := (currentInstance as TEntityInstance).GetTAttribute('demandOfNonINTiller').GetCurrentSample().value;
+              sumOfLastDemandCulm := (currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller').GetCurrentSample().value;
+              supplyCulm := (currentInstance as TEntityInstance).GetTAttribute('supply_tiller').GetCurrentSample().value;
+              SRwriteln('stockTiller                   --> ' + FloatToStr(stockCulm));
+              SRwriteln('maxReservoirDispoOnTiller     --> ' + FloatToStr(maxReservoirOnCulm));
+              SRwriteln('sumOfTillerInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
+              SRwriteln('sumOfTillerNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
+              SRwriteln('sumOfLastDemandTiller         --> ' + FloatToStr(sumOfLastDemandCulm));
+              SRwriteln('supplyTiller                  --> ' + FloatToStr(supplyCulm));
+              surplusCulm := Max(0, stockCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + supplyCulm - maxReservoirOnCulm);
+              SRwriteln('surplusCulm                   --> ' + FloatToStr(surplusCulm));
+              date := (currentInstance as TEntityInstance).GetNextDate();
+              sample := (currentInstance as TEntityInstance).GetTAttribute('surplus_tiller').GetSample(date);
+              sample.date := date;
+              sample.value := surplusCulm;
+              (currentInstance as TEntityInstance).GetTAttribute('surplus_tiller').SetSample(sample);
             end;
           end;
         end;
@@ -3519,30 +3517,29 @@ var
   date : TDateTime;
 begin
   stateMeristem := (instance as TEntityInstance).GetCurrentState();
-  case stateMeristem of
-    4, 5, 6, 9 :
+  if (stateMeristem >= 4) then
+  begin
+    SRwriteln('state meristem : ' + IntToStr(stateMeristem));
+    tmpCulm := (instance as TEntityInstance).GetTAttribute('tmp_mainstem').GetCurrentSample().value;
+    deficitCulm := Min(0, tmpCulm);
+    SRwriteln('tmpMainstem     --> ' + FloatToStr(tmpCulm));
+    SRwriteln('deficitMainstem --> ' + FloatToStr(deficitCulm));
+    date := (instance as TEntityInstance).GetNextDate();
+    sample := (instance as TEntityInstance).GetTAttribute('deficit_mainstem').GetSample(date);
+    sample.date := date;
+    sample.value := deficitCulm;
+    (instance as TEntityInstance).GetTAttribute('deficit_mainstem').SetSample(sample);
+    le := (instance as TEntityInstance).LengthTInstanceList();
+    for i := 0 to le - 1 do
     begin
-      SRwriteln('state meristem : ' + IntToStr(stateMeristem));
-      tmpCulm := (instance as TEntityInstance).GetTAttribute('tmp_mainstem').GetCurrentSample().value;
-      deficitCulm := Min(0, tmpCulm);
-      SRwriteln('tmpMainstem     --> ' + FloatToStr(tmpCulm));
-      SRwriteln('deficitMainstem --> ' + FloatToStr(deficitCulm));
-      date := (instance as TEntityInstance).GetNextDate();
-      sample := (instance as TEntityInstance).GetTAttribute('deficit_mainstem').GetSample(date);
-      sample.date := date;
-      sample.value := deficitCulm;
-      (instance as TEntityInstance).GetTAttribute('deficit_mainstem').SetSample(sample);
-      le := (instance as TEntityInstance).LengthTInstanceList();
-      for i := 0 to le - 1 do
+      currentInstance := (instance as TEntityInstance).GetTInstance(i);
+      if (currentInstance is TEntityInstance) then
       begin
-        currentInstance := (instance as TEntityInstance).GetTInstance(i);
-        if (currentInstance is TEntityInstance) then
+        if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
         begin
-          if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
-          begin
-            stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
-            case stateTiller of
-              4, 6, 7, 9, 10 :
+          stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
+          case stateTiller of
+            4, 6, 7, 9, 10 :
               begin
                 SRwriteln('Tiller        --> ' + currentInstance.GetName());
                 SRwriteln('state tiller  --> ' + IntToStr(stateTiller));
@@ -3557,7 +3554,6 @@ begin
                 (currentInstance as TEntityInstance).GetTAttribute('deficit_tiller').SetSample(sample);
               end;
             end;
-          end;
         end;
       end;
     end;
@@ -3717,7 +3713,7 @@ var
   stateMeristem, stateTiller, le, i : Integer;
   currentInstance : TInstance;
   stockCulm, deficitCulm, sumDemandINCulm, sumDemandNonINCulm, sumOfLastDemandCulm, supplyCulm, tmpCulm : Double;
-  sumOfBiomassOnCulm, sumOfBiomassOnPlant : Double;
+  sumOfBiomassOnCulm, sumOfBiomassOnPlant, sumOfDailySenescedLeafBiomassCulm : Double;
   stockPlant, deficitPlant, computedReallocBiomass, reallocCulm : Double;
   sample : TSample;
   date : TDateTime;
@@ -3735,16 +3731,20 @@ begin
     sumDemandNonINCulm := (instance as TEntityInstance).GetTAttribute('sumOfMainstemNonInternodeDemand').GetCurrentSample().value;
     sumOfLastDemandCulm := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample().value;
     supplyCulm := (instance as TEntityInstance).GetTAttribute('supply_mainstem').GetCurrentSample().value;
+    sumOfDailySenescedLeafBiomassCulm := (instance as TEntityInstance).GetTAttribute('sumOfDailySenescedLeafBiomassMainstem').GetCurrentSample().value;
 
     date := (instance as TEntityInstance).GetNextDate();
 
-    SRwriteln('stockMainstem                   --> ' + FloatToStr(stockCulm));
-    SRwriteln('deficitMainstem                 --> ' + FloatToStr(deficitCulm));
-    SRwriteln('deficitPlant                    --> ' + FloatToStr(deficitPlant));
-    SRwriteln('sumOfMainstemInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
-    SRwriteln('sumOfMainstemNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
-    SRwriteln('lastDemandMainstem              --> ' + FloatToStr(sumOfLastDemandCulm));
-    SRwriteln('supplyMainstem                  --> ' + FloatToStr(supplyCulm));
+    SRwriteln('stockMainstem                         --> ' + FloatToStr(stockCulm));
+    SRwriteln('deficitMainstem                       --> ' + FloatToStr(deficitCulm));
+    SRwriteln('deficitPlant                          --> ' + FloatToStr(deficitPlant));
+    SRwriteln('sumOfMainstemInternodeDemand          --> ' + FloatToStr(sumDemandINCulm));
+    SRwriteln('sumOfMainstemNonInternodeDemand       --> ' + FloatToStr(sumDemandNonINCulm));
+    SRwriteln('lastDemandMainstem                    --> ' + FloatToStr(sumOfLastDemandCulm));
+    SRwriteln('supplyMainstem                        --> ' + FloatToStr(supplyCulm));
+    SRwriteln('computedReallocBiomass                --> ' + FloatToStr(computedReallocBiomass));
+    SRwriteln('sumOfDailySenescedLeafBiomassMainstem --> ' + FloatToStr(sumOfDailySenescedLeafBiomassCulm));
+
     if (deficitPlant < 0) then
     begin
       sumOfBiomassOnCulm := ComputeBiomassCulm(instance);
@@ -3766,7 +3766,7 @@ begin
       SRwriteln('deficitCulm         --> ' + FloatToStr(deficitCulm));
       SRwriteln('------------------------------');
     end;
-    tmpCulm := stockCulm + deficitCulm + supplyCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm;
+    tmpCulm := stockCulm + deficitCulm + supplyCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + sumOfDailySenescedLeafBiomassCulm;
     SRwriteln('tmpMainstem                     --> ' + FloatToStr(tmpCulm));
     SRwriteln('-------------------------------------------------');
     sample := (instance as TEntityInstance).GetTAttribute('tmp_mainstem').GetSample(date);
@@ -3786,19 +3786,21 @@ begin
           begin
             SRwriteln('Tiller                        --> ' + currentInstance.GetName());
             SRwriteln('state Tiller                  --> ' + IntToStr(stateTiller));
-            stockCulm := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetCurrentSample().value;
+            stockCulm := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetCurrentSample().value;
             deficitCulm := (currentInstance as TEntityInstance).GetTAttribute('deficit_tiller').GetCurrentSample().value;
             sumDemandINCulm := (currentInstance as TEntityInstance).GetTAttribute('sumOfTillerInternodeDemand').GetCurrentSample().value;
             sumDemandNonINCulm := (currentInstance as TEntityInstance).GetTAttribute('demandOfNonINTiller').GetCurrentSample().value;
             sumOfLastDemandCulm := (currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller').GetCurrentSample().value;
             supplyCulm := (currentInstance as TEntityInstance).GetTAttribute('supply_tiller').GetCurrentSample().value;
-            SRwriteln('stockTiller                   --> ' + FloatToStr(stockCulm));
-            SRwriteln('deficitTiller                 --> ' + FloatToStr(deficitCulm));
-            SRwriteln('deficitPlant                  --> ' + FloatToStr(deficitPlant));
-            SRwriteln('sumOfTillerInternodeDemand    --> ' + FloatToStr(sumDemandINCulm));
-            SRwriteln('sumOfTillerNonInternodeDemand --> ' + FloatToStr(sumDemandNonINCulm));
-            SRwriteln('lastDemandTiller              --> ' + FloatToStr(sumOfLastDemandCulm));
-            SRwriteln('supplyTiller                  --> ' + FloatToStr(supplyCulm));
+            sumOfDailySenescedLeafBiomassCulm := (currentInstance as TEntityInstance).GetTAttribute('sumOfDailySenescedLeafBiomassTiller').GetCurrentSample().value;
+            SRwriteln('stockTiller                         --> ' + FloatToStr(stockCulm));
+            SRwriteln('deficitTiller                       --> ' + FloatToStr(deficitCulm));
+            SRwriteln('deficitPlant                        --> ' + FloatToStr(deficitPlant));
+            SRwriteln('sumOfTillerInternodeDemand          --> ' + FloatToStr(sumDemandINCulm));
+            SRwriteln('sumOfTillerNonInternodeDemand       --> ' + FloatToStr(sumDemandNonINCulm));
+            SRwriteln('lastDemandTiller                    --> ' + FloatToStr(sumOfLastDemandCulm));
+            SRwriteln('supplyTiller                        --> ' + FloatToStr(supplyCulm));
+            SRwriteln('sumOfDailySenescedLeafBiomassTiller --> ' + FloatToStr(sumOfDailySenescedLeafBiomassCulm));
             if (deficitPlant < 0) then
             begin
               sumOfBiomassOnCulm := ComputeBiomassCulm(currentInstance);
@@ -3820,7 +3822,7 @@ begin
               SRwriteln('deficitCulm         --> ' + FloatToStr(deficitCulm));
               SRwriteln('------------------------------');              
             end;
-            tmpCulm := stockCulm + deficitCulm + supplyCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm;
+            tmpCulm := stockCulm + deficitCulm + supplyCulm - sumDemandINCulm - sumDemandNonINCulm - sumOfLastDemandCulm + sumOfDailySenescedLeafBiomassCulm;
             SRwriteln('tmpTiller                     --> ' + FloatToStr(tmpCulm));
             SRwriteln('-------------------------------------------------');
             date := (currentInstance as TEntityInstance).GetNextDate();
@@ -3853,47 +3855,45 @@ var
   date : TDateTime;
 begin
   stateMeristem := (instance as TEntityInstance).GetCurrentState();
-  case stateMeristem of
-    4, 5, 6, 9 :
+  if (stateMeristem >= 4) then
+  begin
+    SRwriteln('state meristem : ' + IntToStr(stateMeristem));
+    maxReservoirOnCulm := (instance as TEntityInstance).GetTAttribute('max_reservoir_mainstem').GetCurrentSample().value;
+    tmpCulm := (instance as TEntityInstance).GetTAttribute('tmp_mainstem').GetCurrentSample().value;
+    stockCulm := Max(0, Min(maxReservoirOnCulm, tmpCulm));
+    SRwriteln('maxReservoirOnMainstem --> ' + FloatToStr(maxReservoirOnCulm));
+    SRwriteln('tmpMainstem            --> ' + FloatToStr(tmpCulm));
+    SRwriteln('stockMainstem          --> ' + FloatToStr(stockCulm));
+    date := (instance as TEntityInstance).GetNextDate();
+    sample := (instance as TEntityInstance).GetTAttribute('stock_mainstem').GetSample(date);
+    sample.date := date;
+    sample.value := stockCulm;
+    (instance as TEntityInstance).GetTAttribute('stock_mainstem').SetSample(sample);
+    le := (instance as TEntityInstance).LengthTInstanceList();
+    for i := 0 to le - 1 do
     begin
-      SRwriteln('state meristem : ' + IntToStr(stateMeristem));
-      maxReservoirOnCulm := (instance as TEntityInstance).GetTAttribute('max_reservoir_mainstem').GetCurrentSample().value;
-      tmpCulm := (instance as TEntityInstance).GetTAttribute('tmp_mainstem').GetCurrentSample().value;
-      stockCulm := Max(0, Min(maxReservoirOnCulm, tmpCulm));
-      SRwriteln('maxReservoirOnMainstem --> ' + FloatToStr(maxReservoirOnCulm));
-      SRwriteln('tmpMainstem            --> ' + FloatToStr(tmpCulm));
-      SRwriteln('stockMainstem          --> ' + FloatToStr(stockCulm));
-      date := (instance as TEntityInstance).GetNextDate();
-      sample := (instance as TEntityInstance).GetTAttribute('stock_mainstem').GetSample(date);
-      sample.date := date;
-      sample.value := stockCulm;
-      (instance as TEntityInstance).GetTAttribute('stock_mainstem').SetSample(sample);
-      le := (instance as TEntityInstance).LengthTInstanceList();
-      for i := 0 to le - 1 do
+      currentInstance := (instance as TEntityInstance).GetTInstance(i);
+      if (currentInstance is TEntityInstance) then
       begin
-        currentInstance := (instance as TEntityInstance).GetTInstance(i);
-        if (currentInstance is TEntityInstance) then
+        if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
         begin
-          if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
-          begin
-            stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
-            case stateTiller of
-              4, 6, 7, 9, 10 :
-              begin
-                SRwriteln('Tiller                 --> ' + currentInstance.GetName());
-                SRwriteln('state tiller           --> ' + IntToStr(stateTiller));
-                maxReservoirOnCulm := (currentInstance as TEntityInstance).GetTAttribute('max_reservoir_tiller').GetCurrentSample().value;
-                tmpCulm := (currentInstance as TEntityInstance).GetTAttribute('tmp_tiller').GetCurrentSample().value;
-                stockCulm := Max(0, Min(maxReservoirOnCulm, tmpCulm));
-                SRwriteln('maxReservoirOnTiller --> ' + FloatToStr(maxReservoirOnCulm));
-                SRwriteln('tmpTiller            --> ' + FloatToStr(tmpCulm));
-                SRwriteln('stockTiller          --> ' + FloatToStr(stockCulm));
-                date := (currentInstance as TEntityInstance).GetNextDate();
-                sample := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetSample(date);
-                sample.date := date;
-                sample.value := stockCulm;
-                ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).SetSample(sample);
-              end;
+          stateTiller := (currentInstance as TEntityInstance).GetCurrentState();
+          case stateTiller of
+            4, 6, 7, 9, 10 :
+            begin
+              SRwriteln('Tiller                 --> ' + currentInstance.GetName());
+              SRwriteln('state tiller           --> ' + IntToStr(stateTiller));
+              maxReservoirOnCulm := (currentInstance as TEntityInstance).GetTAttribute('max_reservoir_tiller').GetCurrentSample().value;
+              tmpCulm := (currentInstance as TEntityInstance).GetTAttribute('tmp_tiller').GetCurrentSample().value;
+              stockCulm := Max(0, Min(maxReservoirOnCulm, tmpCulm));
+              SRwriteln('maxReservoirOnTiller --> ' + FloatToStr(maxReservoirOnCulm));
+              SRwriteln('tmpTiller            --> ' + FloatToStr(tmpCulm));
+              SRwriteln('stockTiller          --> ' + FloatToStr(stockCulm));
+              date := (currentInstance as TEntityInstance).GetNextDate();
+              sample := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetSample(date);
+              sample.date := date;
+              sample.value := stockCulm;
+              (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').SetSample(sample);
             end;
           end;
         end;
@@ -4228,6 +4228,27 @@ begin
       sample.value := lastDemandMainstem + lastDemandTillers;
       (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
       SRwriteln('lastDemand : ' + FloatToStr(lastDemandMainstem + lastDemandTillers));
+    end
+    else
+    begin
+      if ((instance as TEntityInstance).GetTAttribute('lastDemandMainstem') <> nil) then
+      begin
+        sample := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample();
+        sample.value := 0;
+        (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').SetSample(sample);
+        SRwriteln('lastDemandMainstem : ' + FloatToStr(sample.value));
+      end;
+      if ((instance as TEntityInstance).GetTAttribute('lastDemandTillers') <> nil) then
+      begin
+        sample := (instance as TEntityInstance).GetTAttribute('lastDemandTillers').GetCurrentSample();
+        sample.value := 0;
+        (instance as TEntityInstance).GetTAttribute('lastDemandTillers').SetSample(sample);
+        SRwriteln('lastDemandTillers : ' + FloatToStr(sample.value));
+      end;
+      sample := ((instance as TEntityInstance).GetTAttribute('lastDemand') as TAttributeTableOut).GetCurrentSample();
+      sample.value := 0;
+      (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
+      SRwriteln('lastDemand : ' + FloatToStr(sample.value));
     end;
   end;
 end;
@@ -5292,9 +5313,9 @@ begin
               stockCulm := ((instance as TEntityInstance).GetTAttribute('stock_mainstem') as TAttributeTableOut).GetCurrentSample().value;
               stockIN := Min(maximumReserveInInternode * biomassIN, (biomassIN / sumOfBiomassOnInternodeInMatureState) * stockCulm);
               sumOfStockINInMatureState := sumOfStockINInMatureState + stockIN;
-              sample := ((currentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample();
+              sample := (currentInstance as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample();
               sample.value := stockIN;
-              ((currentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).SetSample(sample);
+              (currentInstance as TEntityInstance).GetTAttribute('stockIN').SetSample(sample);
               SRwriteln('maximumReserveInInternode            --> ' + FloatToStr(maximumReserveInInternode));
               SRwriteln('biomassIN                            --> ' + FloatToStr(biomassIN));
               SRwriteln('sumOfBiomassOnInternodeInMatureState --> ' + FloatToStr(sumOfBiomassOnInternodeInMatureState));
@@ -5319,9 +5340,9 @@ begin
               biomassIN := (currentInstance as TEntityInstance).GetTAttribute('biomassIN').GetCurrentSample().value;
               stockCulm := ((instance as TEntityInstance).GetTAttribute('stock_mainstem') as TAttributeTableOut).GetCurrentSample().value;
               stockIN := Min(maximumReserveInInternode * biomassIN, stockCulm - sumOfStockINInMatureState);
-              sample := ((currentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample();
+              sample := (currentInstance as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample();
               sample.value := stockIN;
-              ((currentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).SetSample(sample);
+              (currentInstance as TEntityInstance).GetTAttribute('stockIN').SetSample(sample);
               SRwriteln('maximumReserveInInternode            --> ' + FloatToStr(maximumReserveInInternode));
               SRwriteln('biomassIN                            --> ' + FloatToStr(biomassIN));
               SRwriteln('stockMainstem                        --> ' + FloatToStr(stockCulm));
@@ -5353,13 +5374,13 @@ begin
                   maximumReserveInInternode := (instance as TEntityInstance).GetTAttribute('maximumReserveInInternode').GetCurrentSample().value;
                   biomassIN := (currentCurrentInstance as TEntityInstance).GetTAttribute('biomassIN').GetCurrentSample().value;
                   sumOfBiomassOnInternodeInMatureState := (currentInstance as TEntityInstance).GetTAttribute('sumOfBiomassOnInternodeInMatureState').GetCurrentSample().value;
-                  stockCulm := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetCurrentSample().value;
+                  stockCulm := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetCurrentSample().value;
                   SRwriteln('stockTiller                          --> ' + FloatToStr(stockCulm));
                   stockIN := Min(maximumReserveInInternode * biomassIN, (biomassIN / sumOfBiomassOnInternodeInMatureState) * stockCulm);
                   sumOfStockINInMatureState := sumOfStockINInMatureState + stockIN;
-                  sample := ((currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample();
+                  sample := (currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample();
                   sample.value := stockIN;
-                  ((currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).SetSample(sample);
+                  (currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN').SetSample(sample);
                   SRwriteln('maximumReserveInInternode            --> ' + FloatToStr(maximumReserveInInternode));
                   SRwriteln('biomassIN                            --> ' + FloatToStr(biomassIN));
                   SRwriteln('sumOfBiomassOnInternodeInMatureState --> ' + FloatToStr(sumOfBiomassOnInternodeInMatureState));
@@ -5381,11 +5402,11 @@ begin
                   SRwriteln('IN : ' + currentCurrentInstance.GetName() + ' state 2');
                   maximumReserveInInternode := (instance as TEntityInstance).GetTAttribute('maximumReserveInInternode').GetCurrentSample().value;
                   biomassIN := (currentCurrentInstance as TEntityInstance).GetTAttribute('biomassIN').GetCurrentSample().value;
-                  stockCulm := ((currentInstance as TEntityInstance).GetTAttribute('stock_tiller') as TAttributeTableOut).GetCurrentSample().value;
+                  stockCulm := (currentInstance as TEntityInstance).GetTAttribute('stock_tiller').GetCurrentSample().value;
                   stockIN := Min(maximumReserveInInternode * biomassIN, stockCulm - sumOfStockINInMatureState);
-                  sample := ((currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample();
+                  sample := (currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample();
                   sample.value := stockIN;
-                  ((currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).SetSample(sample);
+                  (currentCurrentInstance as TEntityInstance).GetTAttribute('stockIN').SetSample(sample);
                   SRwriteln('maximumReserveInInternode            --> ' + FloatToStr(maximumReserveInInternode));
                   SRwriteln('biomassIN                            --> ' + FloatToStr(biomassIN));
                   SRwriteln('stockTiller                          --> ' + FloatToStr(stockCulm));
@@ -5836,7 +5857,7 @@ begin
           SRwriteln('Internode name -->  ' + currentTEntityInstance.GetName());
           internodeState := currentTEntityInstance.GetCurrentState();
           SRwriteln('Internode state --> ' + IntToStr(internodeState));
-          if ((internodeState = 1) or (internodeState = 2) or (internodeState = 4) or (internodeState = 10)) then
+          if ((internodeState = 1) or (internodeState = 2) or (internodeState = 4) or (internodeState = 10) or (internodeState = 3) or (internodeState = 5)) then
           begin
             nbActiveInternodesOnMainstem := nbActiveInternodesOnMainstem + 1;
           end;
@@ -5885,7 +5906,7 @@ begin
           begin
           if ((currentInstance as TEntityInstance).GetTAttribute('LIN') <> Nil) then
             begin
-              internodeLength := (currentInstance as TEntityInstance).GetTAttribute('LIN').GetCurrentSample().value;
+              internodeLength := ((currentInstance as TEntityInstance).GetTAttribute('LIN') as TAttributeTableOut).GetCurrentSample().value;
               SRwriteln('Internode contribution --> ' + FloatToStr(internodeLength));
               internodeLengthOnMainstem := internodeLengthOnMainstem + internodeLength
             end;
@@ -5897,7 +5918,7 @@ begin
   SRwriteln('internodeLengthOnMainstem --> ' + FloatToStr(internodeLengthOnMainstem));
 end;
 
-procedure ComputeFirstLastExpandedInternodeDiameterMainstem(var instance : TInstance; var firstDiameter, lastDiameter : Double);
+procedure ComputeFirstLastExpandedInternodeDiameterMainstem(var instance : TInstance; var firstDiameter, lastDiameter, lastLength, lastRank : Double);
 var
   state, internodeState, le, i : Integer;
   maxCreationDate, minCreationDate, currentDate : TDateTime;
@@ -5942,10 +5963,12 @@ begin
     if ((refMinInstance <> nil) and (refMaxInstance <> nil)) then
     begin
       SRwriteln('first expanded internode          --> ' + refMinInstance.GetName());
-      firstDiameter := (refMinInstance as TEntityInstance).GetTAttribute('DIN').GetCurrentSample().value;
+      firstDiameter := ((refMinInstance as TEntityInstance).GetTAttribute('DIN') as TAttributeTableOut).GetCurrentSample().value;
       SRwriteln('first expanded internode diameter --> ' + FloatToStr(firstDiameter));
       SRwriteln('last expanded internode           -->  ' + refMaxInstance.GetName());
-      lastDiameter := (refMaxInstance as TEntityInstance).GetTAttribute('DIN').GetCurrentSample().value;
+      lastDiameter := ((refMaxInstance as TEntityInstance).GetTAttribute('DIN') as TAttributeTableOut).GetCurrentSample().value;
+      lastRank := (refMaxInstance as TEntityInstance).GetTAttribute('rank').GetCurrentSample().value;
+      lastLength := ((refMaxInstance as TEntityInstance).GetTAttribute('LIN') as TAttributeTableOut).GetCurrentSample().value;
       SRwriteln('last expanded internode diameter  --> ' + FloatToStr(lastDiameter));
     end;
   end;
@@ -5968,7 +5991,7 @@ begin
       begin
         if ((currentInstance as TEntityInstance).GetTAttribute('stockIN') <> nil) then
         begin
-          stockIN := ((currentInstance as TEntityInstance).GetTAttribute('stockIN') as TAttributeTableOut).GetCurrentSample().value;
+          stockIN := (currentInstance as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample().value;
           SRwriteln('Internode name ' + (currentInstance as TEntityInstance).GetName() + ' stock : ' + FloatToStr(stockIN));
           stock := stock + stockIN;
         end;
@@ -6003,7 +6026,7 @@ begin
             begin
               if ((currentInstance2 as TEntityInstance).GetTAttribute('stockIN') <> nil) then
               begin
-                stockIN := ((currentInstance2 as TEntityInstance).GetTAttribute('stockIN')as TAttributeTableOut).GetCurrentSample().value;
+                stockIN := (currentInstance2 as TEntityInstance).GetTAttribute('stockIN').GetCurrentSample().value;
                 SRwriteln('Internode name ' + (currentInstance2 as TEntityInstance).GetName() + ' stock : ' + FloatToStr(stockIN));
                 stock := stock + stockIN;
               end;
@@ -6075,7 +6098,7 @@ begin
     begin
       heightPanicleMainstem := 0;
     end;
-    4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15:
+    4, 5, 6, 7, 8, 11, 12, 13, 14, 15:
     begin
       sumOfInternodeLengthMainstem := 0;
       le1 := (instance as TEntityInstance).LengthTInstanceList();
@@ -6097,7 +6120,7 @@ begin
           begin
             if ((currentInstance1 as TEntityInstance).GetTAttribute('LIN') <> Nil) then
             begin
-              sample := (currentInstance1 as TEntityInstance).GetTAttribute('LIN').GetCurrentSample();
+              sample := ((currentInstance1 as TEntityInstance).GetTAttribute('LIN') as TAttributeTableOut).GetCurrentSample();
               SRwriteln('Internode : ' + currentInstance1.GetName() + ' length --> ' + FloatToStr(sample.value));
               sumOfInternodeLengthMainstem := sumOfInternodeLengthMainstem + sample.value;
             end;
@@ -6108,7 +6131,7 @@ begin
             stateTiller := (currentInstance1 as TEntityInstance).GetCurrentState();
             SRwriteln('state tiller --> ' + IntToStr(stateTiller));
             case stateTiller of
-              4, 6, 7, 9, 10 :
+              4, 6, 7, 10 :
               begin
                 le2 := (currentInstance1 as TEntityInstance).LengthTInstanceList();
                 sumOfInternodeLengthTiller := 0;
@@ -6119,6 +6142,7 @@ begin
                   begin
                     if ((currentInstance2 as TEntityInstance).GetCategory() = 'Peduncle') then
                     begin
+                      SRwriteln('Peduncle');
                       if ((currentInstance2 as TEntityInstance).GetTAttribute('LIN') <> nil) then
                       begin
                         sample := (currentInstance2 as TEntityInstance).GetTAttribute('LIN').GetCurrentSample();
@@ -6128,13 +6152,14 @@ begin
                     end;
                     if ((currentInstance2 as TEntityInstance).GetCategory() = 'Panicle') then
                     begin
+                      SRwriteln('Panicle');
                       refPanicle := (currentInstance2 as TEntityInstance);
                     end;
                     if ((currentInstance2 as TEntityInstance).GetCategory() = 'Internode') then
                     begin
                       if ((currentInstance2 as TEntityInstance).GetTAttribute('LIN') <> Nil) then
                       begin
-                        sample := (currentInstance2 as TEntityInstance).GetTAttribute('LIN').GetCurrentSample();
+                        sample := ((currentInstance2 as TEntityInstance).GetTAttribute('LIN') as TAttributeTableOut).GetCurrentSample();
                         SRwriteln('Internode : ' + currentInstance2.GetName() + ' length --> ' + FloatToStr(sample.value));
                         sumOfInternodeLengthTiller := sumOfInternodeLengthTiller + sample.value;
                       end;
@@ -6269,12 +6294,17 @@ begin
       computedReallocBiomass := reallocationCoeff * delta;
       computedSenesc_dw := delta - computedReallocBiomass;
       SRwriteln('computedReallocBiomass     --> ' + FloatToStr(computedReallocBiomass));
+      SRwriteln('dailySenescedLeafBiomass   --> ' + FloatToStr(computedReallocBiomass));
       SRwriteln('computedSenesc_dw          --> ' + FloatToStr(computedSenesc_dw));
-      refTAttribute := ((refInstance as TEntityInstance).GetTAttribute('stock') as TAttributeTableOut);
-      sample := refTAttribute.GetCurrentSample();
-      stock := sample.value + computedReallocBiomass;
-      sample.value := stock;
-      refTAttribute.SetSample(sample);
+      refTa := (instance as TEntityInstance).GetTAttribute('dailySenescedLeafBiomass');
+      sample := refTa.GetCurrentSample();
+      sample.value := computedReallocBiomass;
+      refTa.SetSample(sample);
+      //refTAttribute := ((refInstance as TEntityInstance).GetTAttribute('stock') as TAttributeTableOut);
+      //sample := refTAttribute.GetCurrentSample();
+      //stock := sample.value + computedReallocBiomass;
+      //sample.value := stock;
+      //refTAttribute.SetSample(sample);
       refTAttribute := ((refInstance as TEntityInstance).GetTAttribute('senesc_dw') as TAttributeTableOut);
       sample := refTAttribute.GetCurrentSample();
       senesc_dw := sample.value + computedSenesc_dw;
@@ -6501,7 +6531,7 @@ begin
       if ((currentInstance1 as TEntityInstance).GetCategory() = 'Leaf') then
       begin
         stateLeaf := (currentInstance1 as TEntityInstance).GetCurrentState();
-        if (stateLeaf <> 2000) then
+        if ((stateLeaf <> 2000) and (stateLeaf <> 500)) then
         begin
           if ((stateLeaf = 4) or (stateLeaf = 5)) then
           begin
@@ -6531,7 +6561,7 @@ begin
               if ((currentInstance2 as TEntityInstance).GetCategory() = 'Leaf') then
               begin
                 stateLeaf := (currentInstance2 as TEntityInstance).GetCurrentState();
-                if (stateLeaf <> 2000) then
+                if ((stateLeaf <> 2000) and (stateLeaf <> 500)) then
                 begin
                   if (((stateLeaf = 4) or (stateLeaf = 5)) and (stateLeaf <> 2000)) then
                   begin
@@ -6572,7 +6602,7 @@ begin
       if ((currentInstance as TEntityInstance).GetCategory() = 'Leaf') then
       begin
         state := (currentInstance as TEntityInstance).GetCurrentState();
-        if (state <> 2000) then
+        if ((state <> 2000) and (state <> 500)) then
         begin
           if ((state = 4) or (state = 5)) then
           begin
@@ -6704,7 +6734,14 @@ begin
   end;
   if find then
   begin
-    predim := (currentInstance as TEntityInstance).GetTAttribute(attributeName).GetCurrentSample().value;
+    if ((currentInstance as TEntityInstance).GetTAttribute(attributeName) is TAttributeTableOut) then
+    begin
+      predim := ((currentInstance as TEntityInstance).GetTAttribute(attributeName) as TAttributeTableOut).GetCurrentSample().value;
+    end
+    else
+    begin
+      predim := (currentInstance as TEntityInstance).GetTAttribute(attributeName).GetCurrentSample().value;
+    end;
     SRwriteln('internode name --> ' + currentInstance.GetName());
     SRwriteln('predim         --> ' + FloatToStr(predim));
   end;
@@ -6992,7 +7029,35 @@ begin
   SRwriteln('stockInternodePlant --> ' + FloatToStr(stockInternodePlant));
   SRwriteln('biomLeafStruct      --> ' + FloatToStr(biomLeafStruct));
   SRwriteln('structLeaf          --> ' + FloatToStr(structLeaf));
-end;  
+end;
+
+procedure SumOfDailySenescedLeafBiomassOnCulm(var instance : TInstance; var sumOfDailySenescedLeafBiomass : Double);
+var
+  i, le, leafState : Integer;
+  currentInstance : TInstance;
+  dailySenescedLeafBiomass : Double;
+begin
+  sumOfDailySenescedLeafBiomass := 0;
+  le := (instance as TEntityInstance).LengthTInstanceList();
+  for i := 0 to le - 1 do
+  begin
+    currentInstance := (instance as TEntityInstance).GetTInstance(i);
+    if (currentInstance is TEntityInstance) then
+    begin
+      if ((currentInstance as TEntityInstance).GetCategory() = 'Leaf') then
+      begin
+        leafState := (currentInstance as TEntityInstance).GetCurrentState();
+        if ((leafState = 4) or (leafState = 5)) then
+        begin
+          dailySenescedLeafBiomass := (currentInstance as TEntityInstance).GetTAttribute('dailySenescedLeafBiomass').GetCurrentSample().value;
+          SRwriteln((currentInstance as TEntityInstance).GetName() + ' dailySenescedLeafBiomass --> ' + FloatToStr(dailySenescedLeafBiomass));
+          sumOfDailySenescedLeafBiomass := sumOfDailySenescedLeafBiomass + dailySenescedLeafBiomass;
+          SRwriteln('sumOfDailySenescedLeafBiomass --> ' + FloatToStr(sumOfDailySenescedLeafBiomass));
+        end;
+      end;
+    end;
+  end;
+end;
 
 
 //----------------------------------------------------------------------------
@@ -7506,7 +7571,7 @@ end;
 
 procedure ComputeFirstLastExpandedInternodeDiameterMainstemDyn(var instance : TInstance; var T : TPointerProcParam);
 begin
-  ComputeFirstLastExpandedInternodeDiameterMainstem(instance, T[0], T[1]);
+  ComputeFirstLastExpandedInternodeDiameterMainstem(instance, T[0], T[1], T[2], T[3]);
 end;
 
 procedure ComputeStockInternodeMainstemDyn(var instance : TInstance; var T : TPointerProcParam);
@@ -7628,6 +7693,13 @@ procedure ComputeBiomLeafDyn(var T : TPointerProcParam);
 begin
   ComputeBiomLeaf(T[0], T[1], T[2], T[3]);
 end;
+
+procedure SumOfDailySenescedLeafBiomassOnCulmDyn(var instance : TInstance; var T : TPointerProcParam);
+begin
+  SumOfDailySenescedLeafBiomassOnCulm(instance, T[0]);
+end;
+
+
 
 
 
@@ -8048,7 +8120,7 @@ PROC_DECLARATION := TExtraProcInstanceInternal.Create('',SumOfInternodeLengthOnM
 PROC_DECLARATION.SetProcName('SumOfInternodeLengthOnMainstem');
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
-PROC_DECLARATION := TExtraProcInstanceInternal.Create('',ComputeFirstLastExpandedInternodeDiameterMainstemDyn,['firstDiameter','kInOut','lastDiameter','kInOut']);
+PROC_DECLARATION := TExtraProcInstanceInternal.Create('',ComputeFirstLastExpandedInternodeDiameterMainstemDyn,['firstDiameter','kInOut','lastDiameter','kInOut','lastLength','kInOut','lastRank','kInOut']);
 PROC_DECLARATION.SetProcName('ComputeFirstLastExpandedInternodeDiameterMainstem');
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
@@ -8148,5 +8220,8 @@ PROC_DECLARATION := TProcInstanceInternal.Create('',ComputeBiomLeafDyn,['stock',
 PROC_DECLARATION.SetProcName('ComputeBiomLeaf');
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
+PROC_DECLARATION := TExtraProcInstanceInternal.Create('',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomass', 'kOut']);
+PROC_DECLARATION.SetProcName('SumOfDailySenescedLeafBiomassOnCulm');
+PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
 end.

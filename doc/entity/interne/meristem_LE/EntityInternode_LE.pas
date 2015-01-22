@@ -179,9 +179,12 @@ begin
   attributeTmp := TAttributeTmp.Create('SSL');
   entityInternode.AddTAttribute(attributeTmp);
 
-  attributeOut := TAttributeTableOut.Create('stockIN');
-  attributeOut.SetFileNameOut(GetCurrentDir() + '\stock_IN_' + entityInternode.GetName() + '_out.txt', true);
-  entityInternode.AddTAttribute(attributeOut);
+  // attributeOut := TAttributeTableOut.Create('stockIN');
+  // attributeOut.SetFileNameOut(GetCurrentDir() + '\stock_IN_' + entityInternode.GetName() + '_out.txt', true);
+  // entityInternode.AddTAttribute(attributeOut);
+
+  attributeTmp := TAttributeTmp.Create('stockIN');
+  entityInternode.AddTAttribute(attributeTmp);
 
   attributeTmp := TAttributeTmp.Create('deficitIN');
   entityInternode.AddTAttribute(attributeTmp);
@@ -215,11 +218,20 @@ begin
   parameterTmp := TParameter.Create('LIN1', LIN1);
   entityInternode.AddTAttribute(parameterTmp);
 
-  attributeTmp := TAttributeTmp.Create('LIN');  // OK
-  entityInternode.AddTAttribute(attributeTmp);  // OK
+  // attributeTmp := TAttributeTmp.Create('LIN');  // OK
+  // entityInternode.AddTAttribute(attributeTmp);  // OK
 
-  attributeTmp := TAttributeTmp.Create('DIN');  // OK
-  entityInternode.AddTAttribute(attributeTmp);  // OK
+  // attributeTmp := TAttributeTmp.Create('DIN');  // OK
+  // entityInternode.AddTAttribute(attributeTmp);  // OK
+
+  attributeOut := TAttributeTableOut.Create('DIN');
+  attributeOut.SetFileNameOut(GetCurrentDir() + '\diameter_' + entityInternode.GetName() + '_out.txt', True);
+  entityInternode.AddTAttribute(attributeOut);
+
+  attributeOut := TAttributeTableOut.Create('LIN');
+  attributeOut.SetFileNameOut(GetCurrentDir() + '\length_' + entityInternode.GetName() + '_out.txt', True);
+  entityInternode.AddTAttribute(attributeOut);
+
 
   attributeTmp := TAttributeTmp.Create('plasto_delay');
   entityInternode.AddTAttribute(attributeTmp);
@@ -294,6 +306,33 @@ begin
                                    'slopeINER',
                                    'FTSW',
                                    'P']);
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Modules pour l'etat vegetatif
+  /////////////////////////////////////////////////////////////////////////////
+
+  // creation de 'lengthZero'
+
+  procTmp := TProcInstanceInternal.Create('lengthZero', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(2);
+  procTmp.SetActiveState(2000);
+  entityInternode.AddTInstance(procTmp);
+  // connection port <-> attribut pour lengthZero
+  procTmp.ExternalConnect(['zero', 'LIN']);
+
+  // creation de 'diameterZeo'
+
+  procTmp := TProcInstanceInternal.Create('diameterZero2000', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(4);
+  procTmp.SetActiveState(2000);
+  entityInternode.AddTInstance(procTmp);
+  // connection prot <-> attribut pour diameterZero
+  procTmp.ExternalConnect(['zero', 'DIN']);
+
 
   /////////////////////////////////////////////////////////////////////////////
   // Modules pour l'état initiation
@@ -583,6 +622,47 @@ begin
   XprocTmp.ExternalConnect(['LIN','predim','isOnMainstem']);
 
 
+  // creation de 'keepDIN2'
+
+  procTmp := TProcInstanceInternal.Create('keepDIN2', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(1140);
+  procTmp.SetActiveState(2);
+  entityInternode.AddTInstance(procTmp);
+  // connection prot <-> attribut pour keepDIN2
+  procTmp.ExternalConnect(['DIN', 'DIN']);
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Modules pour l'etat realization_nostock
+  /////////////////////////////////////////////////////////////////////////////
+
+  // creation de 'keepLength3'
+
+  procTmp := TProcInstanceInternal.Create('keepLength3', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(1200);
+  procTmp.SetActiveState(3);
+  entityInternode.AddTInstance(procTmp);
+  // connection port <-> attribut pour keepLength3
+  procTmp.ExternalConnect(['LIN', 'LIN']);
+
+  // creation de 'keepDiameter3'
+
+  procTmp := TProcInstanceInternal.Create('keepDiameter3', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(1210);
+  procTmp.SetActiveState(3);
+  entityInternode.AddTInstance(procTmp);
+  // connection prot <-> attribut pour keepDiameter3
+  procTmp.ExternalConnect(['DIN', 'DIN']);
+
+
+
+
   /////////////////////////////////////////////////////////////////////////////
   // Modules pour l'état Maturity
   /////////////////////////////////////////////////////////////////////////////
@@ -624,12 +704,35 @@ begin
   procTmp := TProcInstanceInternal.Create('finalizeDemand',IdentityDyn,['inValue','kIn','outValue','kOut']);
   procTmp.SetProcName('Identity');
   procTmp.SetExeStep(1); // pas journalier
-  procTmp.SetExeOrder(2120);
+  procTmp.SetExeOrder(2110);
   procTmp.SetActiveState(4);
   entityInternode.AddTInstance(procTmp);
 
   // connection port <-> attribut pour 'finalizeDemand' de 'EntityLeaf'
   procTmp.ExternalConnect(['zero','demandIN']);
+
+
+  // creation de 'keepLength4'
+
+  procTmp := TProcInstanceInternal.Create('keepLength4', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(2115);
+  procTmp.SetActiveState(4);
+  entityInternode.AddTInstance(procTmp);
+  // connection port <-> attribut pour keepLength3
+  procTmp.ExternalConnect(['LIN', 'LIN']);
+
+  // creation de 'keepDiameter4'
+
+  procTmp := TProcInstanceInternal.Create('keepDiameter4', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(2120);
+  procTmp.SetActiveState(4);
+  entityInternode.AddTInstance(procTmp);
+  // connection prot <-> attribut pour keepDiameter3
+  procTmp.ExternalConnect(['DIN', 'DIN']);
 
 
   // creation de 'cancelDemand3'
@@ -666,6 +769,31 @@ begin
 
   // connection port <-> attribut pour 'demandIN' de 'EntityInternode'
   procTmp.ExternalConnect(['zero','stockIN']);
+
+  // creation de 'keepLength5'
+
+  procTmp := TProcInstanceInternal.Create('keepLength5', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(2160);
+  procTmp.SetActiveState(5);
+  entityInternode.AddTInstance(procTmp);
+  // connection port <-> attribut pour keepLength3
+  procTmp.ExternalConnect(['LIN', 'LIN']);
+
+  // creation de 'keepDiameter5'
+
+  procTmp := TProcInstanceInternal.Create('keepDiameter5', IdentityDyn, ['inValue', 'kIn', 'outValue', 'kOut']);
+  procTmp.SetProcName('Identity');
+  procTmp.SetExeStep(1);
+  procTmp.SetExeOrder(2170);
+  procTmp.SetActiveState(5);
+  entityInternode.AddTInstance(procTmp);
+  // connection prot <-> attribut pour keepDiameter3
+  procTmp.ExternalConnect(['DIN', 'DIN']);
+
+
+
 
   ////////////////////////////////////////////////////////
   // ajout d'un manageur
