@@ -49,13 +49,25 @@ public:
     virtual ~PlastoVisu()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-            _PlastoVisu = _PlastoVisu - _plasto_delay;
-        } else {
-            _PlastoVisu = _PlastoVisu + _EDD;
+        if (not update) {
+            if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+                _PlastoVisu = _PlastoVisu - _plasto_delay;
+            } else {
+                _PlastoVisu = _PlastoVisu + _EDD;
+            }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLASTO_VISU", t, utils::COMPUTE)
+            << "PLASTO_VISU = " << _PlastoVisu
+            << " ; plasto_delay = " << _plasto_delay
+            << " ; EDD = " << _EDD;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,

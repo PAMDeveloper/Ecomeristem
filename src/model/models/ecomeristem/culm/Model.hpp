@@ -104,6 +104,8 @@ public:
             phytomer_models.begin();
         std::vector < phytomer::Model* >::iterator previous_it;
         int i = 0;
+        double old_lig = _lig;
+        bool ok = true;
 
         _leaf_biomass_sum = 0;
         _leaf_last_demand_sum = 0;
@@ -175,6 +177,7 @@ public:
                 (*it)->get(t, phytomer::Model::REALLOC_BIOMASS);
             _senesc_dw_sum +=
                 (*it)->get(t, phytomer::Model::SENESC_DW);
+
             if ((*it)->is_computed(t, phytomer::Model::PREDIM)) {
                 // if leaf state = lig
                 if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
@@ -190,10 +193,16 @@ public:
                         _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
                     }
                 }
+            } else {
+                ok = false;
             }
             previous_it = it;
             ++it;
             ++i;
+        }
+
+        if (not ok) {
+            _lig = old_lig;
         }
 
 #ifdef WITH_TRACE

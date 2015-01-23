@@ -49,13 +49,25 @@ public:
     virtual ~LiguloVisu()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-            _LiguloVisu = _LiguloVisu - _plasto_delay;
-        } else {
-            _LiguloVisu = _LiguloVisu + _EDD;
+        if (not update) {
+            if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+                _LiguloVisu = _LiguloVisu - _plasto_delay;
+            } else {
+                _LiguloVisu = _LiguloVisu + _EDD;
+            }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LIGULO_VISU", t, utils::COMPUTE)
+            << "LIGULO_VISU = " << _LiguloVisu
+            << " ; plasto_delay = " << _plasto_delay
+            << " ; EDD = " << _EDD;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,

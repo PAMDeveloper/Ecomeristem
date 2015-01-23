@@ -56,28 +56,30 @@ public:
     { return is_ready(t, DELTA_T) and is_ready(t, PLASTO_DELAY) and
             is_ready(t, PHASE) and is_ready(t, GROW); }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_last_time != t) {
+        if (not update) {
             _DD_1 = _DD;
             _EDD_1 = _EDD;
-            _last_time = t;
+            if (_phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
+                double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
+
+                _BoolCrossedPlasto = tempDD - _plasto;
+                if (_BoolCrossedPlasto >= 0) {
+                    _DD = tempDD - _plasto;
+                } else {
+                    _DD = tempDD;
+                }
+                if (_BoolCrossedPlasto <= 0) {
+                    _EDD = _DeltaT + _PlastoDelay_1;
+                } else {
+                    _EDD = _plasto - _DD_1;
+                }
+            } else {
+                _DD = _DD_1;
+                _EDD = _EDD_1;
+            }
         }
-
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
-            double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
-
-            _BoolCrossedPlasto = tempDD - _plasto;
-            if (_BoolCrossedPlasto >= 0) {
-                _DD = tempDD - _plasto;
-            } else {
-                _DD = tempDD;
-            }
-            if (_BoolCrossedPlasto <= 0) {
-                _EDD = _DeltaT + _PlastoDelay_1;
-            } else {
-                _EDD = _plasto - _DD_1;
-            }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -91,10 +93,6 @@ public:
         utils::Trace::trace().flush();
 #endif
 
-       } else {
-           _DD = _DD_1;
-           _EDD = _EDD_1;
-       }
     }
 
     void init(double /* t */,
@@ -108,7 +106,6 @@ public:
         _BoolCrossedPlasto = 0;
         _PlastoDelay_1 = 0;
         _PlastoDelay = 0;
-        _last_time = -1;
     }
 
     virtual void put(double t, unsigned int index, double value)
@@ -136,7 +133,6 @@ private:
     double _EDD;
     double _EDD_1;
     double _BoolCrossedPlasto;
-    double _last_time;
 };
 
 } } } // namespace ecomeristem plant thermal_time

@@ -35,7 +35,8 @@ class Stock : public AbstractAtomicModel < Stock >
 public:
     enum internals { STOCK, GROW, DEFICIT };
     enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
-                     DELETED_LEAF_BIOMASS, REALLOC_BIOMASS_SUM };
+                     DELETED_LEAF_BIOMASS, REALLOC_BIOMASS_SUM,
+                     DAILY_SENESCED_LEAF_BIOMASS };
 
     Stock()
     {
@@ -79,12 +80,11 @@ public:
             stock = _stock_1 + std::min(_reservoir_dispo,
                                         _supply - _day_demand);
         }
+        if (_realloc_biomass_sum > 0) {
+            stock += _realloc_biomass_sum;
+        }
         _stock = std::max(0., _deficit + stock);
         _deficit = std::min(0., _deficit + stock);
-
-        if (_realloc_biomass_sum > 0) {
-            _stock += _realloc_biomass_sum;
-        }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()

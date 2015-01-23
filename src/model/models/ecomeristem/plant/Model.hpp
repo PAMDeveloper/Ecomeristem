@@ -59,6 +59,7 @@ public:
 private:
     void compute_assimilation(double t);
     void compute_culms(double t);
+    void compute_lig(double t);
     void compute_manager(double t);
     void compute_root(double t);
     void compute_sla(double t);

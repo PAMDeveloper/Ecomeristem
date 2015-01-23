@@ -50,10 +50,16 @@ public:
     virtual ~Ih()
     { }
 
-    void compute(double t, bool /* update */)
+    bool check(double t) const
+    { return is_ready(t, LIG) and is_ready(t, TT_LIG); }
+
+    void compute(double t, bool update)
     {
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-            _IH = _lig + std::min(1., _TT_lig / _ligulo);
+        if (not update or (update and _previous_phase == _phase)) {
+            _previous_phase = _phase;
+            if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+                _IH = _lig + std::min(1., _TT_lig / _ligulo);
+            }
         }
 
 #ifdef WITH_TRACE
@@ -86,6 +92,7 @@ private:
 // internal variable
     double _IH;
     double _ligulo;
+    double _previous_phase;
 
 // external variables
     double _lig;

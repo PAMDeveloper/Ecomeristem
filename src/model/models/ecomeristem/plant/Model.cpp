@@ -104,6 +104,7 @@ void Model::compute(double t, bool /* update */)
     bool create = false;
 
     _culm_is_computed = false;
+    compute_lig(t);
 //    lig_model(t);
     do {
         compute_assimilation(t);
@@ -113,6 +114,7 @@ void Model::compute(double t, bool /* update */)
         compute_manager(t);
         compute_tiller(t);
         compute_culms(t);
+        compute_lig(t);
 
         //TODO: c'est genant !
         compute_assimilation(t);
@@ -173,7 +175,6 @@ void Model::compute_culms(double t)
     _leaf_blade_area_sum = 0;
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
-    _lig = 0;
     while (it != culm_models.end()) {
         if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
             (*it)->put(t, culm::Model::DD,
@@ -232,9 +233,6 @@ void Model::compute_culms(double t)
         _senesc_dw_sum +=
             (*it)->get(t, culm::Model::SENESC_DW_SUM);
         if (it == culm_models.begin()) {
-            _lig += (*it)->get(t, culm::Model::LIG);
-        }
-        if (it == culm_models.begin()) {
             _predim_leaf_on_mainstem = (*it)->get(t, culm::Model::LEAF_PREDIM);
         }
         ++it;
@@ -253,6 +251,11 @@ void Model::compute_culms(double t)
     utils::Trace::trace().flush();
 #endif
 
+}
+
+void Model::compute_lig(double t)
+{
+    _lig = culm_models[0]->get(t, culm::Model::LIG);
 }
 
 void Model::compute_manager(double t)
