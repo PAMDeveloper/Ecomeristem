@@ -80,7 +80,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     water_balance_model.init(t, parameters);
     manager_model.init(t, parameters);
     tiller_manager_model.init(t, parameters);
-    lig_model.init(t, parameters);
+    // lig_model.init(t, parameters);
     sla_model.init(t, parameters);
 
     culm::Model* meristem = new culm::Model(1);
@@ -92,6 +92,11 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
     _leaf_blade_area_sum = 0;
+
+    _nbleaf_enabling_tillering =
+        parameters.get < double >("nb_leaf_enabling_tillering");
+
+    _parameters = &parameters;
 }
 
 void Model::compute(double t, bool /* update */)
@@ -99,7 +104,7 @@ void Model::compute(double t, bool /* update */)
     bool create = false;
 
     _culm_is_computed = false;
-    lig_model(t);
+//    lig_model(t);
     do {
         compute_assimilation(t);
         compute_water_balance(t);
@@ -108,8 +113,12 @@ void Model::compute(double t, bool /* update */)
         compute_manager(t);
         compute_tiller(t);
         compute_culms(t);
+
         //TODO: c'est genant !
         compute_assimilation(t);
+        compute_thermal_time(t);
+        //TODO: fin du genant !
+
         compute_root(t);
         compute_stock(t);
         compute_manager(t);
@@ -119,7 +128,6 @@ void Model::compute(double t, bool /* update */)
             create = true;
             create_phytomer(t);
         }
-
     } while (not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or
              not thermal_time_model.is_stable(t) or
@@ -157,7 +165,7 @@ void Model::compute_assimilation(double t)
 void Model::compute_culms(double t)
 {
     std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-    double _predim_leaf_on_mainstem = (*it)->get(t, culm::Model::LEAF_PREDIM);
+    double _predim_leaf_on_mainstem = 0;
 
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
@@ -165,6 +173,7 @@ void Model::compute_culms(double t)
     _leaf_blade_area_sum = 0;
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
+    _lig = 0;
     while (it != culm_models.end()) {
         if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
             (*it)->put(t, culm::Model::DD,
@@ -222,6 +231,12 @@ void Model::compute_culms(double t)
             (*it)->get(t, culm::Model::REALLOC_BIOMASS_SUM);
         _senesc_dw_sum +=
             (*it)->get(t, culm::Model::SENESC_DW_SUM);
+        if (it == culm_models.begin()) {
+            _lig += (*it)->get(t, culm::Model::LIG);
+        }
+        if (it == culm_models.begin()) {
+            _predim_leaf_on_mainstem = (*it)->get(t, culm::Model::LEAF_PREDIM);
+        }
         ++it;
     }
     _culm_is_computed = true;
@@ -342,8 +357,7 @@ void Model::compute_thermal_time(double t)
                                stock_model.get(t, stock::Model::GROW));
     }
     thermal_time_model.put(t, thermal_time::Model::TA, _ta);
-    thermal_time_model.put(t, thermal_time::Model::LIG,
-                           lig_model.get(t, Lig::LIG));
+    thermal_time_model.put(t, thermal_time::Model::LIG, _lig);
     // TODO
     thermal_time_model.put(t, thermal_time::Model::PLASTO_DELAY, 0);
     thermal_time_model(t);
@@ -369,7 +383,28 @@ void Model::compute_tiller(double t)
         tiller_manager_model.put(t, TillerManager::IC,
                                  stock_model.get(t, stock::Model::IC));
     }
+
+    {
+        int n = 0;
+
+        for (unsigned int i = 0; i < culm_models.size(); ++i) {
+            if (culm_models[i]->get_phytomer_number() >=
+                _nbleaf_enabling_tillering) {
+                ++n;
+            }
+        }
+        tiller_manager_model.put(t, TillerManager::TAE, n);
+    }
+
     tiller_manager_model(t);
+
+    if (tiller_manager_model.is_computed(t, TillerManager::NB_TILLERS)) {
+        if (tiller_manager_model.get(t, TillerManager::CREATE) > 0 and
+            tiller_manager_model.get(t, TillerManager::NB_TILLERS) > 0) {
+            create_culm(t, tiller_manager_model.get(t,
+                                                    TillerManager::NB_TILLERS));
+        }
+    }
 }
 
 void Model::compute_water_balance(double t)
@@ -383,6 +418,25 @@ void Model::compute_water_balance(double t)
     water_balance_model.put(t, water_balance::Model::WATER_SUPPLY,
                             _water_supply);
     water_balance_model(t);
+}
+
+void Model::create_culm(double t, int n)
+{
+    for (int i = 0; i < n; ++i) {
+        culm::Model* culm = new culm::Model(culm_models.size() + 1);
+
+        culm->init(t, *_parameters);
+        culm_models.push_back(culm);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << "CREATE CULM = " << culm_models.size()
+            << " ; n = " << n;
+        utils::Trace::trace().flush();
+#endif
+
+    }
 }
 
 void Model::create_phytomer(double t)

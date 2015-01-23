@@ -49,22 +49,34 @@ public:
     virtual ~TT_lig()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
+        if (not update) {
+            _TT_lig_1 = _TT_lig;
+        }
         if (_isFirstStep) {
             _isFirstStep = false;
         } else {
             if (_lig_1 == _lig) {
                 if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-                    _TT_lig = _TT_lig + _EDD;
+                    _TT_lig = _TT_lig_1 + _EDD;
                 }
             } else {
                 _TT_lig = 0;
             }
         }
 
-        // std::cout << "TT_LIG: " << _TT_lig << " " << _lig << " "
-        //           << _lig_1 << " " << _EDD << std::endl;
+ #ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("TT_lig", t, utils::COMPUTE)
+            << "TT_lig = " << _TT_lig
+            << " ; TT_lig[-1] = " << _TT_lig_1
+            << " ; phase = " << _phase
+            << " ; lig = " << _lig
+            << " ; lig[-1] = " << _lig_1
+            << " ; EDD = " << _EDD;
+        utils::Trace::trace().flush();
+#endif
 
     }
 
@@ -87,6 +99,7 @@ public:
 private:
 // internal variable
     double _TT_lig;
+    double _TT_lig_1;
     bool _isFirstStep;
 
 // external variables

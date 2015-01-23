@@ -66,8 +66,14 @@ private:
     void compute_thermal_time(double t);
     void compute_tiller(double t);
     void compute_water_balance(double t);
+    void create_culm(double t, int n);
     void create_phytomer(double t);
     bool culms_is_stable(double t);
+
+// parameters
+    double _nbleaf_enabling_tillering;
+
+    const model::models::ModelParameters* _parameters;
 
 // internal variables
     double _leaf_biomass_sum;
@@ -78,6 +84,7 @@ private:
     bool _culm_is_computed;
     double _realloc_biomass_sum;
     double _senesc_dw_sum;
+    double _lig;
 
 // external variables
     double _etp;
@@ -94,7 +101,7 @@ private:
     ecomeristem::plant::water_balance::Model water_balance_model;
     ecomeristem::plant::Manager manager_model;
     ecomeristem::plant::TillerManager tiller_manager_model;
-    ecomeristem::plant::Lig lig_model;
+//    ecomeristem::plant::Lig lig_model;
     ecomeristem::plant::Sla sla_model;
 
     std::vector < culm::Model* > culm_models;

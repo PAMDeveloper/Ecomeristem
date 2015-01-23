@@ -222,6 +222,10 @@ TEST_CASE("Stock_tests", "variables")
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
                   utils::DateTime::toJulianDayNumber(end));
 
+    check_values("Ic_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "IC");
     check_values("supply_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,

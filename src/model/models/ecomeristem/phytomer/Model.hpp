@@ -35,7 +35,7 @@ public:
     enum internals { LEAF_BIOMASS,  LEAF_BLADE_AREA,  LEAF_DEMAND,
                      LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY, REALLOC_BIOMASS,
                      SENESC_DW, LEAF_CORRECTED_BIOMASS,
-                     LEAF_CORRECTED_BLADE_AREA };
+                     LEAF_CORRECTED_BLADE_AREA, LEAF_LEN };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      SLA, GROW, PHASE, STOP, TEST_IC };
@@ -57,6 +57,7 @@ public:
                  leaf::Model::CORRECTED_BIOMASS);
         internal(LEAF_CORRECTED_BLADE_AREA, &leaf_model,
                  leaf::Model::CORRECTED_BLADE_AREA);
+        internal(LEAF_LEN, &leaf_model, leaf::Model::LEN);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);

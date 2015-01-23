@@ -49,6 +49,7 @@ Model::Model(int index, bool is_on_mainstem) :
     internal(CORRECTED_BIOMASS, &biomass_model, Biomass::CORRECTED_BIOMASS);
     internal(CORRECTED_BLADE_AREA, &blade_area_model,
              BladeArea::CORRECTED_BLADE_AREA);
+    internal(LEN, &len_model, Len::LEN);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);

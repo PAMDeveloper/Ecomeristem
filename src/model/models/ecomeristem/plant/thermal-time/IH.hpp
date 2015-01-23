@@ -50,15 +50,22 @@ public:
     virtual ~Ih()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             _IH = _lig + std::min(1., _TT_lig / _ligulo);
         }
 
-        // std::cout << utils::DateTime::toJulianDay(t)
-        //           << " - IH: " << _IH << " " << _lig << " " << _TT_lig
-        //           << " " << _ligulo << std::endl;
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("IH", t, utils::COMPUTE)
+            << "IH = " << _IH
+            << " ; phase = " << _phase
+            << " ; lig = " << _lig
+            << " ; TT_lig = " << _TT_lig
+            << " ; ligulo = " << _ligulo;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

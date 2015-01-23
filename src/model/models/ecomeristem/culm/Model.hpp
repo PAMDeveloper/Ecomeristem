@@ -33,11 +33,11 @@ class Model : public AbstractCoupledModel < Model >
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
                      LEAF_BLADE_AREA_SUM, LEAF_PREDIM, REALLOC_BIOMASS_SUM,
-                     SENESC_DW_SUM };
+                     SENESC_DW_SUM, LIG };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STOP, TEST_IC };
 
-    Model(bool is_first_culm) : _is_first_culm(is_first_culm)
+    Model(int index) : _index(index), _is_first_culm(index == 1)
     {
         internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
         internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
@@ -46,6 +46,7 @@ public:
         internal(LEAF_PREDIM, &Model::_leaf_predim);
         internal(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
         internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
+        internal(LIG, &Model::_lig);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);
@@ -73,6 +74,7 @@ public:
         phytomer_models.push_back(first_phytomer);
 
         _parameters = &parameters;
+        _first_day = t;
 
         _leaf_biomass_sum = 0;
         _leaf_last_demand_sum = 0;
@@ -80,6 +82,7 @@ public:
         _leaf_blade_area_sum = 0;
 
         _grow = 0;
+        _lig = 0;
     }
 
     bool is_stable(double t) const
@@ -108,6 +111,7 @@ public:
         _leaf_blade_area_sum = 0;
         _realloc_biomass_sum = 0;
         _senesc_dw_sum = 0;
+        _lig = 0;
         while (it != phytomer_models.end()) {
             (*it)->put(t, phytomer::Model::DD, _dd);
             (*it)->put(t, phytomer::Model::DELTA_T, _delta_t);
@@ -127,7 +131,7 @@ public:
                 }
             } else {
                 (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
-                _predim_leaf_on_mainstem);
+                           _predim_leaf_on_mainstem);
             }
             if (i == 0) {
                 (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
@@ -171,37 +175,68 @@ public:
                 (*it)->get(t, phytomer::Model::REALLOC_BIOMASS);
             _senesc_dw_sum +=
                 (*it)->get(t, phytomer::Model::SENESC_DW);
-            // TODO
-            if (i == 0) {
-                _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+            if ((*it)->is_computed(t, phytomer::Model::PREDIM)) {
+                // if leaf state = lig
+                if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
+                    (*it)->get(t, phytomer::Model::PREDIM)) {
+                    ++_lig;
+                }
+                if (i == 0) {
+                    _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                } else {
+                    // if leaf state = lig
+                    if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
+                        (*it)->get(t, phytomer::Model::PREDIM)) {
+                        _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                    }
+                }
             }
             previous_it = it;
             ++it;
             ++i;
         }
-    }
-
-    void create_phytomer(double t)
-    {
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM", t, utils::COMPUTE)
-            << "CREATE PHYTOMER: " << (phytomer_models.size() + 1);
+            << "Predim = " << _leaf_predim
+            << " ; index = " << _index
+            << " ; lig = " << _lig;
         utils::Trace::trace().flush();
 #endif
 
-        phytomer::Model* phytomer = new phytomer::Model(
-            phytomer_models.size() + 1, _is_first_culm);
-
-        phytomer->init(t, *_parameters);
-        phytomer_models.push_back(phytomer);
-        compute(t, true);
     }
+
+    void create_phytomer(double t)
+    {
+        if (t != _first_day) {
+
+#ifdef WITH_TRACE
+            utils::Trace::trace()
+                << utils::TraceElement("CULM", t, utils::COMPUTE)
+                << "CREATE PHYTOMER: " << (phytomer_models.size() + 1)
+                << " ; index = " << _index;
+            utils::Trace::trace().flush();
+#endif
+
+            phytomer::Model* phytomer = new phytomer::Model(
+                phytomer_models.size() + 1, _is_first_culm);
+
+            phytomer->init(t, *_parameters);
+            phytomer_models.push_back(phytomer);
+            compute(t, true);
+        }
+    }
+
+    int get_phytomer_number() const
+    { return phytomer_models.size(); }
 
 private:
 // parameters
+    int _index;
+    double _first_day;
     bool _is_first_culm;
+
     const model::models::ModelParameters* _parameters;
 
 //submodels
@@ -215,6 +250,7 @@ private:
     double _leaf_predim;
     double _realloc_biomass_sum;
     double _senesc_dw_sum;
+    double _lig;
 
 // external variables
     double _dd;

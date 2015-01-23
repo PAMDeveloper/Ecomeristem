@@ -29,51 +29,70 @@ namespace ecomeristem { namespace plant {
 class TillerManager : public AbstractAtomicModel < TillerManager >
 {
 public:
-    static const int BOOL_CROSSED_PLASTO = 0;
-    static const int IC = 1;
-    static const int PHENO_STAGE = 2;
+    enum internals { NB_TILLERS, CREATE };
+    enum externals { BOOL_CROSSED_PLASTO, IC, PHENO_STAGE, TAE };
 
     TillerManager()
     {
+        internal(NB_TILLERS, &TillerManager::_nb_tillers);
+        internal(CREATE, &TillerManager::_create);
+
         external(BOOL_CROSSED_PLASTO, &TillerManager::_boolCrossedPlasto);
         external(IC, &TillerManager::_IC);
         external(PHENO_STAGE, &TillerManager::_phenoStage);
+        external(TAE, &TillerManager::_tae);
     }
 
     virtual ~TillerManager()
     { }
+
+    virtual bool check(double t) const
+    { return is_ready(t, IC); }
 
     void init(double /* t */, const model::models::ModelParameters& parameters)
     {
         _Ict = parameters.get < double >("Ict");
         _nbleaf_enabling_tillering =
             parameters.get < double >("nb_leaf_enabling_tillering");
-        _P = parameters.get < double >("P");
+        _P = 0; // parameters.get < double >("P");
         _resp_Ict = parameters.get < double >("resp_Ict");
 
-        nbTillers = 0;
+        _nb_tillers = 0;
         nbExistingTillers = 1;
-        tae = 0;
+        _create = 0;
     }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_IC > _Ict) {
-            nbTillers += nbExistingTillers;
+        if (not update) {
+            _create = 0;
+            if (_IC > _Ict) {
+                _nb_tillers += nbExistingTillers;
+            }
+            if (_boolCrossedPlasto > 0 and _nb_tillers >= 1 and
+                _IC > _Ict * ((_P * _resp_Ict) + 1)) {
+                _nb_tillers = std::min(_nb_tillers, _tae);
+                nbExistingTillers += _nb_tillers;
+                _create = 1;
+            }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("TILLER MANAGER", t, utils::COMPUTE)
+            << "NB_TILLERS = " << _nb_tillers
+            << " ; create = " << _create
+            << " ; boolCrossedPlasto = " << _boolCrossedPlasto
+            << " ; IC = " << _IC
+            << " ; Ict = " << _Ict;
+        utils::Trace::trace().flush();
+#endif
+        } else {
+            _create = 0;
         }
-        if (_boolCrossedPlasto > 0 and nbTillers >= 1 and
-            _IC > _Ict * ((_P * _resp_Ict) + 1)) {
-            nbTillers = std::min(nbTillers, tae);
-            nbExistingTillers += nbTillers;
-            createCulm();
-            nbTillers = 0;
-        }
+
     }
 
 private:
-    void createCulm()
-    {
-    }
 
     // parameters
     double _Ict;
@@ -82,14 +101,15 @@ private:
     double _resp_Ict;
 
     // internal variables
-    unsigned int nbTillers;
+    double _nb_tillers;
     unsigned int nbExistingTillers;
-    unsigned int tae;
+    double _create;
 
     // external variables
     double _boolCrossedPlasto;
     double _IC;
     double _phenoStage;
+    double _tae;
 };
 
 } } // namespace ecomeristem plant

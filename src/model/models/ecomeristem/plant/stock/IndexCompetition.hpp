@@ -55,54 +55,58 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        double resDiv, mean;
-        double total = 0.;
-        int n = 0;
+        if (not _is_first_day) {
+            double resDiv, mean;
+            double total = 0.;
+            int n = 0;
 
-        if (_day_demand_[0] != 0) {
-            resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
-                _day_demand_[0];
-            total += resDiv;
-            ++n;
-        }
+            if (_day_demand_[0] != 0) {
+                resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
+                    _day_demand_[0];
+                total += resDiv;
+                ++n;
+            }
 
-        if (_day_demand_[0] != 0) {
-            resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
-                _day_demand_[0];
-            total += resDiv;
-            ++n;
-        }
+            if (_day_demand_[0] != 0) {
+                resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
+                    _day_demand_[0];
+                total += resDiv;
+                ++n;
+            }
 
-        if (_day_demand_[1] != 0) {
-            resDiv = (std::max(0., _seed_res_[1]) + _supply_[1]) /
-                _day_demand_[1];
-            total += resDiv;
-            ++n;
-        }
+            if (_day_demand_[1] != 0) {
+                resDiv = (std::max(0., _seed_res_[1]) + _supply_[1]) /
+                    _day_demand_[1];
+                total += resDiv;
+                ++n;
+            }
 
-        if (_day_demand_[2] != 0) {
-            resDiv = (std::max(0., _seed_res_[2]) + _supply_[2]) /
-                _day_demand_[2];
-            total += resDiv;
-            ++n;
-        }
+            if (_day_demand_[2] != 0) {
+                resDiv = (std::max(0., _seed_res_[2]) + _supply_[2]) /
+                    _day_demand_[2];
+                total += resDiv;
+                ++n;
+            }
 
-        if (n != 0) {
-            mean = total / n;
+            if (n != 0) {
+                mean = total / n;
+            } else {
+                mean = _ic_1;
+            }
+
+            double tmp = std::min(5., mean);
+
+            _ic_1 = _ic;
+            if (tmp == 0 and _seed_res_[0] == 0 and _seed_res_[1] == 0 and
+                _seed_res_[2] == 0) {
+                _ic = 0.001;
+                _test_ic = 0.001;
+            } else {
+                _ic = tmp;
+                _test_ic = std::min(1., std::sqrt(tmp));
+            }
         } else {
-            mean = _ic_1;
-        }
-
-        double tmp = std::min(5., mean);
-
-        _ic_1 = _ic;
-        if (tmp == 0 and _seed_res_[0] == 0 and _seed_res_[1] == 0 and
-            _seed_res_[2] == 0) {
-            _ic = 0.001;
-            _test_ic = 0.001;
-        } else {
-            _ic = tmp;
-            _test_ic = std::min(1., std::sqrt(tmp));
+            _is_first_day = false;
         }
 
 #ifdef WITH_TRACE
@@ -132,6 +136,7 @@ public:
         _supply_[2] = _supply_[1] = _supply_[0] = _supply = 0;
         _seed_res_[2] = _seed_res_[1] = _seed_res_[0] = _seed_res = 0;
         _day_demand_[2] = _day_demand_[1] = _day_demand_[0] = _day_demand = 0;
+        _is_first_day = true;
     }
 
     void put(double t, unsigned int index, double value)
@@ -159,6 +164,7 @@ private:
     double _ic;
     double _ic_1;
     double _test_ic;
+    bool _is_first_day;
 
 // external variables
     double _day_demand;
