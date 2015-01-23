@@ -146,12 +146,27 @@ public:
             }
             (**it)(t);
 
-            _leaf_biomass_sum += (*it)->get(t, phytomer::Model::LEAF_BIOMASS);
+            if ((*it)->get(t, phytomer::Model::LEAF_CORRECTED_BIOMASS) == 0) {
+                _leaf_biomass_sum +=
+                    (*it)->get(t, phytomer::Model::LEAF_BIOMASS);
+            } else {
+                _leaf_biomass_sum +=
+                    (*it)->get(t, phytomer::Model::LEAF_CORRECTED_BIOMASS);
+            }
+
             _leaf_last_demand_sum +=
                 (*it)->get(t, phytomer::Model::LEAF_LAST_DEMAND);
             _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
-            _leaf_blade_area_sum +=
-                (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
+
+            if ((*it)->get(t
+                           , phytomer::Model::LEAF_CORRECTED_BLADE_AREA) == 0) {
+                _leaf_blade_area_sum +=
+                    (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
+            } else {
+                _leaf_blade_area_sum +=
+                    (*it)->get(t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA);
+            }
+
             _realloc_biomass_sum +=
                 (*it)->get(t, phytomer::Model::REALLOC_BIOMASS);
             _senesc_dw_sum +=

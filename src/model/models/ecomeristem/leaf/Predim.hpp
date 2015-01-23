@@ -37,8 +37,8 @@ public:
     enum externals { FCSTR, PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      TEST_IC };
 
-    Predim(bool is_first_leaf, bool is_on_mainstem) :
-        _is_first_leaf(is_first_leaf), _is_on_mainstem(is_on_mainstem)
+    Predim(int index, bool is_first_leaf, bool is_on_mainstem) :
+        _index(index), _is_first_leaf(is_first_leaf), _is_on_mainstem(is_on_mainstem)
     {
         internal(PREDIM, &Predim::_predim);
 
@@ -70,17 +70,19 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_is_first_leaf and _is_on_mainstem) {
-            _predim = _Lef1;
-        } else if (not _is_first_leaf and _is_on_mainstem) {
-            _predim =  _predim_leaf_on_mainstem + _MGR * _test_ic * _fcstr;
-        } else if (_is_first_leaf and not _is_on_mainstem) {
-            _predim = 0.5 * (_predim_leaf_on_mainstem + _Lef1) *
-                _test_ic * _fcstr;
-        } else {
-            _predim = 0.5 * (_predim_leaf_on_mainstem +
-                             _predim_previous_leaf) +
-                _MGR * _test_ic * _fcstr;
+        if (t == _first_day) {
+            if (_is_first_leaf and _is_on_mainstem) {
+                _predim = _Lef1;
+            } else if (not _is_first_leaf and _is_on_mainstem) {
+                _predim =  _predim_leaf_on_mainstem + _MGR * _test_ic * _fcstr;
+            } else if (_is_first_leaf and not _is_on_mainstem) {
+                _predim = 0.5 * (_predim_leaf_on_mainstem + _Lef1) *
+                    _test_ic * _fcstr;
+            } else {
+                _predim = 0.5 * (_predim_leaf_on_mainstem +
+                                 _predim_previous_leaf) +
+                    _MGR * _test_ic * _fcstr;
+            }
         }
 
 #ifdef WITH_TRACE
@@ -88,6 +90,7 @@ public:
             << utils::TraceElement("LEAF_PREDIM", t, utils::COMPUTE)
             << "Predim = " << _predim
             << " ; Lef1 = " << _Lef1
+            << " ; index = " << _index
             << " ; is_first_leaf = " << _is_first_leaf
             << " ; is_on_mainstem = " << _is_on_mainstem
             << " ; MGR = " << _MGR
@@ -100,20 +103,22 @@ public:
 
     }
 
-    void init(double /* t */,
-              const model::models::ModelParameters& parameters)
+    void init(double t, const model::models::ModelParameters& parameters)
     {
         _Lef1 = parameters.get < double >("Lef1");
         _MGR = parameters.get < double >("MRG_init");
         _predim = 0;
+        _first_day = t;
     }
 
 private:
 // parameters
+    int _index;
     bool _is_first_leaf;
     bool _is_on_mainstem;
     double _Lef1;
     double _MGR;
+    double _first_day;
 
 // internal variable
     double _predim;

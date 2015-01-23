@@ -238,7 +238,7 @@ procedure ComputeFirstLastExpandedInternodeDiameterMainstem(var instance : TInst
 procedure ComputeStockInternodeMainstem(var instance : TInstance; var stock : Double);
 procedure ComputeStockInternodeTillers(var instance : TInstance; var stock : Double);
 procedure SetAliveToDead(var instance : TInstance; var alive : Double);
-procedure FindLengthPeduncle(var instance : TInstance; var lengthPeduncle : Double);
+procedure FindLengthPeduncle(var instance : TInstance; var lengthPeduncle : Double);                                          
 procedure ComputeLengthPeduncles(var instance : TInstance; var heightPanicleMainstem : Double);
 procedure ComputeCorrectedBladeArea(var instance : TInstance; var correctedBladeArea : Double);
 procedure ComputeCorrectedLeafBiomass(var instance : TInstance; var correctedLeafBiomass : Double);
@@ -4180,75 +4180,78 @@ var
   lastDemandMainstem, lastDemandTillers : Double;
 begin
   stateMeristem := (instance as TEntityInstance).GetCurrentState();
-  // on commence par le brin maitre
-  lastDemandMainstem := 0;
-  lastDemandTillers := 0;
-  le := (instance as TEntityInstance).LengthTInstanceList();
-  case stateMeristem of
-    4, 5, 6, 9 :
-    begin
-      for i := 0 to le - 1 do
+  if (stateMeristem >= 4) then
+  begin
+    // on commence par le brin maitre
+    lastDemandMainstem := 0;
+    lastDemandTillers := 0;
+    le := (instance as TEntityInstance).LengthTInstanceList();
+    case stateMeristem of
+      4, 5, 6, 9 :
       begin
-        currentInstance := (instance as TEntityInstance).GetTInstance(i);
-        if (currentInstance is TEntityInstance) then
+        for i := 0 to le - 1 do
         begin
-          if ( ((currentInstance as TEntityInstance).GetTAttribute('lastdemand') <> nil) and
-               (((currentInstance as TEntityInstance).GetCategory() = 'Leaf') or
-               ((currentInstance as TEntityInstance).GetCategory() = 'Internode') or
-               ((currentInstance as TEntityInstance).GetCategory() = 'Peduncle'))
-             ) then
+          currentInstance := (instance as TEntityInstance).GetTInstance(i);
+          if (currentInstance is TEntityInstance) then
           begin
-            entityMainstemContribution := (currentInstance as TEntityInstance).GetTAttribute('lastdemand').GetCurrentSample().value;
-            SRwriteln('contribution de : ' + currentInstance.GetName() + ' = ' + FloatToStr(entityMainstemContribution));
-            lastDemandMainstem := lastDemandMainstem + entityMainstemContribution;
-          end
-          else
-          begin
-            if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
+            if ( ((currentInstance as TEntityInstance).GetTAttribute('lastdemand') <> nil) and
+                 (((currentInstance as TEntityInstance).GetCategory() = 'Leaf') or
+                 ((currentInstance as TEntityInstance).GetCategory() = 'Internode') or
+                 ((currentInstance as TEntityInstance).GetCategory() = 'Peduncle'))
+               ) then
             begin
-              if ((currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller') <> nil) then
+              entityMainstemContribution := (currentInstance as TEntityInstance).GetTAttribute('lastdemand').GetCurrentSample().value;
+              SRwriteln('contribution de : ' + currentInstance.GetName() + ' = ' + FloatToStr(entityMainstemContribution));
+              lastDemandMainstem := lastDemandMainstem + entityMainstemContribution;
+            end
+            else
+            begin
+              if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
               begin
-                entityTillerContribution := (currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller').GetCurrentSample().value;
-                SRwriteln('contribution de : ' + currentInstance.GetName() + ' = ' + FloatToStr(entityTillerContribution));
-                lastDemandTillers := lastDemandTillers + entityTillerContribution;
+                if ((currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller') <> nil) then
+                begin
+                  entityTillerContribution := (currentInstance as TEntityInstance).GetTAttribute('last_demand_tiller').GetCurrentSample().value;
+                  SRwriteln('contribution de : ' + currentInstance.GetName() + ' = ' + FloatToStr(entityTillerContribution));
+                  lastDemandTillers := lastDemandTillers + entityTillerContribution;
+                end;
               end;
             end;
           end;
         end;
-      end;
-      sample := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample();
-      sample.value := lastDemandMainstem;
-      (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').SetSample(sample);
-      SRwriteln('lastDemandMainstem : ' + FloatToStr(lastDemandMainstem));
-      sample := (instance as TEntityInstance).GetTAttribute('lastDemandTillers').GetCurrentSample();
-      sample.value := lastDemandTillers;
-      (instance as TEntityInstance).GetTAttribute('lastDemandTillers').SetSample(sample);
-      SRwriteln('lastDemandTillers : ' + FloatToStr(lastDemandTillers));
-      sample := ((instance as TEntityInstance).GetTAttribute('lastDemand') as TAttributeTableOut).GetCurrentSample();
-      sample.value := lastDemandMainstem + lastDemandTillers;
-      (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
-      SRwriteln('lastDemand : ' + FloatToStr(lastDemandMainstem + lastDemandTillers));
-    end
-    else
-    begin
-      if ((instance as TEntityInstance).GetTAttribute('lastDemandMainstem') <> nil) then
-      begin
         sample := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample();
-        sample.value := 0;
+        sample.value := lastDemandMainstem;
         (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').SetSample(sample);
-        SRwriteln('lastDemandMainstem : ' + FloatToStr(sample.value));
-      end;
-      if ((instance as TEntityInstance).GetTAttribute('lastDemandTillers') <> nil) then
-      begin
+        SRwriteln('lastDemandMainstem : ' + FloatToStr(lastDemandMainstem));
         sample := (instance as TEntityInstance).GetTAttribute('lastDemandTillers').GetCurrentSample();
-        sample.value := 0;
+        sample.value := lastDemandTillers;
         (instance as TEntityInstance).GetTAttribute('lastDemandTillers').SetSample(sample);
-        SRwriteln('lastDemandTillers : ' + FloatToStr(sample.value));
+        SRwriteln('lastDemandTillers : ' + FloatToStr(lastDemandTillers));
+        sample := ((instance as TEntityInstance).GetTAttribute('lastDemand') as TAttributeTableOut).GetCurrentSample();
+        sample.value := lastDemandMainstem + lastDemandTillers;
+        (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
+        SRwriteln('lastDemand : ' + FloatToStr(lastDemandMainstem + lastDemandTillers));
+      end
+      else
+      begin
+        if ((instance as TEntityInstance).GetTAttribute('lastDemandMainstem') <> nil) then
+        begin
+          sample := (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').GetCurrentSample();
+          sample.value := 0;
+          (instance as TEntityInstance).GetTAttribute('lastDemandMainstem').SetSample(sample);
+          SRwriteln('lastDemandMainstem : ' + FloatToStr(sample.value));
+        end;
+        if ((instance as TEntityInstance).GetTAttribute('lastDemandTillers') <> nil) then
+        begin
+          sample := (instance as TEntityInstance).GetTAttribute('lastDemandTillers').GetCurrentSample();
+          sample.value := 0;
+          (instance as TEntityInstance).GetTAttribute('lastDemandTillers').SetSample(sample);
+          SRwriteln('lastDemandTillers : ' + FloatToStr(sample.value));
+        end;
+        sample := ((instance as TEntityInstance).GetTAttribute('lastDemand') as TAttributeTableOut).GetCurrentSample();
+        sample.value := 0;
+        (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
+        SRwriteln('lastDemand : ' + FloatToStr(sample.value));
       end;
-      sample := ((instance as TEntityInstance).GetTAttribute('lastDemand') as TAttributeTableOut).GetCurrentSample();
-      sample.value := 0;
-      (instance as TEntityInstance).GetTAttribute('lastDemand').SetSample(sample);
-      SRwriteln('lastDemand : ' + FloatToStr(sample.value));
     end;
   end;
 end;

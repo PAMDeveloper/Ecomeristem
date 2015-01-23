@@ -63,13 +63,24 @@ void check_values(const std::string& file_name,
 	boost::split(columns, l, boost::is_any_of(" \t\n"),
                      boost::token_compress_on);
 
-        std::string info = (boost::format("[%1%] %2% => %3%") % var_name %
-                            utils::DateTime::toJulianDay(begin + j) % j).str();
+        std::string info = (boost::format("[%1%] %2% => %3% [%4%/%5%]") %
+                            var_name %
+                            utils::DateTime::toJulianDay(begin + j) % j %
+           columns[2] %  view.get(t, var_name)).str();
+
+        // std::cout << "TEST - "
+        //           << utils::DateTime::toJulianDay(begin + j) << " "
+        //           << var_name << " = "
+        //           << columns[2] << " <=> "
+        //           << view.get(t, var_name)
+        //           << std::endl;
+
 
         CAPTURE(info);
-        REQUIRE(boost::lexical_cast < double >(
-                    columns[2]) == Approx(view.get(t, var_name))
-            );
+        // REQUIRE(boost::lexical_cast < double >(
+        //             columns[2]) == Approx(view.get(t, var_name)));
+        REQUIRE(fabs(boost::lexical_cast < double >(
+                    columns[2]) - view.get(t, var_name)) < 1e-10);
         ++t;
     }
 }
@@ -215,10 +226,6 @@ TEST_CASE("Stock_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "SUPPLY");
-    check_values("reservoirDispo_out.txt",
-                 utils::DateTime::toJulianDayNumber(begin),
-                 utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "RESERVOIR_DISPO");
     check_values("stock_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
@@ -227,6 +234,10 @@ TEST_CASE("Stock_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "DEFICIT");
+    check_values("reservoirDispo_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "RESERVOIR_DISPO");
     check_values("dayDemand_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,

@@ -34,14 +34,16 @@ namespace ecomeristem { namespace leaf {
 class Biomass : public AbstractAtomicModel < Biomass >
 {
 public:
-    enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW };
-    enum externals { BLADE_AREA, SLA, GROW, PHASE, TT, LIFE_SPAN };
+    enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW, CORRECTED_BIOMASS };
+    enum externals { BLADE_AREA, SLA, GROW, PHASE, TT, LIFE_SPAN,
+                     CORRECTED_BLADE_AREA };
 
     Biomass(int index) : _index(index)
     {
         internal(BIOMASS, &Biomass::_biomass);
         internal(REALLOC_BIOMASS, &Biomass::_realloc_biomass);
         internal(SENESC_DW, &Biomass::_senesc_dw);
+        internal(CORRECTED_BIOMASS, &Biomass::_corrected_biomass);
 
         external(BLADE_AREA, &Biomass::_blade_area);
         external(SLA, &Biomass::_sla);
@@ -49,6 +51,7 @@ public:
         external(PHASE, &Biomass::_phase);
         external(TT, &Biomass::_TT);
         external(LIFE_SPAN, &Biomass::_life_span);
+        external(CORRECTED_BLADE_AREA, &Biomass::_corrected_blade_area);
     }
 
     virtual ~Biomass()
@@ -60,24 +63,28 @@ public:
 
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
+            _corrected_biomass = 0;
             _realloc_biomass = 0;
             _sla_cste = _sla;
+            _old_biomass = _biomass;
         } else {
             if (_phase != plant::NOGROWTH) {
                 if (not _lig) {
                     _lig = _phase == plant::LIG;
                     _biomass = (1. / _G_L) * _blade_area / _sla_cste;
+                    _corrected_biomass = 0;
                     _realloc_biomass = 0;
                     _old_biomass = _biomass;
                 } else {
                     if (not update) {
-                        _old_biomass = _corrected_biomass;
+                        if (_corrected_biomass > 0) {
+                            _old_biomass = _corrected_biomass;
+                        } else {
+                            _old_biomass = _biomass;
+                        }
                     }
-                    // TODO : strange !!!!
-                    // _biomass -= _blade_area * (1 + _G_L) *
-                    //     (_TT / _life_span) / _sla_cste;
-                    _corrected_biomass = _biomass - _blade_area * (1 + _G_L) *
-                        (_TT / (_life_span - _TT)) / _sla_cste;
+                    _corrected_biomass = _biomass - _blade_area *
+                        (1 + _G_L) * (_TT / _life_span) / _sla_cste;
                     _realloc_biomass = (_old_biomass - _corrected_biomass) *
                         _realocationCoeff;
                     _senesc_dw = (_old_biomass - _corrected_biomass) *
@@ -100,7 +107,8 @@ public:
             << " ; life_span = " << _life_span
             << " ; old_biomass = " << _old_biomass
             << " ; realloc_biomass = " << _realloc_biomass
-            << " ; senesc_dw = " << _senesc_dw;
+            << " ; senesc_dw = " << _senesc_dw
+            << " ; lig = " << _lig;
         utils::Trace::trace().flush();
 #endif
 
@@ -133,6 +141,7 @@ private:
 
 // external variables
     double _blade_area;
+    double _corrected_blade_area;
     double _sla;
     double _sla_cste;
     double _grow;

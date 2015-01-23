@@ -119,6 +119,7 @@ void Model::compute(double t, bool /* update */)
             create = true;
             create_phytomer(t);
         }
+
     } while (not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or
              not thermal_time_model.is_stable(t) or

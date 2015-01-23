@@ -43,8 +43,14 @@ public:
     virtual ~TillerManager()
     { }
 
-    void init(double /* t */, const model::models::ModelParameters& /* parameters */)
+    void init(double /* t */, const model::models::ModelParameters& parameters)
     {
+        _Ict = parameters.get < double >("Ict");
+        _nbleaf_enabling_tillering =
+            parameters.get < double >("nb_leaf_enabling_tillering");
+        _P = parameters.get < double >("P");
+        _resp_Ict = parameters.get < double >("resp_Ict");
+
         nbTillers = 0;
         nbExistingTillers = 1;
         tae = 0;
@@ -52,22 +58,28 @@ public:
 
     void compute(double /* t */, bool /* update */)
     {
-        if (_IC > Ict) {
+        if (_IC > _Ict) {
             nbTillers += nbExistingTillers;
         }
         if (_boolCrossedPlasto > 0 and nbTillers >= 1 and
-            _IC > Ict * ((P * resp_Ict) + 1)) {
+            _IC > _Ict * ((_P * _resp_Ict) + 1)) {
             nbTillers = std::min(nbTillers, tae);
             nbExistingTillers += nbTillers;
+            createCulm();
+            nbTillers = 0;
         }
     }
 
 private:
+    void createCulm()
+    {
+    }
+
     // parameters
-    double Ict;
-    double nbleaf_enabling_tillering;
-    double P;
-    double resp_Ict;
+    double _Ict;
+    double _nbleaf_enabling_tillering;
+    double _P;
+    double _resp_Ict;
 
     // internal variables
     unsigned int nbTillers;

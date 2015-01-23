@@ -38,6 +38,7 @@ public:
     Ler(int index) : _index(index)
     {
         internal(LER, &Ler::_ler);
+
         external(REDUCTION_LER, &Ler::_reduction_ler);
         external(PREDIM, &Ler::_predim);
     }
@@ -45,14 +46,26 @@ public:
     virtual ~Ler()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    // si activé alors pb !
+    // virtual bool check(double t) const
+    // { return is_ready(t, PREDIM); }
+
+    void compute(double t, bool /* update */)
     {
         _ler = _predim * _reduction_ler / (_plasto + _index *
                                            (_ligulo - _plasto));
 
-        // std::cout << "LER: " << _ler << " " << _predim << " "
-        //           << _reduction_ler << " " << _plasto
-        //           << " " << _index << " " << _ligulo << std::endl;
+ #ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("LEAF_LER", t, utils::COMPUTE)
+            << "LER = " << _ler
+            << " ; predim = " << _predim
+            << " ; reduction_ler = " << _reduction_ler
+            << " ; plasto = " << _plasto
+            << " ; index = " << _index
+            << " ; ligulo = " << _ligulo;
+        utils::Trace::trace().flush();
+#endif
 
     }
 

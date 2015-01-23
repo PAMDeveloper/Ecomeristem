@@ -51,7 +51,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_LEN", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_WIDTH", t, utils::COMPUTE)
             << "Width = " << _width
             << " ; len = " << _len
             << " ; WLR = " << _WLR

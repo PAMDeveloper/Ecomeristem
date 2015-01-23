@@ -32,7 +32,8 @@ Model::Model(int index, bool is_on_mainstem) :
     _is_first_leaf(_index == 1), _is_on_mainstem(is_on_mainstem),
     biomass_model(index),
     exp_time_model(_is_first_leaf, _is_on_mainstem),
-    predim_model(_is_first_leaf, _is_on_mainstem),
+    len_model(index),
+    predim_model(index, _is_first_leaf, _is_on_mainstem),
     blade_area_model(index),
     ler_model(index),
     life_span_model(index)
@@ -45,6 +46,9 @@ Model::Model(int index, bool is_on_mainstem) :
     internal(PLASTO_DELAY, &plasto_delay_model, PlastoDelay::PLASTO_DELAY);
     internal(REALLOC_BIOMASS, &biomass_model, Biomass::REALLOC_BIOMASS);
     internal(SENESC_DW, &biomass_model, Biomass::SENESC_DW);
+    internal(CORRECTED_BIOMASS, &biomass_model, Biomass::CORRECTED_BIOMASS);
+    internal(CORRECTED_BLADE_AREA, &blade_area_model,
+             BladeArea::CORRECTED_BLADE_AREA);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);
@@ -175,6 +179,8 @@ void Model::compute(double t, bool /* update */)
                       manager_model.get(t, Manager::LEAF_PHASE));
     biomass_model.put(t, Biomass::BLADE_AREA,
                       blade_area_model.get(t, BladeArea::BLADE_AREA));
+    biomass_model.put(t, Biomass::CORRECTED_BLADE_AREA,
+                      blade_area_model.get(t, BladeArea::CORRECTED_BLADE_AREA));
     biomass_model.put(
         t, Biomass::TT,
         thermal_time_since_ligulation_model.get(

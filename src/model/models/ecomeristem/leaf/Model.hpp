@@ -46,7 +46,8 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { BIOMASS, BLADE_AREA, DEMAND, LAST_DEMAND, PREDIM,
-                     PLASTO_DELAY, REALLOC_BIOMASS, SENESC_DW };
+                     PLASTO_DELAY, REALLOC_BIOMASS, SENESC_DW,
+                     CORRECTED_BIOMASS, CORRECTED_BLADE_AREA };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
                      SLA, GROW, PHASE, STOP, TEST_IC };

@@ -34,12 +34,14 @@ namespace ecomeristem { namespace leaf {
 class BladeArea : public AbstractAtomicModel < BladeArea >
 {
 public:
-    enum internals { BLADE_AREA };
+    enum internals { BLADE_AREA, CORRECTED_BLADE_AREA };
     enum externals { LEN, WIDTH, PHASE, LIFE_SPAN, TT };
 
     BladeArea(int index) : _index(index)
     {
         internal(BLADE_AREA, &BladeArea::_blade_area);
+        internal(CORRECTED_BLADE_AREA, &BladeArea::_corrected_blade_area);
+
         external(LEN, &BladeArea::_len);
         external(WIDTH, &BladeArea::_width);
         external(PHASE, &BladeArea::_phase);
@@ -54,18 +56,20 @@ public:
     {
         _blade_area = _len * _width * _allo_area / _LL_BL;
         if (not _lig) {
+            _corrected_blade_area = 0;
             _lig = _phase == plant::LIG;
         } else {
-            _blade_area *=  1 - _TT / _life_span;
             if (_blade_area < 0) {
                 _blade_area = 0;
             }
+            _corrected_blade_area = _blade_area * (1 - _TT / _life_span);
         }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("LEAF_BLADE_AREA", t, utils::COMPUTE)
             << "BladeArea = " << _blade_area
+            << " ; correctedBladeArea = " << _corrected_blade_area
             << " ; index = " << _index
             << " ; Len = " << _len
             << " ; Width = " << _width
@@ -86,6 +90,7 @@ public:
         _width = 0;
         _phase = plant::INITIAL;
         _lig = false;
+        _corrected_blade_area = 0;
     }
 
 private:
@@ -96,6 +101,7 @@ private:
 // internal variable
     double _blade_area;
     double _blade_area_1;
+    double _corrected_blade_area;
     bool _lig;
     int _index;
 

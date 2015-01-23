@@ -37,7 +37,7 @@ public:
     enum internals { LEN };
     enum externals { DD, DELTA_T, GROW, PHASE, LER, EXP_TIME, PREDIM };
 
-    Len()
+    Len(int index) : _index(index)
     {
         internal(LEN, &Len::_len);
         external(DD, &Len::_dd);
@@ -70,6 +70,7 @@ public:
         utils::Trace::trace()
             << utils::TraceElement("LEAF_LEN", t, utils::COMPUTE)
             << "Len = " << _len
+            << " ; index = " << _index
             << " ; len[-1] = " << _len_1
             << " ; phase = " << _phase
             << " ; DeltaT = " << _delta_t
@@ -89,6 +90,9 @@ public:
     }
 
 private:
+// parameters
+    int _index;
+
 // internal variable
     double _len;
     double _len_1;

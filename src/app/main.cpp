@@ -73,13 +73,13 @@ static void run(const std::string& /* path */, int /* verbose */)
     std::string date;
 
     std::cout.precision(10);
-    std::cout << "**************** 27-01-2010 *******************" << std::endl;
-    utils::DateTime::format_date("27-01-2010", date);
+    std::cout << "**************** 23-01-2010 *******************" << std::endl;
+    utils::DateTime::format_date("23-01-2010", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()
               << std::endl;
-    std::cout << "**************** 28-01-2010 *******************" << std::endl;
-    utils::DateTime::format_date("28-01-2010", date);
+    std::cout << "**************** 24-01-2010 *******************" << std::endl;
+    utils::DateTime::format_date("24-01-2010", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()
               << std::endl;

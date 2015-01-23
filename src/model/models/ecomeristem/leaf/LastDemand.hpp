@@ -66,7 +66,8 @@ public:
             << "LastDemand = " << _last_demand << " ; phase = " << _phase
             << " ; Biomass = " << _biomass
             << " ; Biomass[-1] = " << _biomass_1
-            << " ; Biomass[-2] = " << _biomass_2;
+            << " ; Biomass[-2] = " << _biomass_2
+            << " ; lig = " << _lig;
         utils::Trace::trace().flush();
 #endif
 

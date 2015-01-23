@@ -67,7 +67,7 @@ public:
         if (not update) {
             _stock_1 = _stock;
         }
-        if (_seed_res > 0) {
+        if (_seed_res > 0 or _seed_res_1 > 0) {
             if (_seed_res > _day_demand) {
                 stock = _stock_1 + std::min(_reservoir_dispo, _supply);
             } else {
