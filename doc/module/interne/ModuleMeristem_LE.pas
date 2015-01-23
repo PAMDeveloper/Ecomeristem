@@ -83,7 +83,7 @@ Procedure UpdateLeafLength_LE(const LER, deltaT, exp_time : double ; var len : d
 Procedure ComputeReservoirDispo_LE(const leafStockMax,sumOfLeavesBiomass,stock : double ; var reservoirDispo : double);
 Procedure UpdateSeedres_LE(var seedres, dayDemand : double);
 Procedure UpdateSeedres2_LE(const reservoirDispo, supply : double; var restDayDemand, seedres, dayDemand, deficit, stock : double);
-Procedure UpdateStock_LE(const dayDemand, reservoirDispo, supply : Double; var stock, deficit, seedres, surplus : Double);
+procedure UpdateStock_LE(const dayDemand, reservoirDispo, supply, dailySenescedLeafBiomass : Double; var stock, deficit, seedres, surplus : Double);
 Procedure UpdateSurplus_LE(const reservoirDispo, supply, seedres, restDayDemand, dayDemand : double; var surplus : double);
 Procedure ComputeIC_LE(const seedres,seedres_previous1,seedres_previous2,seedres_previous3,supply,supply_previous1,supply_previous2,supply_previous3,dayDemand,dayDemand_previous1,dayDemand_previous2,dayDemand_previous3, Ic_previous1 : double ; var Ic, testIc : double);
 Procedure UpdateNbTillerCount_LE(const Ic,IcThreshold,nbExistingTiller : Double; var nbTiller : Double);
@@ -257,6 +257,7 @@ procedure ComputeStructLeaf(var instance : TInstance; var structLeaf : Double);
 procedure ComputeSumOfBiomass(var instance : TInstance; var sumOfBiomass : Double);
 procedure ComputeWeightPanicle(var instance : TInstance; var weightPanicle, weightPanicleMainstem : Double);
 procedure SumOfDailySenescedLeafBiomassOnCulm(var instance : TInstance; var sumOfDailySenescedLeafBiomass : Double);
+procedure SumOfDailySenescedLeafBiomass(var instance : TInstance; var total : Double);
 
 
 
@@ -330,6 +331,7 @@ procedure ComputeStructLeafDyn(var instance : TInstance; var T : TPointerProcPar
 procedure ComputeSumOfBiomassDyn(var instance : TInstance; var T : TPointerProcParam);
 procedure ComputeWeightPanicleDyn(var instance : TInstance; var T : TPointerProcParam);
 procedure SumOfDailySenescedLeafBiomassOnCulmDyn(var instance : TInstance; var T : TPointerProcParam);
+procedure SumOfDailySenescedLeafBiomassDyn(var instance : TInstance; var T : TPointerProcParam);
 
 
 
@@ -1486,19 +1488,20 @@ end;
 @param dayDemand (In) demande journalière en biomasse
 @param stock (InOut) stock de biomasse
 *)
-Procedure UpdateStock_LE(const dayDemand, reservoirDispo, supply : Double; var stock, deficit, seedres, surplus : Double);
+procedure UpdateStock_LE(const dayDemand, reservoirDispo, supply, dailySenescedLeafBiomass: Double; var stock, deficit, seedres, surplus : Double);
 var
   restDayDemand, tmp : Double;
 begin
 	SRwriteln('AVANT');
   SRwriteln('-----');
-  SRwriteln('stock          --> ' + FloatToStr(stock));
-  SRwriteln('deficit        --> ' + FloatToStr(deficit));
-  SRwriteln('seedres        --> ' + FloatToStr(seedres));
-  SRwriteln('dayDemand      --> ' + FloatToStr(dayDemand));
-  SRwriteln('reservoirDispo --> ' + FloatToStr(reservoirDispo));
-  SRwriteln('supply         --> ' + FloatToStr(supply));
-  SRwriteln('surplus        --> ' + FloatToStr(surplus));
+  SRwriteln('stock                    --> ' + FloatToStr(stock));
+  SRwriteln('deficit                  --> ' + FloatToStr(deficit));
+  SRwriteln('seedres                  --> ' + FloatToStr(seedres));
+  SRwriteln('dayDemand                --> ' + FloatToStr(dayDemand));
+  SRwriteln('reservoirDispo           --> ' + FloatToStr(reservoirDispo));
+  SRwriteln('supply                   --> ' + FloatToStr(supply));
+  SRwriteln('surplus                  --> ' + FloatToStr(surplus));
+  SRwriteln('dailySenescedLeafBiomass --> ' + FloatToStr(dailySenescedLeafBiomass));
 	if (seedres > 0) then
   begin
     if (seedres > dayDemand) then
@@ -1521,19 +1524,20 @@ begin
     stock := stock + min(reservoirDispo, supply - dayDemand);
     surplus := max(supply - dayDemand - reservoirDispo, 0);
   end;
-  tmp := deficit + stock;
+  tmp := deficit + stock + dailySenescedLeafBiomass;
   deficit := Min(0, tmp);
   stock := Max(0, tmp);
 
   SRwriteln('APRES');
   SRWRITELN('-----');
-  SRwriteln('stock          --> ' + FloatToStr(stock));
-  SRwriteln('deficit        --> ' + FloatToStr(deficit));
-  SRwriteln('seedres        --> ' + FloatToStr(seedres));
-  SRwriteln('dayDemand      --> ' + FloatToStr(dayDemand));
-  SRwriteln('reservoirDispo --> ' + FloatToStr(reservoirDispo));
-  SRwriteln('supply         --> ' + FloatToStr(supply));
-  SRwriteln('surplus        --> ' + FloatToStr(surplus));
+  SRwriteln('stock                    --> ' + FloatToStr(stock));
+  SRwriteln('deficit                  --> ' + FloatToStr(deficit));
+  SRwriteln('seedres                  --> ' + FloatToStr(seedres));
+  SRwriteln('dayDemand                --> ' + FloatToStr(dayDemand));
+  SRwriteln('reservoirDispo           --> ' + FloatToStr(reservoirDispo));
+  SRwriteln('supply                   --> ' + FloatToStr(supply));
+  SRwriteln('surplus                  --> ' + FloatToStr(surplus));
+  SRwriteln('dailySenescedLeafBiomass --> ' + FloatToStr(dailySenescedLeafBiomass));
 end;
 
 
@@ -7062,6 +7066,33 @@ begin
   end;
 end;
 
+procedure SumOfDailySenescedLeafBiomass(var instance : TInstance; var total : Double);
+var
+  i, le : Integer;
+  currentInstance : TInstance;
+  sumOfSenescedBiomass : Double;
+begin
+  total := 0;
+  sumOfSenescedBiomass := (instance as TEntityInstance).GetTAttribute('sumOfDailySenescedLeafBiomassMainstem').GetCurrentSample().value;
+  SRwriteln('sumOfDailySenescedLeafBiomassMainstem --> ' + FloatToStr(sumOfSenescedBiomass));
+  total := total + sumOfSenescedBiomass;
+  le := (instance as TEntityInstance).LengthTInstanceList();
+  for i := 0 to le - 1 do
+  begin
+    currentInstance := (instance as TEntityInstance).GetTInstance(i);
+    if (currentInstance is TEntityInstance) then
+    begin
+      if ((currentInstance as TEntityInstance).GetCategory() = 'Tiller') then
+      begin
+        sumOfSenescedBiomass := (currentInstance as TEntityInstance).GetTAttribute('sumOfDailySenescedLeafBiomassTiller').GetCurrentSample().value;
+        SRwriteln(currentInstance.GetName() + ' : sumOfDailySenescedLeafBiomassTiller --> ' + FloatToStr(sumOfSenescedBiomass));
+        total := total + sumOfSenescedBiomass;
+      end;
+    end;
+  end;
+  SRwriteln('total --> ' + FloatToStr(total));
+end;
+
 
 //----------------------------------------------------------------------------
 // LISTE DES PROCEDURES DYNAMIQUES
@@ -7189,7 +7220,7 @@ end;
 
 Procedure UpdateStock_LEDyn(Var T : TPointerProcParam);
 Begin
-  UpdateStock_LE(T[0],T[1],T[2],T[3],T[4],T[5],T[6]);
+  UpdateStock_LE(T[0],T[1],T[2],T[3],T[4],T[5],T[6],T[7]);
 end;
 
 Procedure UpdateSurplus_LEDyn(Var T : TPointerProcParam);
@@ -7702,6 +7733,11 @@ begin
   SumOfDailySenescedLeafBiomassOnCulm(instance, T[0]);
 end;
 
+procedure SumOfDailySenescedLeafBiomassDyn(var instance : TInstance; var T : TPointerProcParam);
+begin
+  SumOfDailySenescedLeafBiomass(instance, T[0]);
+end;
+
 
 
 
@@ -7815,8 +7851,8 @@ PROC_DECLARATION := TProcInstanceInternal.Create('',UpdateSeedres2_LEDyn,['reser
 PROC_DECLARATION.SetProcName('UpdateSeedres2_LE');  
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
-PROC_DECLARATION := TProcInstanceInternal.Create('',UpdateStock_LEDyn,['dayDemand','kIn','reservoirDispo','kIn','supply','kIn','stock','kInOut','deficit','kInOut','seedres','kInOut','surplus','kOut']);
-PROC_DECLARATION.SetProcName('UpdateStock_LE'); 
+PROC_DECLARATION := TProcInstanceInternal.Create('',UpdateStock_LEDyn,['dayDemand','kIn','reservoirDispo','kIn','supply','kIn','dailySenescedLeafBiomass','kIn','stock','kInOut','deficit','kInOut','seedres','kInOut','surplus','kOut']);
+PROC_DECLARATION.SetProcName('UpdateStock_LE');
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
 PROC_DECLARATION := TProcInstanceInternal.Create('',UpdateSurplus_LEDyn,['reservoirDispo','kIn','supply','kIn','seedres','kIn','restDayDemand','kIn','dayDemand','kIn','surplus','kInOut']);
@@ -8225,6 +8261,10 @@ PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
 PROC_DECLARATION := TExtraProcInstanceInternal.Create('',SumOfDailySenescedLeafBiomassOnCulmDyn,['sumOfDailySenescedLeafBiomass', 'kOut']);
 PROC_DECLARATION.SetProcName('SumOfDailySenescedLeafBiomassOnCulm');
+PROC_LIBRARY.AddTProc(PROC_DECLARATION);
+
+PROC_DECLARATION := TExtraProcInstanceInternal.Create('',SumOfDailySenescedLeafBiomassDyn,['total', 'kOut']);
+PROC_DECLARATION.SetProcName('SumOfDailySenescedLeafBiomass');
 PROC_LIBRARY.AddTProc(PROC_DECLARATION);
 
 end.
