@@ -115,9 +115,9 @@ TEST_CASE("Thermal_time_tests", "variables")
     check_values("EDD_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "EDD");
-    // check_values("IH_out.txt", utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "IH");
+    check_values("IH_out.txt", utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "IH");
     check_values("ligulo_visu_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,

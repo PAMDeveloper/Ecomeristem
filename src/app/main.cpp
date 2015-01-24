@@ -73,19 +73,11 @@ static void run(const std::string& /* path */, int /* verbose */)
     std::string date;
 
     std::cout.precision(10);
-    utils::DateTime::format_date("21-02-2010", date);
+    utils::DateTime::format_date("27-02-2010", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()
               << std::endl;
-    utils::DateTime::format_date("22-02-2010", date);
-    std::cout << utils::Trace::trace().elements().filter_time(
-        utils::DateTime::toJulianDayNumber(date)).to_string()
-              << std::endl;
-    utils::DateTime::format_date("23-02-2010", date);
-    std::cout << utils::Trace::trace().elements().filter_time(
-        utils::DateTime::toJulianDayNumber(date)).to_string()
-              << std::endl;
-    utils::DateTime::format_date("24-02-2010", date);
+    utils::DateTime::format_date("28-02-2010", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()
               << std::endl;

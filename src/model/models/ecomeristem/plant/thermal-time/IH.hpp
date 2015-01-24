@@ -38,6 +38,7 @@ public:
     static const unsigned int LIG = 0;
     static const unsigned int TT_LIG = 1;
     static const unsigned int PHASE = 2;
+    static const unsigned int LIGULO_VISU = 3;
 
     Ih()
     {
@@ -45,6 +46,7 @@ public:
         external(LIG, &Ih::_lig);
         external(TT_LIG, &Ih::_TT_lig);
         external(PHASE, &Ih::_phase);
+        external(LIGULO_VISU, &Ih::_ligulo_visu);
     }
 
     virtual ~Ih()
@@ -58,7 +60,7 @@ public:
         if (not update or (update and _previous_phase == _phase)) {
             _previous_phase = _phase;
             if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-                _IH = _lig + std::min(1., _TT_lig / _ligulo);
+                _IH = _lig + std::min(1., _TT_lig / _ligulo_visu);
             }
         }
 
@@ -98,6 +100,7 @@ private:
     double _lig;
     double _TT_lig;
     double _phase;
+    double _ligulo_visu;
 };
 
 } } } // namespace ecomeristem plant thermal_time

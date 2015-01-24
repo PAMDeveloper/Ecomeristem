@@ -200,7 +200,9 @@ void Model::compute(double t, bool /* update */)
         << "Predim = " << _leaf_predim
         << " ; index = " << _index
         << " ; lig = " << _lig
-        << " ; leaf biomass sum = " << _leaf_biomass_sum;
+        << " ; leaf biomass sum = " << _leaf_biomass_sum
+        << " ; leaf number = "
+        << (_deleted_leaf_number + phytomer_models.size());
     utils::Trace::trace().flush();
 #endif
 

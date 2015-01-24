@@ -88,11 +88,6 @@ void Model::compute(double t, bool /* update */)
     TT_lig_model(t);
 
     IH_model.put(t, Ih::TT_LIG, TT_lig_model.get(t, TT_lig::TT_LIG));
-    IH_model.put(t, Ih::LIG, _lig);
-    IH_model.put(t, Ih::PHASE,
-                 ThermalTimeManager_model.get(t, ThermalTimeManager::PHASE));
-    IH_model(t);
-
     PlastoVisu_model.put(t, PlastoVisu::EDD, DD_model.get(t, Dd::EDD));
     PlastoVisu_model.put(t, PlastoVisu::PHASE,
                          ThermalTimeManager_model.get(
@@ -113,6 +108,13 @@ void Model::compute(double t, bool /* update */)
                              t, ThermalTimeManager::PHASE));
     LiguloVisu_model.put(t, LiguloVisu::PLASTO_DELAY, _plasto_delay);
     LiguloVisu_model(t);
+
+    IH_model.put(t, Ih::LIG, _lig);
+    IH_model.put(t, Ih::PHASE,
+                 ThermalTimeManager_model.get(t, ThermalTimeManager::PHASE));
+    IH_model.put(t, Ih::LIGULO_VISU,
+                 LiguloVisu_model.get(t, LiguloVisu::LIGULO_VISU));
+    IH_model(t);
 }
 
 } } } // namespace ecomeristem plant thermal_time
