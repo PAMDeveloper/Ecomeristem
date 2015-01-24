@@ -61,8 +61,12 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     surplus_model.init(t, parameters);
 }
 
-void Model::compute(double t, bool /* update */)
+void Model::compute(double t, bool update)
 {
+    if (not update) {
+        _stop = false;
+    }
+
     if (is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM) and
         is_ready(t, PHASE)) {
         day_demand_model.put(t, DayDemand::DEMAND_SUM, _demand_sum);
@@ -79,15 +83,19 @@ void Model::compute(double t, bool /* update */)
             supply_model.put(t, Supply::ASSIM, _assim);
             supply_model(t);
 
-            index_competition_model.put(t, IndexCompetition::DAY_DEMAND,
-                                        day_demand_model.get(
-                                            t, DayDemand::DAY_DEMAND));
-            index_competition_model.put(t, IndexCompetition::SEED_RES,
-                                        seed_res_model.get(t,
-                                                           SeedRes::SEED_RES));
-            index_competition_model.put(t, IndexCompetition::SUPPLY,
-                                        supply_model.get(t, Supply::SUPPLY));
-            index_competition_model(t);
+            if (not update or (update and not _stop)) {
+                index_competition_model.put(t, IndexCompetition::DAY_DEMAND,
+                                            day_demand_model.get(
+                                                t, DayDemand::DAY_DEMAND));
+                index_competition_model.put(
+                    t, IndexCompetition::SEED_RES,
+                    seed_res_model.get(t, SeedRes::SEED_RES));
+                index_competition_model.put(
+                    t, IndexCompetition::SUPPLY,
+                    supply_model.get(t, Supply::SUPPLY));
+                index_competition_model(t);
+                _stop = _phase == plant::NOGROWTH4;
+            }
 
             reservoir_dispo_model.put(t, ReservoirDispo::LEAF_BIOMASS_SUM,
                                       _leaf_biomass_sum);

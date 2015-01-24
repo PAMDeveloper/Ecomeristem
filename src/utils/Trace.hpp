@@ -153,7 +153,13 @@ public:
     }
 
     void clear()
-    { _trace.clear(); }
+    {
+        _trace.clear();
+        if (_instance) {
+            // delete _instance;
+            _instance = 0;
+        }
+    }
 
     const TraceElements& elements() const
     { return _trace; }
@@ -182,9 +188,12 @@ public:
 private:
     Trace()
     { _sstream = 0; }
+
     virtual ~Trace()
     {
-        delete _instance;
+        if (_instance) {
+            delete _instance;
+        }
         if (_sstream) {
             delete _sstream;
         }

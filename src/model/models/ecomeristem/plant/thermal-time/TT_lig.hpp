@@ -52,19 +52,28 @@ public:
     void compute(double t, bool update)
     {
         if (not update) {
-            _TT_lig_1 = _TT_lig;
+            _no_grow = false;
         }
-        if (_isFirstStep) {
-            _isFirstStep = false;
-        } else {
-            if (_lig_1 == _lig) {
-                if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
-                    _TT_lig = _TT_lig_1 + _EDD;
-                }
+        if (not _no_grow) {
+            if (not update) {
+                _TT_lig_1 = _TT_lig;
+                _no_grow = false;
+            }
+            if (_isFirstStep) {
+                _isFirstStep = false;
             } else {
-                _TT_lig = 0;
+                if (_lig_1 == _lig) {
+                    if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+                        _TT_lig = _TT_lig_1 + _EDD;
+                    } else {
+                        _no_grow = true;
+                    }
+                } else {
+                    _TT_lig = 0;
+                }
             }
         }
+
 
  #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -86,6 +95,7 @@ public:
         _TT_lig = 0;
         _isFirstStep = true;
         _lig_1 = 0;
+        _no_grow = false;
     }
 
     void put(double t, unsigned int index, double value)
@@ -101,6 +111,7 @@ private:
     double _TT_lig;
     double _TT_lig_1;
     bool _isFirstStep;
+    bool _no_grow;
 
 // external variables
     double _EDD;

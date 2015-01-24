@@ -112,6 +112,7 @@ private:
     unsigned int leaf_number;
     unsigned int culm_number;
     bool first_leaf;
+    double _last_time;
 
 // external variables
     double _stock;

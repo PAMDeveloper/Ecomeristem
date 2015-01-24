@@ -55,7 +55,9 @@ public:
             _phase_ = plant::INITIAL;
         } else if (_phase_ == plant::INITIAL and _len >= _predim) {
             _phase_ = plant::LIG;
-        } else if (_phase_ == plant::INITIAL and _phase == plant::NOGROWTH) {
+        } else if (_phase_ == plant::INITIAL and
+                   (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
+                    or _phase == plant::NOGROWTH4)) {
             _phase_ = plant::NOGROWTH;
         } else if (_phase_ == plant::NOGROWTH and
                    _phase == plant::PHYTOMER_MORPHO_GENESIS) {

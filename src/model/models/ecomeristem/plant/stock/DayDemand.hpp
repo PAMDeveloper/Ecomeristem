@@ -54,10 +54,15 @@ public:
     { return is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM)
             and is_ready(t, PHASE); }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_phase == ecomeristem::plant::NOGROWTH) {
+        if (not update) {
+            _stop = false;
+        }
+        if (_phase == ecomeristem::plant::NOGROWTH or
+            _phase == ecomeristem::plant::NOGROWTH4 or _stop) {
             _day_demand = 0;
+            _stop = _phase == ecomeristem::plant::NOGROWTH4;
         } else {
             _day_demand = _demand_sum + _leaf_last_demand_sum;
         }
@@ -82,6 +87,7 @@ public:
 private:
 // internal variable
     double _day_demand;
+    bool _stop;
 
 // external variables
     double _demand_sum;

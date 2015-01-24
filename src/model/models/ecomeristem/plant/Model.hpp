@@ -51,7 +51,14 @@ public:
     Model();
 
     virtual ~Model()
-    { }
+    {
+        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+
+        while (it != culm_models.end()) {
+            delete *it;
+            ++it;
+        }
+    }
 
     void compute(double t, bool /* update */);
     void init(double t, const model::models::ModelParameters& parameters);
@@ -73,6 +80,7 @@ private:
 
 // parameters
     double _nbleaf_enabling_tillering;
+    double _realocationCoeff;
 
     const model::models::ModelParameters* _parameters;
 
@@ -86,6 +94,7 @@ private:
     double _realloc_biomass_sum;
     double _senesc_dw_sum;
     double _lig;
+    double _deleted_leaf_biomass;
 
 // external variables
     double _etp;
@@ -93,6 +102,8 @@ private:
     double _radiation;
     double _ta;
     double _water_supply;
+    int _culm_index;
+    int _leaf_index;
 
 // submodels
     ecomeristem::plant::assimilation::Model assimilation_model;

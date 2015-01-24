@@ -95,8 +95,12 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
     _nbleaf_enabling_tillering =
         parameters.get < double >("nb_leaf_enabling_tillering");
+    _realocationCoeff = parameters.get < double >("realocationCoeff");
 
     _parameters = &parameters;
+
+    _culm_index = -1;
+    _leaf_index = -1;
 }
 
 void Model::compute(double t, bool /* update */)
@@ -104,6 +108,25 @@ void Model::compute(double t, bool /* update */)
     bool create = false;
 
     _culm_is_computed = false;
+
+    compute_manager(t);
+    if (_culm_index != -1 and _leaf_index != -1) {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << "DELETE LEAF: "
+            << " ; culm index = " << _culm_index
+            << " ; leaf index = " << _leaf_index;
+        utils::Trace::trace().flush();
+#endif
+
+        culm_models[_culm_index]->delete_leaf(_leaf_index);
+        stock_model.realloc_biomass(t, _deleted_leaf_biomass);
+    } else {
+        stock_model.realloc_biomass(t, 0);
+    }
+
     compute_lig(t);
 //    lig_model(t);
     do {
@@ -136,6 +159,37 @@ void Model::compute(double t, bool /* update */)
              not sla_model.is_stable(t) or not manager_model.is_stable(t) or
              not tiller_manager_model.is_stable(t) or not culms_is_stable(t) or
              not root_model.is_stable(t) or not stock_model.is_stable(t));
+
+    _culm_index = -1;
+    _leaf_index = -1;
+    _deleted_leaf_biomass = 0;
+    if (stock_model.get(t, stock::Model::STOCK) == 0) {
+        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+        int i = 0;
+
+        while (it != culm_models.end() and (*it)->get_phytomer_number() == 0) {
+            ++it;
+            ++i;
+        }
+        if (it != culm_models.end()) {
+            _culm_index = i;
+            _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
+            _deleted_leaf_biomass =
+                culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+        }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << "DELETE LEAF: "
+            << " ; culm index = " << _culm_index
+            << " ; leaf index = " << _leaf_index
+            << " ; leaf biomass = " << _deleted_leaf_biomass;
+        utils::Trace::trace().flush();
+#endif
+
+    }
+
 }
 
 void Model::compute_assimilation(double t)

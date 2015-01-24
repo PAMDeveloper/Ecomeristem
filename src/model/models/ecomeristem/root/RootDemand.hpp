@@ -59,15 +59,18 @@ public:
     {
         if (not update) {
             _root_biomass_1 = _root_biomass;
+            _stop = false;
         }
         if (_first_day == t) {
             _root_demand = _leaf_demand_sum * _root_demand_coef;
             _last_value = _root_demand;
             _root_biomass = _root_demand;
         } else {
-            if (_phase == ecomeristem::plant::NOGROWTH) {
+            if (_phase == ecomeristem::plant::NOGROWTH or
+                _phase == ecomeristem::plant::NOGROWTH4 or _stop) {
                 _root_demand = 0;
                 _last_value = 0;
+                _stop = _phase == ecomeristem::plant::NOGROWTH4;
             } else {
                 if (_leaf_demand_sum_1 == 0) {
                     _root_demand = _last_value * _root_demand_coef;
@@ -128,6 +131,7 @@ private:
     double _root_biomass_1;
     double _first_day;
     double _last_value;
+    bool _stop;
 
 // external variables
     double _leaf_demand_sum;

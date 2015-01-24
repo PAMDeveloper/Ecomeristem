@@ -53,60 +53,62 @@ public:
     { return is_ready(t, DAY_DEMAND) and is_ready(t, SEED_RES)
             and is_ready(t, SUPPLY); }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (not _is_first_day) {
-            double resDiv, mean;
-            double total = 0.;
-            int n = 0;
+        if (not update) {
+            if (not _is_first_day) {
+                double resDiv, mean;
+                double total = 0.;
+                int n = 0;
 
-            if (_day_demand_[0] != 0) {
-                resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
-                    _day_demand_[0];
-                total += resDiv;
-                ++n;
-            }
+                if (_day_demand_[0] != 0) {
+                    resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
+                        _day_demand_[0];
+                    total += resDiv;
+                    ++n;
+                }
 
-            if (_day_demand_[0] != 0) {
-                resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
-                    _day_demand_[0];
-                total += resDiv;
-                ++n;
-            }
+                if (_day_demand_[0] != 0) {
+                    resDiv = (std::max(0., _seed_res_[0]) + _supply_[0]) /
+                        _day_demand_[0];
+                    total += resDiv;
+                    ++n;
+                }
 
-            if (_day_demand_[1] != 0) {
-                resDiv = (std::max(0., _seed_res_[1]) + _supply_[1]) /
-                    _day_demand_[1];
-                total += resDiv;
-                ++n;
-            }
+                if (_day_demand_[1] != 0) {
+                    resDiv = (std::max(0., _seed_res_[1]) + _supply_[1]) /
+                        _day_demand_[1];
+                    total += resDiv;
+                    ++n;
+                }
 
-            if (_day_demand_[2] != 0) {
-                resDiv = (std::max(0., _seed_res_[2]) + _supply_[2]) /
-                    _day_demand_[2];
-                total += resDiv;
-                ++n;
-            }
+                if (_day_demand_[2] != 0) {
+                    resDiv = (std::max(0., _seed_res_[2]) + _supply_[2]) /
+                        _day_demand_[2];
+                    total += resDiv;
+                    ++n;
+                }
 
-            if (n != 0) {
-                mean = total / n;
+                if (n != 0) {
+                    mean = total / n;
+                } else {
+                    mean = _ic_1;
+                }
+
+                double tmp = std::min(5., mean);
+
+                _ic_1 = _ic;
+                if (tmp == 0 and _seed_res_[0] == 0 and _seed_res_[1] == 0 and
+                    _seed_res_[2] == 0) {
+                    _ic = 0.001;
+                    _test_ic = 0.001;
+                } else {
+                    _ic = tmp;
+                    _test_ic = std::min(1., std::sqrt(tmp));
+                }
             } else {
-                mean = _ic_1;
+                _is_first_day = false;
             }
-
-            double tmp = std::min(5., mean);
-
-            _ic_1 = _ic;
-            if (tmp == 0 and _seed_res_[0] == 0 and _seed_res_[1] == 0 and
-                _seed_res_[2] == 0) {
-                _ic = 0.001;
-                _test_ic = 0.001;
-            } else {
-                _ic = tmp;
-                _test_ic = std::min(1., std::sqrt(tmp));
-            }
-        } else {
-            _is_first_day = false;
         }
 
 #ifdef WITH_TRACE
@@ -115,12 +117,15 @@ public:
             << "IC = " << _ic
             << " ; testIC = " << _test_ic
             << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[0] = " << _seed_res_[0]
             << " ; SeedRes[-1] = " << _seed_res_[1]
             << " ; SeedRes[-2] = " << _seed_res_[2]
             << " ; Supply = " << _supply
+            << " ; Supply[0] = " << _supply_[0]
             << " ; Supply[-1] = " << _supply_[1]
             << " ; Supply[-2] = " << _supply_[2]
             << " ; DayDemand = " << _day_demand
+            << " ; DayDemand[0] = " << _day_demand_[0]
             << " ; DayDemand[-1] = " << _day_demand_[1]
             << " ; DayDemand[-2] = " << _day_demand_[2];
         utils::Trace::trace().flush();

@@ -26,6 +26,8 @@
 #include <model/models/ecomeristem/phytomer/Model.hpp>
 #include <utils/Trace.hpp>
 
+#include <deque>
+
 namespace ecomeristem { namespace culm {
 
 class Model : public AbstractCoupledModel < Model >
@@ -63,7 +65,14 @@ public:
     }
 
     virtual ~Model()
-    { }
+    {
+        std::deque < phytomer::Model* >::iterator it = phytomer_models.begin();
+
+        while (it != phytomer_models.end()) {
+            delete *it;
+            ++it;
+        }
+    }
 
     void init(double t, const model::models::ModelParameters& parameters)
     {
@@ -83,11 +92,12 @@ public:
 
         _grow = 0;
         _lig = 0;
+        _deleted_leaf_number = 0;
     }
 
     bool is_stable(double t) const
     {
-        std::vector < phytomer::Model* >::const_iterator it =
+        std::deque < phytomer::Model* >::const_iterator it =
             phytomer_models.begin();
         bool stable = true;
 
@@ -100,9 +110,9 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        std::vector < phytomer::Model* >::iterator it =
+        std::deque < phytomer::Model* >::iterator it =
             phytomer_models.begin();
-        std::vector < phytomer::Model* >::iterator previous_it;
+        std::deque < phytomer::Model* >::iterator previous_it;
         int i = 0;
         double old_lig = _lig;
         bool ok = true;
@@ -113,7 +123,7 @@ public:
         _leaf_blade_area_sum = 0;
         _realloc_biomass_sum = 0;
         _senesc_dw_sum = 0;
-        _lig = 0;
+        _lig = _deleted_leaf_number;
         while (it != phytomer_models.end()) {
             (*it)->put(t, phytomer::Model::DD, _dd);
             (*it)->put(t, phytomer::Model::DELTA_T, _delta_t);
@@ -141,6 +151,8 @@ public:
                 if ((*previous_it)->is_stable(t)) {
                     (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
                                (*previous_it)->get(t, phytomer::Model::PREDIM));
+                } else {
+                    (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
                 }
             }
             (*it)->put(t, phytomer::Model::SLA, _sla);
@@ -210,7 +222,8 @@ public:
             << utils::TraceElement("CULM", t, utils::COMPUTE)
             << "Predim = " << _leaf_predim
             << " ; index = " << _index
-            << " ; lig = " << _lig;
+            << " ; lig = " << _lig
+            << " ; leaf biomass sum = " << _leaf_biomass_sum;
         utils::Trace::trace().flush();
 #endif
 
@@ -237,8 +250,49 @@ public:
         }
     }
 
+    void delete_leaf(int index)
+    {
+        delete phytomer_models[index];
+        phytomer_models.erase(phytomer_models.begin() + index);
+        ++_deleted_leaf_number;
+    }
+
+    double get_leaf_biomass(double t, int index) const
+    {
+        double biomass = phytomer_models[index]->get(
+            t, phytomer::Model::LEAF_BIOMASS);
+        double corrected_biomass =
+            phytomer_models[index]->get(
+                t, phytomer::Model::LEAF_CORRECTED_BIOMASS);
+
+        if (corrected_biomass > 0) {
+            return corrected_biomass;
+        } else {
+            return biomass;
+        }
+    }
+
     int get_phytomer_number() const
     { return phytomer_models.size(); }
+
+    int get_first_ligulated_leaf_index(double t) const
+    {
+        std::deque < phytomer::Model* >::const_iterator it =
+            phytomer_models.begin();
+        int i = 0;
+
+        while (it != phytomer_models.end() and
+               (*it)->get(t, phytomer::Model::LEAF_LEN) !=
+               (*it)->get(t, phytomer::Model::PREDIM)) {
+            ++it;
+            ++i;
+        }
+        if (it != phytomer_models.end()) {
+            return i;
+        } else {
+            return -1;
+        }
+    }
 
 private:
 // parameters
@@ -249,7 +303,7 @@ private:
     const model::models::ModelParameters* _parameters;
 
 //submodels
-    std::vector < phytomer::Model* > phytomer_models;
+    std::deque < phytomer::Model* > phytomer_models;
 
 // internal
     double _leaf_biomass_sum;
@@ -260,6 +314,7 @@ private:
     double _realloc_biomass_sum;
     double _senesc_dw_sum;
     double _lig;
+    double _deleted_leaf_number;
 
 // external variables
     double _dd;

@@ -61,6 +61,9 @@ public:
     {
         double _old_biomass = 0;
 
+        if (not update) {
+            _stop = false;
+        }
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
             _corrected_biomass = 0;
@@ -68,7 +71,8 @@ public:
             _sla_cste = _sla;
             _old_biomass = _biomass;
         } else {
-            if (_phase != plant::NOGROWTH) {
+            if (_phase != plant::NOGROWTH and _phase != plant::NOGROWTH3
+                and _phase != plant::NOGROWTH4 and not _stop) {
                 if (not _lig) {
                     _lig = _phase == plant::LIG;
                     _biomass = (1. / _G_L) * _blade_area / _sla_cste;
@@ -90,6 +94,7 @@ public:
                     _senesc_dw = (_old_biomass - _corrected_biomass) *
                         (1 - _realocationCoeff);
                 }
+                _stop = _phase == plant::NOGROWTH4;
             }
         }
 
@@ -138,6 +143,7 @@ private:
     double _first_day;
     bool _lig;
     int _index;
+    bool _stop;
 
 // external variables
     double _blade_area;

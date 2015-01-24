@@ -54,16 +54,21 @@ public:
 
     void compute(double t, bool update)
     {
+        if (not update) {
+            _stop = false;
+        }
         if (_first_day == t) {
             _len = _ler * _dd;
         } else {
             if (not update) {
                 _len_1 = _len;
             }
-            if (_phase != plant::NOGROWTH) {
+            if (_phase != plant::NOGROWTH and _phase != plant::NOGROWTH3
+                and _phase != plant::NOGROWTH4 and not _stop) {
                 _len = std::min(_predim,
                                 _len_1 + _ler * std::min(_delta_t, _exp_time));
             }
+            _stop = _phase == plant::NOGROWTH4;
         }
 
 #ifdef WITH_TRACE
@@ -97,6 +102,7 @@ private:
     double _len;
     double _len_1;
     double _first_day;
+    bool _stop;
 
 // external variables
     double _dd;

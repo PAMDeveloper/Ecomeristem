@@ -115,6 +115,9 @@ public:
         leaf_model(t);
     }
 
+    const leaf::Model& leaf() const
+    { return leaf_model; }
+
 private:
 // parameters
     int _index;

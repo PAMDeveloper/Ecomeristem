@@ -83,9 +83,17 @@ void Manager::compute(double t, bool /* update */)
                 leaf_number += culm_number;
                 _state = NEW_PHYTOMER;
             }
+            if (_stock <= 0) {
+                _state = NOGROWTH2;
+            }
             break;
-        case NOGROWTH:
-        case DEAD:
+        case NOGROWTH: {
+            if (_stock > 0) {
+                _state = PHYTOMER_MORPHO_GENESIS;
+            }
+            break;
+        }
+        case DEAD: break;
         case NEW_PHYTOMER: {
             if (_phenoStage == nbleaf_culm_elong) {
                 _state = ELONG;
@@ -106,11 +114,25 @@ void Manager::compute(double t, bool /* update */)
         case NEW_PHYTOMER_NOGROWTH2:
         case NEW_PHYTOMER_NOGROWTH3:
         case NEW_PHYTOMER_NOGROWTH4:
-        case NOGROWTH2:
-        case NOGROWTH3:
-        case NOGROWTH4:
-        case NOGROWTH5:
-        case NEW_PHYTOMER2:
+        case NOGROWTH2: {
+            _last_time = t;
+            _state = NOGROWTH3;
+            break;
+        }
+        case NOGROWTH3: {
+            if (t == _last_time + 1) {
+                _state = NOGROWTH4;
+            }
+            break;
+        }
+        case NOGROWTH4: {
+            if (_stock > 0) {
+                _state = PHYTOMER_MORPHO_GENESIS;
+            }
+            break;
+        }
+        case NOGROWTH5: break;
+        case NEW_PHYTOMER2: break;
         case NEW_PHYTOMER3: {
             if (_boolCrossedPlasto <= 0) {
                 _state = PHYTOMER_MORPHO_GENESIS;

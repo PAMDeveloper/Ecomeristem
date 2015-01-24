@@ -50,6 +50,9 @@ public:
     void compute(double t, bool /* update */);
     void init(double t, const model::models::ModelParameters& parameters);
 
+    void realloc_biomass(double t, double value)
+    { stock_model.realloc_biomass(t, value); }
+
 private:
     void compute_stock(double t);
 
@@ -61,6 +64,9 @@ private:
     Stock stock_model;
     Supply supply_model;
     Surplus surplus_model;
+
+    // internal variables
+    bool _stop;
 
     // external variables
     double _assim;

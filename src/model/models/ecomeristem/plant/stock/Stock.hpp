@@ -65,6 +65,21 @@ public:
     {
         double stock = 0;
 
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("STOCK", t, utils::COMPUTE)
+            << "BEFORE Stock = " << _stock
+            << " ; Stock[-1] = " << _stock_1
+            << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[-1] = " << _seed_res_1
+            << " ; deficit = " << _deficit
+            << " ; ReservoirDispo = " << _reservoir_dispo
+            << " ; Supply = " << _supply
+            << " ; DayDemand = " << _day_demand
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
+        utils::Trace::trace().flush();
+#endif
+
         if (not update) {
             _stock_1 = _stock;
         }
@@ -89,7 +104,7 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("STOCK", t, utils::COMPUTE)
-            << "stock = " << _stock
+            << "AFTER Stock = " << _stock
             << " ; Stock[-1] = " << _stock_1
             << " ; SeedRes = " << _seed_res
             << " ; SeedRes[-1] = " << _seed_res_1
@@ -104,12 +119,15 @@ public:
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& /* parameters */)
+              const model::models::ModelParameters& parameters)
     {
+        _realocationCoeff = parameters.get < double >("realocationCoeff");
+
         _stock_1 = 0;
         _stock = 0;
         _grow = 0;
         _deficit = 0;
+        _stock_realloc = 0;
     }
 
     void put(double t, unsigned int index, double value)
@@ -120,10 +138,47 @@ public:
         AbstractAtomicModel < Stock >::put(t, index, value);
     }
 
+    void realloc_biomass(double t, double value)
+    {
+        if (value > 0) {
+            double qty = value * _realocationCoeff;
+
+#ifdef WITH_TRACE
+            utils::Trace::trace()
+                << utils::TraceElement("STOCK", t, utils::COMPUTE)
+                << "BEFORE stock = " << _stock
+                << " ; Stock[-1] = " << _stock_1
+                << " ; deficit = " << _deficit
+                << " ; realloc biomass = " << qty;
+            utils::Trace::trace().flush();
+#endif
+
+            _stock = std::max(0., qty + _deficit);
+            _stock_1 = _stock;
+            _deficit = std::min(0., qty + _deficit);
+
+#ifdef WITH_TRACE
+            utils::Trace::trace()
+                << utils::TraceElement("STOCK", t, utils::COMPUTE)
+                << "AFTER stock = " << _stock
+                << " ; Stock[-1] = " << _stock_1
+                << " ; deficit = " << _deficit
+                << " ; realloc biomass = " << qty;
+            utils::Trace::trace().flush();
+#endif
+
+        }
+    }
+
 private:
+// parameters
+    double _nbleaf_enabling_tillering;
+    double _realocationCoeff;
+
 // internal variables
     double _stock;
     double _stock_1;
+    double _stock_realloc;
     double _grow;
     double _deficit;
 
