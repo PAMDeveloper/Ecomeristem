@@ -202,7 +202,8 @@ void Model::compute(double t, bool /* update */)
         << " ; lig = " << _lig
         << " ; leaf biomass sum = " << _leaf_biomass_sum
         << " ; leaf number = "
-        << (_deleted_leaf_number + phytomer_models.size());
+        << (_deleted_leaf_number + phytomer_models.size())
+        << " ; deleted leaf number = " << _deleted_leaf_number;
     utils::Trace::trace().flush();
 #endif
 

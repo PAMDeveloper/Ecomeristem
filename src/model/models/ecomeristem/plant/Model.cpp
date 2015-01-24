@@ -184,7 +184,8 @@ void Model::compute(double t, bool /* update */)
             << "DELETE LEAF: "
             << " ; culm index = " << _culm_index
             << " ; leaf index = " << _leaf_index
-            << " ; leaf biomass = " << _deleted_leaf_biomass;
+            << " ; leaf biomass = " << _deleted_leaf_biomass
+            << " ; culm number = " << culm_models.size();
         utils::Trace::trace().flush();
 #endif
 
@@ -301,7 +302,8 @@ void Model::compute_culms(double t)
         << " ; LeafDemandSum = " << _leaf_demand_sum
         << " ; LeafBladeAreaSum = " << _leaf_blade_area_sum
         << " ; ReallocBiomassSum = " << _realloc_biomass_sum
-        << " ; SenescDWSum = " << _senesc_dw_sum;
+        << " ; SenescDWSum = " << _senesc_dw_sum
+        << " ; culm number = " << culm_models.size();
     utils::Trace::trace().flush();
 #endif
 
