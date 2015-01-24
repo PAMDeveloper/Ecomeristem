@@ -78,8 +78,9 @@ void Manager::compute(double t, bool /* update */)
             break;
         }
         case PHYTOMER_MORPHO_GENESIS:
-            if (_boolCrossedPlasto > 0 and _stock > 0 and
-                _phenoStage < nbleaf_culm_elong and _phenoStage < nbleaf_pi) {
+//TODO
+            if (_boolCrossedPlasto > 0 and _stock > 0
+/*and  _phenoStage < nbleaf_culm_elong and _phenoStage < nbleaf_pi*/) {
                 leaf_number += culm_number;
                 _state = NEW_PHYTOMER;
             }

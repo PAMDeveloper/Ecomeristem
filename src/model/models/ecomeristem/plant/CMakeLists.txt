@@ -10,7 +10,7 @@ SET(ECOMERISTEM_PLANT_CPP Manager.cpp Model.cpp)
 
 ADD_LIBRARY(ecomeristem-plant SHARED ${ECOMERISTEM_PLANT_HPP}
   ${ECOMERISTEM_PLANT_CPP})
-TARGET_LINK_LIBRARIES(ecomeristem-plant ecomeristem-leaf
+TARGET_LINK_LIBRARIES(ecomeristem-plant ecomeristem-culm ecomeristem-leaf
   ecomeristem-plant-stock ecomeristem-plant-thermal-time)
 
 INSTALL(TARGETS ecomeristem-plant DESTINATION lib)
