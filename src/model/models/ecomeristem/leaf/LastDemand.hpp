@@ -52,11 +52,11 @@ public:
        if (_first_day == t) {
            _last_demand = 0;
         } else {
-            if (_lig) {
-                _last_demand = _biomass_1 - _biomass_2;
+            if (!_lig and _phase == plant::LIG) {
+                _last_demand = _biomass - _biomass_1;
+                _lig = true;
             } else {
                 _last_demand = 0;
-                _lig = _phase == plant::LIG;
             }
         }
 

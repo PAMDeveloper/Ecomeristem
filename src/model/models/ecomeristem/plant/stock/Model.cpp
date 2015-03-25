@@ -110,6 +110,8 @@ void Model::compute(double t, bool update)
                               seed_res_model.get(t, SeedRes::SEED_RES));
             surplus_model.put(t, Surplus::SUPPLY,
                               supply_model.get(t, Supply::SUPPLY));
+            surplus_model.put(t, Surplus::REALLOC_BIOMASS_SUM,
+                              _realloc_biomass_sum);
             surplus_model(t);
 
             compute_stock(t);

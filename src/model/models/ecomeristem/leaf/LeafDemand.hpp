@@ -56,9 +56,8 @@ public:
         if (_first_day == t) {
             _demand = _biomass;
         } else {
-            if (!_lig) {
+            if (_phase != plant::LIG) {
                 _demand = _biomass - _biomass_1;
-                _lig = _phase == plant::LIG;
             } else {
                 _demand = 0;
             }

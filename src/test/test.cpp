@@ -103,6 +103,7 @@ TEST_CASE("Thermal_time_tests", "variables")
     std::string begin;
     std::string end;
 
+    utils::Trace::trace().clear();
     reader.load("", parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
@@ -138,7 +139,6 @@ TEST_CASE("Thermal_time_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "TT_LIG");
-    utils::Trace::trace().clear();
 }
 
 TEST_CASE("Water_balance_tests", "variables")
@@ -150,6 +150,7 @@ TEST_CASE("Water_balance_tests", "variables")
     std::string begin;
     std::string end;
 
+    utils::Trace::trace().clear();
     reader.load("", parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
@@ -160,7 +161,6 @@ TEST_CASE("Water_balance_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "CSTR");
-    utils::Trace::trace().clear();
 }
 
 TEST_CASE("Assimilation_tests", "variables")
@@ -172,6 +172,7 @@ TEST_CASE("Assimilation_tests", "variables")
     std::string begin;
     std::string end;
 
+    utils::Trace::trace().clear();
     reader.load("", parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
@@ -182,7 +183,6 @@ TEST_CASE("Assimilation_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "ASSIM");
-    utils::Trace::trace().clear();
 }
 
 TEST_CASE("Root_tests", "variables")
@@ -194,6 +194,7 @@ TEST_CASE("Root_tests", "variables")
     std::string begin;
     std::string end;
 
+    utils::Trace::trace().clear();
     reader.load("", parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
@@ -208,7 +209,6 @@ TEST_CASE("Root_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "ROOT_BIOMASS");
-    utils::Trace::trace().clear();
 }
 
 TEST_CASE("Stock_tests", "variables")
@@ -220,6 +220,7 @@ TEST_CASE("Stock_tests", "variables")
     std::string begin;
     std::string end;
 
+    utils::Trace::trace().clear();
     reader.load("", parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
@@ -238,6 +239,10 @@ TEST_CASE("Stock_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "STOCK");
+    check_values("surplus_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "SURPLUS");
     check_values("deficit_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
@@ -254,5 +259,4 @@ TEST_CASE("Stock_tests", "variables")
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
                  "plant", "SEED_RES");
-    utils::Trace::trace().clear();
 }

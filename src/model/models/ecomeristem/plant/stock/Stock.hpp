@@ -85,18 +85,18 @@ public:
         }
         if (_seed_res > 0 or _seed_res_1 > 0) {
             if (_seed_res > _day_demand) {
-                stock = _stock_1 + std::min(_reservoir_dispo, _supply);
+                stock = _stock_1 + std::min(_reservoir_dispo, _supply +
+                    _realloc_biomass_sum);
             } else {
                 stock = _stock_1 +
                     std::min(_reservoir_dispo,
-                             _supply - (_day_demand - _seed_res_1));
+                             _supply - (_day_demand - _seed_res_1) +
+                             _realloc_biomass_sum);
             }
         } else {
             stock = _stock_1 + std::min(_reservoir_dispo,
-                                        _supply - _day_demand);
-        }
-        if (_realloc_biomass_sum > 0) {
-            stock += _realloc_biomass_sum;
+                                        _supply - _day_demand +
+                                        _realloc_biomass_sum);
         }
         _stock = std::max(0., _deficit + stock);
         _deficit = std::min(0., _deficit + stock);

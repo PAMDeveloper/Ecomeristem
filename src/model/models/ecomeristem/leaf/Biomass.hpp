@@ -87,8 +87,9 @@ public:
                             _old_biomass = _biomass;
                         }
                     }
-                    _corrected_biomass = _biomass - _blade_area *
-                        (1 + _G_L) * (_TT / _life_span) / _sla_cste;
+                    // _corrected_biomass = _biomass - _blade_area *
+                    //     (1 + _G_L) * (_TT / _life_span) / _sla_cste;
+                    _corrected_biomass = _biomass * (1. - _TT / _life_span);
                     _realloc_biomass = (_old_biomass - _corrected_biomass) *
                         _realocationCoeff;
                     _senesc_dw = (_old_biomass - _corrected_biomass) *

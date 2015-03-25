@@ -32,12 +32,9 @@ namespace ecomeristem { namespace plant { namespace stock {
 class Surplus : public AbstractAtomicModel < Surplus >
 {
 public:
-    static const int SURPLUS = 0;
-
-    static const int DAY_DEMAND = 0;
-    static const int RESERVOIR_DISPO = 1;
-    static const int SEED_RES = 2;
-    static const int SUPPLY = 3;
+    enum internals { SURPLUS };
+    enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
+                     REALLOC_BIOMASS_SUM };
 
     Surplus()
     {
@@ -47,6 +44,7 @@ public:
         external(RESERVOIR_DISPO, &Surplus::_reservoir_dispo);
         external(SEED_RES, &Surplus::_seed_res);
         external(SUPPLY, &Surplus::_supply);
+        external(REALLOC_BIOMASS_SUM, &Surplus::_realloc_biomass_sum);
     }
 
     virtual ~Surplus()
@@ -56,24 +54,41 @@ public:
     { return is_ready(t, DAY_DEMAND) and is_ready(t, RESERVOIR_DISPO) and
             is_ready(t, SEED_RES) and is_ready(t, SUPPLY); }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
         if (_seed_res_1 > 0) {
             if (_seed_res_1 > _day_demand) {
-                _surplus = std::max(0., _supply - _reservoir_dispo);
+                _surplus = std::max(0., _supply - _reservoir_dispo +
+                                    _realloc_biomass_sum);
             } else {
                 _surplus = std::max(0., _supply - (_day_demand - _seed_res) -
-                                _reservoir_dispo);
+                                    _reservoir_dispo + _realloc_biomass_sum);
             }
         } else {
-            _surplus = std::max(0., _supply - _reservoir_dispo - _day_demand);
+            _surplus = std::max(0., _supply - _reservoir_dispo - _day_demand +
+                                _realloc_biomass_sum);
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("SURPLUS", t, utils::COMPUTE)
+            << "Surplus = " << _surplus
+            << " ; SeedRes = " << _seed_res
+            << " ; SeedRes[-1] = " << _seed_res_1
+            << " ; ReservoirDispo = " << _reservoir_dispo
+            << " ; Supply = " << _supply
+            << " ; DayDemand = " << _day_demand
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& /* parameters */)
+              const model::models::ModelParameters& parameters)
     {
         _surplus = 0;
+        _seed_res_1 = parameters.get < double >("gdw");
     }
 
     void put(double t, unsigned int index, double value)
@@ -94,6 +109,7 @@ private:
     double _seed_res;
     double _seed_res_1;
     double _supply;
+    double _realloc_biomass_sum;
 };
 
 } } } // namespace ecomeristem plant stock
