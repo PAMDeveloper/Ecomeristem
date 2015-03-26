@@ -37,21 +37,19 @@ void ParametersReader::load(const std::string& id,
             "dbname=ecomeristem user=user_samara password=toto"));
 
     load_simulation(id, connection, parameters);
-    parameters.set < std::string >("BeginDate", "20-01-2010");
-    parameters.set < std::string >("EndDate", "26-02-2010");
-    // parameters.set < std::string >("EndDate", "08-05-2010");
 }
 
 void ParametersReader::load_data(pqxx::connection& connection,
                                  const std::string& table,
+                                 const std::string& id,
                                  const std::vector < std::string >& names,
                                  model::models::ModelParameters& parameters)
 {
     try {
         pqxx::work action(connection);
         pqxx::result result = action.exec(
-            (boost::format("SELECT * FROM \"%1%\"") %
-             table).str());
+            (boost::format("SELECT * FROM \"%1%\" WHERE \"id\" = '%2%'") %
+             table % id).str());
 
         if (not result.empty()) {
             for (pqxx::result::tuple::const_iterator it = result[0].begin();
@@ -78,7 +76,7 @@ void ParametersReader::load_data(pqxx::connection& connection,
 }
 
 void ParametersReader::load_simulation(
-    const std::string& /* id */,
+    const std::string& id,
     pqxx::connection& connection,
     model::models::ModelParameters& parameters)
 {
@@ -98,7 +96,7 @@ void ParametersReader::load_simulation(
                                           "coef_plasto_ligulo",
                                           "ligulo1",
                                           "coef_ligulo1",
-                                          "MRG_init",
+                                          "MGR_init",
                                           "Ict",
                                           "resp_Ict",
                                           "resp_R_d",
@@ -172,7 +170,37 @@ void ParametersReader::load_simulation(
                                           "density_IN",
                                           "existTiller" };
 
-    load_data(connection, "parameter", names, parameters);
+    try {
+        pqxx::work action(connection);
+        pqxx::result result = action.exec(
+            (boost::format("SELECT * FROM \"simulation\" "      \
+                           "WHERE \"name\" = '%1%'") % id).str());
+
+        if (not result.empty()) {
+            pqxx::result::const_iterator it = result.begin();
+
+            parameters.set < std::string >(
+                "BeginDate", boost::lexical_cast < std::string >(it->at(2)));
+            parameters.set < std::string >(
+                "EndDate", boost::lexical_cast < std::string >(it->at(3)));
+            parameters.set < std::string >(
+                "idsite", boost::lexical_cast < std::string >(it->at(4)));
+            parameters.set < std::string >(
+                "idvariety", boost::lexical_cast < std::string >(it->at(5)));
+        }
+
+    // parameters.set < std::string >("BeginDate", "20-01-2010");
+    // parameters.set < std::string >("EndDate", "26-02-2010");
+    // parameters.set < std::string >("idsite", "1");
+    // parameters.set < std::string >("idvariety", "rice");
+
+    } catch (pqxx::sql_error e) {
+        std::cout << "Error: " << e.query() << std::endl;
+    }
+
+
+    load_data(connection, "variety",
+              parameters.get < std::string >("idvariety"), names, parameters);
 }
 
 } // namespace utils

@@ -36,6 +36,8 @@
 
 #define BUFFER_SIZE 1024
 
+#define SIMULATION_NAME "sim_rice_vegetative"
+
 using namespace model;
 
 void check_values(const std::string& file_name,
@@ -61,7 +63,8 @@ void check_values(const std::string& file_name,
 
 	f.getline(line, BUFFER_SIZE);
 	l = line;
-	boost::split(columns, l, boost::is_any_of(" \t\n"),
+
+        boost::split(columns, l, boost::is_any_of(" \t\n"),
                      boost::token_compress_on);
 
         std::string info = (boost::format("[%1%] %2% => %3% [%4%/%5%]") %
@@ -104,7 +107,7 @@ TEST_CASE("Thermal_time_tests", "variables")
     std::string end;
 
     utils::Trace::trace().clear();
-    reader.load("", parameters);
+    reader.load(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -151,7 +154,7 @@ TEST_CASE("Water_balance_tests", "variables")
     std::string end;
 
     utils::Trace::trace().clear();
-    reader.load("", parameters);
+    reader.load(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -173,7 +176,7 @@ TEST_CASE("Assimilation_tests", "variables")
     std::string end;
 
     utils::Trace::trace().clear();
-    reader.load("", parameters);
+    reader.load(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -195,7 +198,7 @@ TEST_CASE("Root_tests", "variables")
     std::string end;
 
     utils::Trace::trace().clear();
-    reader.load("", parameters);
+    reader.load(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -221,7 +224,7 @@ TEST_CASE("Stock_tests", "variables")
     std::string end;
 
     utils::Trace::trace().clear();
-    reader.load("", parameters);
+    reader.load(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),

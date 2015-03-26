@@ -106,7 +106,7 @@ public:
     void init(double t, const model::models::ModelParameters& parameters)
     {
         _Lef1 = parameters.get < double >("Lef1");
-        _MGR = parameters.get < double >("MRG_init");
+        _MGR = parameters.get < double >("MGR_init");
         _predim = 0;
         _first_day = t;
     }

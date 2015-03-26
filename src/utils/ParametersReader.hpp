@@ -46,6 +46,7 @@ public:
 private:
     void load_data(pqxx::connection& connection,
                    const std::string& table,
+                   const std::string& id,
                    const std::vector < std::string >& names,
                    model::models::ModelParameters& parameters);
     void load_simulation(const std::string& id,

@@ -26,8 +26,7 @@
 #define __ECOMERISTEM_PLANT_THERMAL_TIME_DELAT_T_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-
-#include <iostream>
+#include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
@@ -49,8 +48,19 @@ public:
     bool check(double t) const
     { return is_ready(t, TA); }
 
-    void compute(double /* t */, bool /* update */)
-    { _deltaT = _Ta - _Tb; }
+    void compute(double t, bool /* update */)
+    {
+        _deltaT = _Ta - _Tb;
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("DELTA_T", t, utils::COMPUTE)
+            << "DeltaT = " << _deltaT << " ; Ta = " << _Ta
+            << " ; Tb = " << _Tb;
+        utils::Trace::trace().flush();
+#endif
+
+    }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)

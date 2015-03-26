@@ -61,7 +61,7 @@ public:
                 _surplus = std::max(0., _supply - _reservoir_dispo +
                                     _realloc_biomass_sum);
             } else {
-                _surplus = std::max(0., _supply - (_day_demand - _seed_res) -
+                _surplus = std::max(0., _supply - (_day_demand - _seed_res_1) -
                                     _reservoir_dispo + _realloc_biomass_sum);
             }
         } else {
@@ -88,6 +88,7 @@ public:
               const model::models::ModelParameters& parameters)
     {
         _surplus = 0;
+        _seed_res = parameters.get < double >("gdw");
         _seed_res_1 = parameters.get < double >("gdw");
     }
 

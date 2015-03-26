@@ -55,7 +55,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
                                  end);
 }
 
-static void run(const std::string& /* path */, int /* verbose */)
+static void run(const std::string& simulation, int /* verbose */)
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -64,7 +64,7 @@ static void run(const std::string& /* path */, int /* verbose */)
     std::string begin;
     std::string end;
 
-    reader.load("", parameters);
+    reader.load(simulation, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -73,7 +73,7 @@ static void run(const std::string& /* path */, int /* verbose */)
     std::string date;
 
     std::cout.precision(10);
-    utils::DateTime::format_date("29-01-2010", date);
+    utils::DateTime::format_date("20-01-2010", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()
               << std::endl;
@@ -116,8 +116,8 @@ enum ProgramOptionsCode
 
 struct ProgramOptions
 {
-    ProgramOptions(std::string* path, int* verbose, CmdArgs* args)
-        : generic("Allowed options"), path(path), args(args)
+    ProgramOptions(std::string* simulation, int* verbose, CmdArgs* args)
+        : generic("Allowed options"), simulation(simulation), args(args)
     {
         generic.add_options()
             ("help,h", "Produce help message")
@@ -125,7 +125,7 @@ struct ProgramOptions
             ("verbose,V", po::value < int >(verbose),
              "Choose the verbose level for logs outputs")
             ("infos", "Informations of Ecomeristem")
-            ("path,P", po::value < std::string >(path),
+            ("simulation,S", po::value < std::string >(simulation),
              "Select working path,\n  path name")
             ;
 
@@ -157,7 +157,7 @@ struct ProgramOptions
             if (vm.count("infos"))
                 return show_infos();
 
-            if (vm.count("path"))
+            if (vm.count("simulation"))
                 return PROGRAM_OPTIONS_PATH;
 
         } catch (const std::exception &e) {
@@ -173,21 +173,21 @@ struct ProgramOptions
 
     po::options_description desc, generic;
     po::variables_map vm;
-    std::string *path;
+    std::string *simulation;
     int* verbose;
     CmdArgs *args;
 };
 
 int main(int argc, char** argv)
 {
-    std::string path;
+    std::string simulation;
     int verbose;
     CmdArgs args;
 
     setlocale(LC_ALL, "C");
 
     {
-        ProgramOptions prgs(&path, &verbose, &args);
+        ProgramOptions prgs(&simulation, &verbose, &args);
         int ret = prgs.run(argc, argv);
 
         if (ret == PROGRAM_OPTIONS_FAILURE) {
@@ -197,6 +197,6 @@ int main(int argc, char** argv)
         }
     }
 
-    run(path, verbose);
+    run(simulation, verbose);
     return 0;
 }

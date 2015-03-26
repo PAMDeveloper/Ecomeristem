@@ -152,7 +152,7 @@ public:
     {
         std::vector < std::string > list;
 
-        boost::split(list, str, boost::is_any_of("-"));
+        boost::split(list, str, boost::is_any_of("-/"));
         date = (boost::format("%1%/%2%/%3%") % list[2] % list[1] %
                 list[0]).str();
     }

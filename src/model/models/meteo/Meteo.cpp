@@ -69,8 +69,10 @@ void Model::init(double /* t */,
         for (unsigned int year = beginYear; year <= endYear; year++) {
             std::string request =
                 (boost::format("SELECT * FROM \"meteorology\" "         \
-                               "WHERE \"day\" like \'%%%1%%%\' order by " \
-                               "\"day\" asc") % year).str();
+                               "WHERE \"day\" like \'%%%1%%%\' "        \
+                               "AND \"idsite\" = '%2%' order by "       \
+                               "to_date(\"day\",'DD/MM/YYYY') asc") % year %
+                 parameters.get < std::string >("idsite")).str();
             pqxx::result result = action.exec(request);
 
             if (not result.empty()) {
