@@ -36,7 +36,7 @@
 
 #define BUFFER_SIZE 1024
 
-#define SIMULATION_NAME "sim_rice_vegetative"
+#define SIMULATION_NAME "sim_sorghum"
 
 using namespace model;
 

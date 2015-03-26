@@ -219,7 +219,6 @@ void Model::compute(double t, bool /* update */)
         utils::Trace::trace().flush();
 #endif
 
-
 }
 
 } } // namespace ecomeristem leaf

@@ -1,5 +1,5 @@
 /**
- * @file leaf/Manager.hpp
+ * @file internode/Manager.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,30 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_LEAF_MANAGER_HPP
-#define __ECOMERISTEM_LEAF_MANAGER_HPP
+#ifndef __ECOMERISTEM_INTERNODE_MANAGER_HPP
+#define __ECOMERISTEM_INTERNODE_MANAGER_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/Manager.hpp>
 #include <utils/Trace.hpp>
 
-namespace ecomeristem { namespace leaf {
+namespace ecomeristem { namespace internode {
 
-enum Phase { INIT, INITIAL, LIG, NOGROWTH };
+enum Phase { INIT, VEGETATIVE, REALIZATION, REALIZATION_NOGROWTH, MATURITY,
+             MATURITY_NOGROWTH };
 
 class Manager : public AbstractAtomicModel < Manager >
 {
 public:
-    enum internals { LEAF_PHASE };
-    enum externals { PHASE, STOP, LEN, PREDIM };
+    enum internals { INTERNODE_PHASE };
+    enum externals { PHASE, LEN, PREDIM, LIG };
 
-    Manager()
+    Manager(int index) : _index(index)
     {
-        internal(LEAF_PHASE, &Manager::_phase_);
+        internal(INTERNODE_PHASE, &Manager::_phase_);
+
         external(PHASE, &Manager::_phase);
-        external(STOP, &Manager::_stop);
         external(LEN, &Manager::_len);
         external(PREDIM, &Manager::_predim);
+        external(LIG, &Manager::_lig);
     }
 
     virtual ~Manager()
@@ -53,26 +55,34 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_phase_ == leaf::INIT) {
-            _phase_ = leaf::INITIAL;
-        } else if (_phase_ == leaf::INITIAL and _len >= _predim) {
-            _phase_ = leaf::LIG;
-        } else if (_phase_ == leaf::INITIAL and
+        if (_phase_ == internode::INIT) {
+            _phase_ = internode::VEGETATIVE;
+        } else if (_phase_ == internode::VEGETATIVE and
+                   _phase == plant::ELONG and _lig == t) {
+            _phase_ = internode::REALIZATION;
+        } else if (_phase_ == internode::REALIZATION and _len >= _predim) {
+            _phase_ = internode::MATURITY;
+        } else if (_phase_ == internode::REALIZATION and
                    (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
                     or _phase == plant::NOGROWTH4)) {
-            _phase_ = leaf::NOGROWTH;
-        } else if (_phase_ == leaf::NOGROWTH and
+            _phase_ = internode::REALIZATION_NOGROWTH;
+        } else if (_phase_ == internode::REALIZATION_NOGROWTH and
                    _phase == plant::PHYTOMER_MORPHO_GENESIS) {
-            _phase_ = leaf::INITIAL;
+            _phase_ = internode::REALIZATION;
+        } else if (_phase_ == internode::MATURITY and
+                   (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
+                    or _phase == plant::NOGROWTH4)) {
+            _phase_ = internode::MATURITY_NOGROWTH;
+        } else if (_phase_ == internode::MATURITY_NOGROWTH and
+                   _phase == plant::PHYTOMER_MORPHO_GENESIS) {
+            _phase_ = internode::MATURITY;
         }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_MANAGER", t, utils::COMPUTE)
-            << "phase = " << _phase_
-            << " ; plant phase = " << _phase
-            << " ; len = " << _len
-            << " ; predim = " << _predim;
+            << utils::TraceElement("INTERNODE_MANAGER", t, utils::COMPUTE)
+            << "phase = " << _phase_ << " ; phase = " << _phase
+            << " ; len = " << _len << " ; predim = " << _predim;
         utils::Trace::trace().flush();
 #endif
 
@@ -82,7 +92,7 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _phase = plant::INIT;
-        _phase_ = leaf::INIT;
+        _phase_ = internode::INIT;
         _predim_init = false;
     }
 
@@ -93,23 +103,24 @@ public:
         }
 
         AbstractAtomicModel < Manager >::put(t, index, value);
-        if (_phase_ == leaf::INIT or (is_ready(t, LEN) and _predim_init)) {
+        if (_phase_ == internode::INIT or (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }
     }
 
 private:
 // internal variable
+    int _index;
     double _phase_;
     bool   _predim_init;
 
 // external variables
     double _phase;
-    double _stop;
     double _len;
     double _predim;
+    double _lig;
 };
 
-} } // namespace ecomeristem leaf
+} } // namespace ecomeristem internode
 
 #endif

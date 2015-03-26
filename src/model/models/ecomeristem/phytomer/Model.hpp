@@ -43,6 +43,7 @@ public:
     Model(int index, bool is_on_mainstem) :
         _index(index), _is_first_leaf(index == 1),
         _is_on_mainstem(is_on_mainstem),
+        internode_model(_index, _is_on_mainstem),
         leaf_model(_index, _is_on_mainstem)
     {
         internal(LEAF_BIOMASS, &leaf_model, leaf::Model::BIOMASS);
@@ -81,6 +82,7 @@ public:
     {
         internode_model.init(t, parameters);
         leaf_model.init(t, parameters);
+        _lig = 0;
     }
 
     void compute(double t, bool /* update */)
@@ -92,8 +94,6 @@ public:
             << "COMPUTE : index = " << _index;
         utils::Trace::trace().flush();
 #endif
-
-        internode_model(t);
 
         leaf_model.put(t, leaf::Model::DD, _dd);
         leaf_model.put(t, leaf::Model::DELTA_T, _delta_t);
@@ -113,10 +113,32 @@ public:
             leaf_model.put(t, leaf::Model::TEST_IC, _test_ic);
         }
         leaf_model(t);
+
+        if (_lig == 0) {
+            if (leaf_model.is_computed(t, leaf::Model::PREDIM) and
+                leaf_model.is_computed(t, leaf::Model::LEN) and
+                leaf_model.get(t, leaf::Model::PREDIM) ==
+                leaf_model.get(t, leaf::Model::LEN)) {
+                _lig = t;
+            }
+        }
+
+        internode_model.put(t, internode::Model::DD, _dd);
+        internode_model.put(t, internode::Model::DELTA_T, _delta_t);
+        internode_model.put(t, internode::Model::FTSW, _ftsw);
+        internode_model.put(t, internode::Model::P, _p);
+        internode_model.put(t, internode::Model::PHASE, _phase);
+        internode_model.put(t, internode::Model::LIG, _lig);
+        internode_model.put(t, internode::Model::PREDIM_PREVIOUS_LEAF,
+            _predim_previous_leaf);
+        internode_model(t);
     }
 
     const leaf::Model& leaf() const
     { return leaf_model; }
+
+    const internode::Model& internode() const
+    { return internode_model; }
 
 private:
 // parameters
@@ -127,6 +149,9 @@ private:
 // submodels
     internode::Model internode_model;
     leaf::Model leaf_model;
+
+// internal variables
+    double _lig;
 
 // external variables
     double _dd;

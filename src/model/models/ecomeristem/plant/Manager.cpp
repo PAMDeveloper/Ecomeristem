@@ -103,7 +103,7 @@ void Manager::compute(double t, bool /* update */)
             }
             break;
         }
-        case ELONG:
+        case ELONG: break;
         case PI:
         case NOGROWTH_ELONG:
         case NOGROWTH_PI:

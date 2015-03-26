@@ -1,5 +1,5 @@
 /**
- * @file leaf/ReductionLER.hpp
+ * @file internode/Biomass.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,60 +22,62 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef __ECOMERISTEM_LEAF_REDUCTION_LER_HPP
-#define __ECOMERISTEM_LEAF_REDUCTION_LER_HPP
+#ifndef __ECOMERISTEM_INTERNODE_BIOMASS_HPP
+#define __ECOMERISTEM_INTERNODE_BIOMASS_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
+#include <utils/Trace.hpp>
 
-namespace ecomeristem { namespace leaf {
+namespace ecomeristem { namespace internode {
 
-class ReductionLER : public AbstractAtomicModel < ReductionLER >
+class Biomass : public AbstractAtomicModel < Biomass >
 {
 public:
-    enum internals { REDUCTION_LER };
-    enum externals { FTSW, P };
+    enum internals { BIOMASS };
+    enum externals { VOLUME };
 
-    ReductionLER()
+    Biomass()
     {
-        internal(REDUCTION_LER, &ReductionLER::_reduction_ler);
-        external(FTSW, &ReductionLER::_ftsw);
-        external(P, &ReductionLER::_p);
+        internal(BIOMASS, &Biomass::_biomass);
+
+        external(VOLUME, &Biomass::_volume);
     }
 
-    virtual ~ReductionLER()
+    virtual ~Biomass()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool /* update */)
     {
-        if (_ftsw < _thresLER) {
-            _reduction_ler = std::max(1e-4, ((1. / _thresLER) * _ftsw) *
-                                      (1. + (_p * _respLER)));
-        } else {
-            _reduction_ler = 1. + _p * _respLER;
-        }
+        _biomass = _volume * _density;
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("INTERNODE_BIOMASS", t, utils::COMPUTE)
+            << "Biomass = " << _biomass
+            << " ; volume = " << _volume;
+        utils::Trace::trace().flush();
+#endif
+
     }
 
     void init(double /* t */,
               const model::models::ModelParameters& parameters)
     {
-        _thresLER = parameters.get < double >("thresLER");
-        _respLER = parameters.get < double >("resp_LER");
-        _reduction_ler = 0;
+        _density = parameters.get < double >("density_IN");
+        _biomass = 0;
     }
 
 private:
 // parameters
-    double _thresLER;
-    double _respLER;
+    double _density;
 
 // internal variable
-    double _reduction_ler;
+    double _biomass;
 
 // external variables
-    double _ftsw;
-    double _p;
+    double _volume;
 };
 
-} } // namespace ecomeristem leaf
+} } // namespace ecomeristem internode
 
 #endif

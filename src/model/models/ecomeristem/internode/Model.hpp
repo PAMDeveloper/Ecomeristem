@@ -24,27 +24,66 @@
 
 #include <model/kernel/AbstractCoupledModel.hpp>
 
+#include <model/models/ecomeristem/internode/TimeFromApp.hpp>
+#include <model/models/ecomeristem/internode/Biomass.hpp>
+#include <model/models/ecomeristem/internode/ExpTime.hpp>
+#include <model/models/ecomeristem/internode/Len.hpp>
+#include <model/models/ecomeristem/internode/DiameterPredim.hpp>
+#include <model/models/ecomeristem/internode/Predim.hpp>
+#include <model/models/ecomeristem/internode/Volume.hpp>
+#include <model/models/ecomeristem/internode/LastDemand.hpp>
+#include <model/models/ecomeristem/internode/INER.hpp>
+#include <model/models/ecomeristem/internode/ReductionINER.hpp>
+#include <model/models/ecomeristem/internode/InternodeDemand.hpp>
+#include <model/models/ecomeristem/internode/Manager.hpp>
+
 namespace ecomeristem { namespace internode {
 
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    Model()
-    { }
+    enum internals { BIOMASS, DEMAND, LAST_DEMAND };
+    enum externals { DD, DELTA_T, FTSW, P, PHASE, PREDIM_PREVIOUS_LEAF, LIG };
+
+    Model(int index, bool is_on_mainstem);
 
     virtual ~Model()
     { }
 
     void init(double /* t */,
-              const model::models::ModelParameters& /*     parameters */)
-    {
-    }
+              const model::models::ModelParameters& /* parameters */);
 
-    void compute(double /* t */, bool /* update */)
-    {
-    }
+    void compute(double /* t */, bool /* update */);
 
 private:
+// parameters
+    int _index;
+    bool _is_first_internode;
+    bool _is_on_mainstem;
+
+// submodels
+    TimeFromApp time_from_app_model;
+    Biomass biomass_model;
+    ExpTime exp_time_model;
+    Len len_model;
+    Volume volume_model;
+    Predim predim_model;
+    DiameterPredim diameter_predim_model;
+    LastDemand last_demand_model;
+    Iner iner_model;
+    ReductionINER reduction_iner_model;
+    InternodeDemand internode_demand_model;
+    Manager manager_model;
+
+// external variables
+    double _dd;
+    double _delta_t;
+    double _ftsw;
+    double _p;
+    double _phase;
+    double _test_ic;
+    double _predim_previous_leaf;
+    double _lig;
 };
 
 } } // namespace ecomeristem internode
