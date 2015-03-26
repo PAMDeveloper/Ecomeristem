@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_TIME_FROM_APP_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 
 namespace ecomeristem { namespace leaf {
 
@@ -52,7 +52,7 @@ public:
         if (_first_day == t) {
             _time_from_app = _dd;
         } else {
-            if (_phase != plant::NOGROWTH) {
+            if (_phase != leaf::NOGROWTH) {
                 _time_from_app = _time_from_app + _delta_t;
             } else {
             }

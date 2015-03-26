@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_THERMAL_TIME_SINCE_LIGULATION_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -57,7 +57,7 @@ public:
     void compute(double t , bool /* update */)
     {
         if (not _lig) {
-            _lig = _phase == plant::LIG;
+            _lig = _phase == leaf::LIG;
         } else {
             _TT += _delta_t;
         }
@@ -77,7 +77,7 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _TT = 0;
-        _phase = plant::INITIAL;
+        _phase = leaf::INITIAL;
         _lig = false;
     }
 

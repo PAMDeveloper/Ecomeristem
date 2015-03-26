@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_LEAF_DEMAND_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -56,7 +56,7 @@ public:
         if (_first_day == t) {
             _demand = _biomass;
         } else {
-            if (_phase != plant::LIG) {
+            if (_phase != leaf::LIG) {
                 _demand = _biomass - _biomass_1;
             } else {
                 _demand = 0;

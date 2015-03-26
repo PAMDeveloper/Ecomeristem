@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_LEN_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -63,12 +63,11 @@ public:
             if (not update) {
                 _len_1 = _len;
             }
-            if (_phase != plant::NOGROWTH and _phase != plant::NOGROWTH3
-                and _phase != plant::NOGROWTH4 and not _stop) {
+            if (_phase != leaf::NOGROWTH and not _stop) {
                 _len = std::min(_predim,
                                 _len_1 + _ler * std::min(_delta_t, _exp_time));
             }
-            _stop = _phase == plant::NOGROWTH4;
+            _stop = _phase == leaf::NOGROWTH;
         }
 
 #ifdef WITH_TRACE

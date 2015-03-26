@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_BLADE_AREA_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -57,7 +57,7 @@ public:
         _blade_area = _len * _width * _allo_area / _LL_BL;
         if (not _lig) {
             _corrected_blade_area = 0;
-            _lig = _phase == plant::LIG;
+            _lig = _phase == leaf::LIG;
         } else {
             if (_blade_area < 0) {
                 _blade_area = 0;
@@ -88,7 +88,7 @@ public:
         _allo_area = parameters.get < double >("allo_area");
         _LL_BL = parameters.get < double >("LL_BL_init");
         _width = 0;
-        _phase = plant::INITIAL;
+        _phase = leaf::INITIAL;
         _lig = false;
         _corrected_blade_area = 0;
     }

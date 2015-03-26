@@ -31,6 +31,8 @@
 
 namespace ecomeristem { namespace leaf {
 
+enum Phase { INIT, INITIAL, LIG, NOGROWTH };
+
 class Manager : public AbstractAtomicModel < Manager >
 {
 public:
@@ -51,17 +53,17 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_phase_ == plant::INIT) {
-            _phase_ = plant::INITIAL;
-        } else if (_phase_ == plant::INITIAL and _len >= _predim) {
-            _phase_ = plant::LIG;
-        } else if (_phase_ == plant::INITIAL and
+        if (_phase_ == leaf::INIT) {
+            _phase_ = leaf::INITIAL;
+        } else if (_phase_ == leaf::INITIAL and _len >= _predim) {
+            _phase_ = leaf::LIG;
+        } else if (_phase_ == leaf::INITIAL and
                    (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
                     or _phase == plant::NOGROWTH4)) {
-            _phase_ = plant::NOGROWTH;
-        } else if (_phase_ == plant::NOGROWTH and
+            _phase_ = leaf::NOGROWTH;
+        } else if (_phase_ == leaf::NOGROWTH and
                    _phase == plant::PHYTOMER_MORPHO_GENESIS) {
-            _phase_ = plant::INITIAL;
+            _phase_ = leaf::INITIAL;
         }
 
 #ifdef WITH_TRACE
@@ -78,7 +80,7 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _phase = plant::INIT;
-        _phase_ = plant::INIT;
+        _phase_ = leaf::INIT;
         _predim_init = false;
     }
 
@@ -89,8 +91,7 @@ public:
         }
 
         AbstractAtomicModel < Manager >::put(t, index, value);
-        if (_phase_ == plant::INIT or
-            (is_ready(t, LEN) and _predim_init)) {
+        if (_phase_ == leaf::INIT or (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }
     }
@@ -98,7 +99,7 @@ public:
 private:
 // internal variable
     double _phase_;
-    bool _predim_init;
+    bool   _predim_init;
 
 // external variables
     double _phase;

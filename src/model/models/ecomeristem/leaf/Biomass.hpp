@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_BIOMASS_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -71,10 +71,9 @@ public:
             _sla_cste = _sla;
             _old_biomass = _biomass;
         } else {
-            if (_phase != plant::NOGROWTH and _phase != plant::NOGROWTH3
-                and _phase != plant::NOGROWTH4 and not _stop) {
+            if (_phase != leaf::NOGROWTH and not _stop) {
                 if (not _lig) {
-                    _lig = _phase == plant::LIG;
+                    _lig = _phase == leaf::LIG;
                     _biomass = (1. / _G_L) * _blade_area / _sla_cste;
                     _corrected_biomass = 0;
                     _realloc_biomass = 0;
@@ -95,7 +94,7 @@ public:
                     _senesc_dw = (_old_biomass - _corrected_biomass) *
                         (1 - _realocationCoeff);
                 }
-                _stop = _phase == plant::NOGROWTH4;
+                _stop = _phase == leaf::NOGROWTH;
             }
         }
 

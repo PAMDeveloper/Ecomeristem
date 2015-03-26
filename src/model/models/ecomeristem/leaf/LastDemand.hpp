@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_LEAF_LAST_DEMAND_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
@@ -52,7 +52,7 @@ public:
        if (_first_day == t) {
            _last_demand = 0;
         } else {
-            if (!_lig and _phase == plant::LIG) {
+            if (!_lig and _phase == leaf::LIG) {
                 _last_demand = _biomass - _biomass_1;
                 _lig = true;
             } else {
