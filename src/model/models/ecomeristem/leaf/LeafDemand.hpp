@@ -37,7 +37,7 @@ public:
     enum internals { DEMAND };
     enum externals { BIOMASS, GROW, PHASE };
 
-    LeafDemand()
+    LeafDemand(int index) : _index(index)
     {
         internal(DEMAND, &LeafDemand::_demand);
         external(BIOMASS, &LeafDemand::_biomass);
@@ -66,7 +66,9 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("LEAF_DEMAND", t, utils::COMPUTE)
-            << "Demand = " << _demand << " ; phase = " << _phase
+            << "Demand = " << _demand
+            << " ; phase = " << _phase
+            << " ; index = " << _index
             << " ; Biomass = " << _biomass
             << " ; Biomass[-1] = " << _biomass_1
             << " ; lig = " << _lig
@@ -108,6 +110,9 @@ public:
     }
 
 private:
+// parameters
+    int _index;
+
 // internal variable
     double _demand;
     double _first_day;

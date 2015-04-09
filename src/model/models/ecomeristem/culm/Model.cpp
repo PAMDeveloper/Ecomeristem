@@ -31,6 +31,9 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
     internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
     internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
+    internal(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
+    internal(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
+    internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
     internal(LEAF_BLADE_AREA_SUM, &Model::_leaf_blade_area_sum);
     internal(LEAF_PREDIM, &Model::_leaf_predim);
     internal(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
@@ -47,6 +50,7 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     external(SLA, &Model::_sla);
     external(GROW, &Model::_grow);
     external(PHASE, &Model::_phase);
+    external(STATE, &Model::_state);
     external(STOP, &Model::_stop);
     external(TEST_IC, &Model::_test_ic);
 }
@@ -65,6 +69,9 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
+    _internode_last_demand_sum = 0;
+    _internode_demand_sum = 0;
+    _internode_biomass_sum = 0;
     _leaf_blade_area_sum = 0;
 
     _grow = 0;
@@ -97,6 +104,9 @@ void Model::compute(double t, bool /* update */)
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
+    _internode_last_demand_sum = 0;
+    _internode_demand_sum = 0;
+    _internode_biomass_sum = 0;
     _leaf_blade_area_sum = 0;
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
@@ -128,13 +138,15 @@ void Model::compute(double t, bool /* update */)
             if ((*previous_it)->is_stable(t)) {
                 (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
                            (*previous_it)->get(t, phytomer::Model::PREDIM));
-            } else {
-                (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
             }
+            // else {
+            //     (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
+            // }
         }
         (*it)->put(t, phytomer::Model::SLA, _sla);
         (*it)->put(t, phytomer::Model::GROW, _grow);
         (*it)->put(t, phytomer::Model::PHASE, _phase);
+        (*it)->put(t, phytomer::Model::STATE, _state);
         (*it)->put(t, phytomer::Model::STOP, _stop);
         if (is_ready(t, TEST_IC)) {
             (*it)->put(t, phytomer::Model::TEST_IC, _test_ic);
@@ -152,6 +164,12 @@ void Model::compute(double t, bool /* update */)
         _leaf_last_demand_sum +=
             (*it)->get(t, phytomer::Model::LEAF_LAST_DEMAND);
         _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
+        _internode_last_demand_sum += (*it)->get(
+            t, phytomer::Model::INTERNODE_LAST_DEMAND);
+        _internode_demand_sum += (*it)->get(
+            t, phytomer::Model::INTERNODE_DEMAND);
+        _internode_biomass_sum += (*it)->get(
+            t, phytomer::Model::INTERNODE_BIOMASS);
 
         if ((*it)->get(t
                        , phytomer::Model::LEAF_CORRECTED_BLADE_AREA) == 0) {
@@ -201,6 +219,7 @@ void Model::compute(double t, bool /* update */)
         << " ; index = " << _index
         << " ; lig = " << _lig
         << " ; leaf biomass sum = " << _leaf_biomass_sum
+        << " ; intenade biomass sum = " << _internode_biomass_sum
         << " ; leaf number = "
         << (_deleted_leaf_number + phytomer_models.size())
         << " ; deleted leaf number = " << _deleted_leaf_number;

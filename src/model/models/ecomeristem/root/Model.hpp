@@ -33,7 +33,9 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { ROOT_DEMAND_COEF, ROOT_DEMAND, ROOT_BIOMASS };
-    enum externals { LEAF_DEMAND_SUM, P, STOCK, GROW, PHASE };
+    enum externals { LEAF_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
+                     INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM, P,
+                     STOCK, GROW, PHASE, STATE };
 
     Model()
     {
@@ -45,10 +47,14 @@ public:
                  RootDemand::ROOT_BIOMASS);
 
         external(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
+        external(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
+        external(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
+        external(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
         external(P, &Model::_p);
         external(STOCK, &Model::_stock);
         external(GROW, &Model::_grow);
         external(PHASE, &Model::_phase);
+        external(STATE, &Model::_state);
     }
 
     virtual ~Model()
@@ -68,21 +74,32 @@ public:
 
         root_demand_model.put(t, RootDemand::LEAF_DEMAND_SUM,
                               _leaf_demand_sum);
+        root_demand_model.put(t, RootDemand::LEAF_LAST_DEMAND_SUM,
+                              _leaf_last_demand_sum);
+        root_demand_model.put(t, RootDemand::INTERNODE_DEMAND_SUM,
+                              _internode_demand_sum);
+        root_demand_model.put(t, RootDemand::INTERNODE_LAST_DEMAND_SUM,
+                              _internode_last_demand_sum);
         root_demand_model.put(t, RootDemand::ROOT_DEMAND_COEF,
                               root_demand_coef_model.get(t,
                                   RootDemandCoef::ROOT_DEMAND_COEF));
         root_demand_model.put(t, RootDemand::GROW, _grow);
         root_demand_model.put(t, RootDemand::PHASE, _phase);
+        root_demand_model.put(t, RootDemand::STATE, _state);
         root_demand_model(t);
     }
 
 private:
     //external variables
     double _leaf_demand_sum;
+    double _leaf_last_demand_sum;
+    double _internode_demand_sum;
+    double _internode_last_demand_sum;
     double _p;
     double _stock;
     double _grow;
     double _phase;
+    double _state;
 
     // submodels
     RootDemandCoef root_demand_coef_model;

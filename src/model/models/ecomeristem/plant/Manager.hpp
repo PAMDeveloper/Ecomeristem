@@ -30,43 +30,36 @@
 
 namespace ecomeristem { namespace plant {
 
-enum state_t { INIT, /* 0 */
-               INITIAL, /* 1 */
-               PHYTOMER_MORPHO_GENESIS, /* 2 */
-               NOGROWTH, /* 3 */
-               DEAD, /* 4 */
-               NEW_PHYTOMER, /* 5 */
-               ELONG, /* 6 */
-               PI, /* 7 */
-               NOGROWTH_ELONG, /* 8 */
-               NOGROWTH_PI, /* 9 */
-               PRE_FLO, /* 10 */
-               NOGROWTH_PRE_FLO, /* 11 */
-               FLO, /* 12 */
-               NOGROWTH_FLO, /* 13 */
-               NEW_PHYTOMER_NOGROWTH, /* 14 */
-               NEW_PHYTOMER_NOGROWTH2, /* 15 */
-               NEW_PHYTOMER_NOGROWTH3, /* 16 */
-               NEW_PHYTOMER_NOGROWTH4, /* 17 */
-               NOGROWTH2, /* 18 */
-               NOGROWTH3, /* 19 */
-               NOGROWTH4, /* 20 */
-               NOGROWTH5, /* 21 */
-               NEW_PHYTOMER2, /* 22 */
-               NEW_PHYTOMER3, /* 23 */
-               LIG /* 24 */
+enum phase_t { INIT = 0,
+               INITIAL = 1,
+               PHYTOMER_MORPHO_GENESIS = 2,
+               NOGROWTH = 3,
+               NEW_PHYTOMER = 5,
+               NOGROWTH_ELONG = 8,
+               NOGROWTH_PI = 9,
+               NOGROWTH_PRE_FLO = 11,
+               NOGROWTH_FLO = 13,
+               NEW_PHYTOMER_NOGROWTH = 14,
+               NEW_PHYTOMER_NOGROWTH2 = 15,
+               NEW_PHYTOMER_NOGROWTH3 = 16,
+               NEW_PHYTOMER_NOGROWTH4 = 17,
+               NOGROWTH2 = 18,
+               NOGROWTH3 = 19,
+               NOGROWTH4 = 20,
+               NOGROWTH5 = 21,
+               NEW_PHYTOMER2 = 22,
+               NEW_PHYTOMER3 = 23,
+               LIG = 24
 };
+
+enum state_t { VEGETATIVE, PRE_ELONG, ELONG, PRE_PI, PI, PRE_FLO, FLO,
+               END_FILLING, MATURITY, DEAD };
 
 class Manager : public AbstractAtomicModel < Manager >
 {
 public:
-    static const int STOCK = 0;
-    static const int PHENO_STAGE = 1;
-    static const int BOOL_CROSSED_PLASTO = 2;
-    static const int FTSW = 3;
-    static const int IC = 4;
-
-    static const int PHASE = 0;
+    enum internals { PHASE, STATE };
+    enum externals { STOCK, PHENO_STAGE, BOOL_CROSSED_PLASTO, FTSW, IC };
 
     Manager()
     {
@@ -76,7 +69,8 @@ public:
         external(FTSW, &Manager::_FTSW);
         external(IC, &Manager::_IC);
 
-        internal(PHASE, &Manager::_state);
+        internal(PHASE, &Manager::_phase);
+        internal(STATE, &Manager::_state);
     }
 
     virtual ~Manager()
@@ -108,6 +102,7 @@ private:
     double nbleaf_max_after_pi;
 
 // internal variables
+    double _phase;
     double _state;
     unsigned int leaf_number;
     unsigned int culm_number;

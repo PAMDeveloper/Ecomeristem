@@ -59,38 +59,37 @@ namespace ecomeristem { namespace plant {
 
 void Manager::compute(double t, bool /* update */)
 {
-    state_t old_state;
+    phase_t old_phase;
 
     do {
-        old_state = (state_t)_state;
+        old_phase = (phase_t)_phase;
 
-        switch ((state_t)_state) {
+        switch ((phase_t)_phase) {
         case INIT: {
-            _state = INITIAL;
+            _phase = INITIAL;
+            _state = VEGETATIVE;
             break;
         }
         case INITIAL: {
             if (_stock > 0 and _phenoStage < nbleaf_pi) {
-                _state = PHYTOMER_MORPHO_GENESIS;
+                _phase = PHYTOMER_MORPHO_GENESIS;
             } else {
-                _state = DEAD;
+                _phase = DEAD;
             }
             break;
         }
         case PHYTOMER_MORPHO_GENESIS:
-//TODO
-            if (_boolCrossedPlasto > 0 and _stock > 0
-/*and  _phenoStage < nbleaf_culm_elong and _phenoStage < nbleaf_pi*/) {
+            if (_boolCrossedPlasto > 0 and _stock > 0) {
                 leaf_number += culm_number;
-                _state = NEW_PHYTOMER;
+                _phase = NEW_PHYTOMER;
             }
             if (_stock <= 0) {
-                _state = NOGROWTH2;
+                _phase = NOGROWTH2;
             }
             break;
         case NOGROWTH: {
             if (_stock > 0) {
-                _state = PHYTOMER_MORPHO_GENESIS;
+                _phase = PHYTOMER_MORPHO_GENESIS;
             }
             break;
         }
@@ -98,56 +97,59 @@ void Manager::compute(double t, bool /* update */)
         case NEW_PHYTOMER: {
             if (_phenoStage == nbleaf_culm_elong) {
                 _state = ELONG;
-            } else if (_phenoStage < nbleaf_culm_elong) {
-                _state = NEW_PHYTOMER3;
             }
+            _phase = NEW_PHYTOMER3;
             break;
         }
-        case ELONG: break;
-        case PI:
-        case NOGROWTH_ELONG:
-        case NOGROWTH_PI:
-        case PRE_FLO:
-        case NOGROWTH_PRE_FLO:
-        case FLO:
-        case NOGROWTH_FLO:
-        case NEW_PHYTOMER_NOGROWTH:
-        case NEW_PHYTOMER_NOGROWTH2:
-        case NEW_PHYTOMER_NOGROWTH3:
-        case NEW_PHYTOMER_NOGROWTH4:
+        // case ELONG: {
+        //     _phase = ELONG;
+        //     break;
+        // }
+        // case PI:
+        // case NOGROWTH_ELONG:
+        // case NOGROWTH_PI:
+        // case PRE_FLO:
+        // case NOGROWTH_PRE_FLO:
+        // case FLO:
+        // case NOGROWTH_FLO:
+        // case NEW_PHYTOMER_NOGROWTH:
+        // case NEW_PHYTOMER_NOGROWTH2:
+        // case NEW_PHYTOMER_NOGROWTH3:
+        // case NEW_PHYTOMER_NOGROWTH4:
         case NOGROWTH2: {
             _last_time = t;
-            _state = NOGROWTH3;
+            _phase = NOGROWTH3;
             break;
         }
         case NOGROWTH3: {
             if (t == _last_time + 1) {
-                _state = NOGROWTH4;
+                _phase = NOGROWTH4;
             }
             break;
         }
         case NOGROWTH4: {
             if (_stock > 0) {
-                _state = PHYTOMER_MORPHO_GENESIS;
+                _phase = PHYTOMER_MORPHO_GENESIS;
             }
             break;
         }
-        case NOGROWTH5: break;
-        case NEW_PHYTOMER2: break;
+        // case NOGROWTH5: break;
+        // case NEW_PHYTOMER2: break;
         case NEW_PHYTOMER3: {
             if (_boolCrossedPlasto <= 0) {
-                _state = PHYTOMER_MORPHO_GENESIS;
+                _phase = PHYTOMER_MORPHO_GENESIS;
             }
             break;
         }
         case LIG: break;
         };
-    } while (old_state != _state);
+    } while (old_phase != _phase);
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("PLANT_MANAGER", t, utils::COMPUTE)
-            << "state = " << _state
+            << "phase = " << _phase
+            << " ; state = " << _state
             << " ; stock = " << _stock
             << " ; phenoStage = " << _phenoStage
             << " ; boolCrossedPlasto = " << _boolCrossedPlasto

@@ -43,7 +43,8 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { BIOMASS, DEMAND, LAST_DEMAND };
-    enum externals { DD, DELTA_T, FTSW, P, PHASE, PREDIM_PREVIOUS_LEAF, LIG };
+    enum externals { DD, DELTA_T, FTSW, P, PHASE, STATE, PREDIM_PREVIOUS_LEAF,
+                     LIG };
 
     Model(int index, bool is_on_mainstem);
 
@@ -81,6 +82,7 @@ private:
     double _ftsw;
     double _p;
     double _phase;
+    double _state;
     double _test_ic;
     double _predim_previous_leaf;
     double _lig;

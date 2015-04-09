@@ -34,13 +34,14 @@ class InternodeDemand : public AbstractAtomicModel < InternodeDemand >
 {
 public:
     enum internals { DEMAND };
-    enum externals { BIOMASS };
+    enum externals { BIOMASS, PHASE };
 
-    InternodeDemand()
+    InternodeDemand(int index) : _index(index)
     {
         internal(DEMAND, &InternodeDemand::_demand);
 
         external(BIOMASS, &InternodeDemand::_biomass);
+        external(PHASE, &InternodeDemand::_phase);
     }
 
     virtual ~InternodeDemand()
@@ -51,12 +52,17 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        _demand = _biomass - _biomass_1;
+        if (_phase == internode::MATURITY) {
+            _demand = 0;
+        } else {
+            _demand = _biomass - _biomass_1;
+        }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("INTERNODE_DEMAND", t, utils::COMPUTE)
             << "Demand = " << _demand
+            << " ; index = " << _index
             << " ; Biomass = " << _biomass
             << " ; Biomass[-1] = " << _biomass_1;
         utils::Trace::trace().flush();
@@ -91,12 +97,16 @@ public:
     }
 
 private:
+// parameters
+    int _index;
+
 // internal variable
     double _demand;
 
 // external variables
     double _biomass;
     double _biomass_1;
+    double _phase;
 };
 
 } } // namespace ecomeristem internode

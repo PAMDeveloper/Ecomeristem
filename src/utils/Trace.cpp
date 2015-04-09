@@ -44,6 +44,7 @@ utils::Trace& operator<<(utils::Trace& trace, const std::string& str)
 
 utils::Trace& operator<<(utils::Trace& trace, double t)
 {
+    trace.sstream().precision(10);
     trace.sstream() << t;
     return trace;
 }

@@ -50,7 +50,7 @@ public:
                      CORRECTED_BIOMASS, CORRECTED_BLADE_AREA, LEN };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
-                     SLA, GROW, PHASE, STOP, TEST_IC };
+                     SLA, GROW, PHASE, STATE, STOP, TEST_IC };
 
     Model(int index, bool is_on_mainstem);
 
@@ -96,6 +96,7 @@ private:
     double _sla;
     double _grow;
     double _phase;
+    double _state;
     double _stop;
     double _test_ic;
 };

@@ -32,13 +32,14 @@ namespace ecomeristem { namespace phytomer {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    enum internals { LEAF_BIOMASS,  LEAF_BLADE_AREA,  LEAF_DEMAND,
-                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY, REALLOC_BIOMASS,
-                     SENESC_DW, LEAF_CORRECTED_BIOMASS,
+    enum internals { LEAF_BIOMASS, LEAF_BLADE_AREA, LEAF_DEMAND,
+                     INTERNODE_DEMAND, INTERNODE_LAST_DEMAND, INTERNODE_BIOMASS,
+                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY,
+                     REALLOC_BIOMASS, SENESC_DW, LEAF_CORRECTED_BIOMASS,
                      LEAF_CORRECTED_BLADE_AREA, LEAF_LEN };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, PREDIM_PREVIOUS_LEAF,
-                     SLA, GROW, PHASE, STOP, TEST_IC };
+                     SLA, GROW, PHASE, STATE, STOP, TEST_IC };
 
     Model(int index, bool is_on_mainstem) :
         _index(index), _is_first_leaf(index == 1),
@@ -49,6 +50,11 @@ public:
         internal(LEAF_BIOMASS, &leaf_model, leaf::Model::BIOMASS);
         internal(LEAF_BLADE_AREA, &leaf_model, leaf::Model::BLADE_AREA);
         internal(LEAF_DEMAND, &leaf_model, leaf::Model::DEMAND);
+        internal(INTERNODE_LAST_DEMAND, &internode_model,
+                 internode::Model::LAST_DEMAND);
+        internal(INTERNODE_DEMAND, &internode_model, internode::Model::DEMAND);
+        internal(INTERNODE_BIOMASS, &internode_model,
+                 internode::Model::BIOMASS);
         internal(LEAF_LAST_DEMAND, &leaf_model, leaf::Model::LAST_DEMAND);
         internal(PREDIM, &leaf_model, leaf::Model::PREDIM);
         internal(PLASTO_DELAY, &leaf_model, leaf::Model::PLASTO_DELAY);
@@ -71,6 +77,7 @@ public:
         external(SLA, &Model::_sla);
         external(GROW, &Model::_grow);
         external(PHASE, &Model::_phase);
+        external(STATE, &Model::_state);
         external(STOP, &Model::_stop);
         external(TEST_IC, &Model::_test_ic);
     }
@@ -108,6 +115,7 @@ public:
         leaf_model.put(t, leaf::Model::SLA, _sla);
         leaf_model.put(t, leaf::Model::GROW, _grow);
         leaf_model.put(t, leaf::Model::PHASE, _phase);
+        leaf_model.put(t, leaf::Model::STATE, _state);
         leaf_model.put(t, leaf::Model::STOP, _stop);
         if (is_ready(t, TEST_IC)) {
             leaf_model.put(t, leaf::Model::TEST_IC, _test_ic);
@@ -128,6 +136,7 @@ public:
         internode_model.put(t, internode::Model::FTSW, _ftsw);
         internode_model.put(t, internode::Model::P, _p);
         internode_model.put(t, internode::Model::PHASE, _phase);
+        internode_model.put(t, internode::Model::STATE, _state);
         internode_model.put(t, internode::Model::LIG, _lig);
         internode_model.put(t, internode::Model::PREDIM_PREVIOUS_LEAF,
             _predim_previous_leaf);
@@ -165,6 +174,7 @@ private:
     double _sla;
     double _grow;
     double _phase;
+    double _state;
     double _stop;
     double _test_ic;
 };

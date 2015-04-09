@@ -32,7 +32,9 @@ Model::Model(int index, bool is_on_mainstem) :
     exp_time_model(index),
     len_model(index),
     predim_model(index),
+    last_demand_model(index),
     iner_model(index),
+    internode_demand_model(index),
     manager_model(index)
 {
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
@@ -44,6 +46,7 @@ Model::Model(int index, bool is_on_mainstem) :
     external(FTSW, &Model::_ftsw);
     external(P, &Model::_p);
     external(PHASE, &Model::_phase);
+    external(STATE, &Model::_state);
     external(PREDIM_PREVIOUS_LEAF, &Model::_predim_previous_leaf);
     external(LIG, &Model::_lig);
 }
@@ -83,6 +86,7 @@ void Model::compute(double t, bool /* update */)
     iner_model(t);
 
     manager_model.put(t, Manager::PHASE, _phase);
+    manager_model.put(t, Manager::STATE, _state);
     manager_model.put(t, Manager::LIG, _lig);
     do {
         len_model.put(t, Len::DD, _dd);
@@ -142,6 +146,8 @@ void Model::compute(double t, bool /* update */)
 
     internode_demand_model.put(t, InternodeDemand::BIOMASS,
                           biomass_model.get(t, Biomass::BIOMASS));
+    internode_demand_model.put(t, InternodeDemand::PHASE,
+                           manager_model.get(t, Manager::INTERNODE_PHASE));
     internode_demand_model(t);
 
     last_demand_model.put(t, LastDemand::PHASE,

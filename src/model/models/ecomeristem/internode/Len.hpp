@@ -98,6 +98,7 @@ public:
             << "Len = " << _len
             << " ; index = " << _index
             << " ; len[-1] = " << _len_1
+            << " ; phase[-1] = " << _phase_1
             << " ; phase = " << _phase
             << " ; DeltaT = " << _delta_t
             << " ; ExpTime = " << _exp_time
@@ -118,7 +119,16 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
-        if (index == PHASE and !is_ready(t, PHASE)) {
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("INTERNODE_LEN", t, utils::PUT)
+            << "Index = " << index
+            << " ; index = " << _index
+            << " ; value = " << value;
+        utils::Trace::trace().flush();
+#endif
+
+        if (index == PHASE and not is_ready(t, PHASE)) {
             _phase_1 = _phase;
         }
         AbstractAtomicModel < Len >::put(t, index, value);

@@ -35,7 +35,10 @@ class RootDemand : public AbstractAtomicModel < RootDemand >
 {
 public:
     enum internals { ROOT_DEMAND, ROOT_BIOMASS };
-    enum externals { LEAF_DEMAND_SUM, ROOT_DEMAND_COEF, GROW, PHASE };
+    enum externals { LEAF_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
+                     INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
+                     ROOT_DEMAND_COEF,
+                     GROW, PHASE, STATE };
 
     RootDemand()
     {
@@ -43,9 +46,14 @@ public:
         internal(ROOT_BIOMASS, &RootDemand::_root_biomass);
 
         external(LEAF_DEMAND_SUM, &RootDemand::_leaf_demand_sum);
+        external(LEAF_LAST_DEMAND_SUM, &RootDemand::_leaf_last_demand_sum);
+        external(INTERNODE_DEMAND_SUM, &RootDemand::_internode_demand_sum);
+        external(INTERNODE_LAST_DEMAND_SUM,
+                 &RootDemand::_internode_last_demand_sum);
         external(ROOT_DEMAND_COEF, &RootDemand::_root_demand_coef);
         external(GROW, &RootDemand::_grow);
         external(PHASE, &RootDemand::_phase);
+        external(STATE, &RootDemand::_state);
     }
 
     virtual ~RootDemand()
@@ -62,7 +70,8 @@ public:
             _stop = false;
         }
         if (_first_day == t) {
-            _root_demand = _leaf_demand_sum * _root_demand_coef;
+            _root_demand = (_leaf_demand_sum + _leaf_last_demand_sum +
+                            _internode_demand_sum) * _root_demand_coef;
             _last_value = _root_demand;
             _root_biomass = _root_demand;
         } else {
@@ -72,15 +81,43 @@ public:
                 _last_value = 0;
                 _stop = _phase == ecomeristem::plant::NOGROWTH4;
             } else {
-                if (_leaf_demand_sum_1 == 0) {
-                    _root_demand = _last_value * _root_demand_coef;
+                if (_state == ecomeristem::plant::ELONG ||
+                    _state == ecomeristem::plant::PI) {
+                    if (_leaf_demand_sum + _leaf_last_demand_sum +
+                        _internode_demand_sum + _internode_last_demand_sum
+                        == 0) {
+                        _root_demand = _last_value * _root_demand_coef;
+                    } else {
+                        _root_demand = (_leaf_demand_sum +
+                                        _leaf_last_demand_sum +
+                                        _internode_demand_sum +
+                                        _internode_last_demand_sum) *
+                            _root_demand_coef;
+                    }
+                    if (_leaf_demand_sum + _leaf_last_demand_sum +
+                        _internode_demand_sum + _internode_last_demand_sum
+                        != 0) {
+                        _last_value = _leaf_demand_sum + _leaf_last_demand_sum +
+                            _internode_demand_sum + _internode_last_demand_sum;
+                    } else {
+                        _last_value = 0;
+                    }
                 } else {
-                    _root_demand = _leaf_demand_sum_1 * _root_demand_coef;
-                }
-                if (_leaf_demand_sum_1 != 0) {
-                    _last_value = _leaf_demand_sum_1;
-                } else {
-                    _last_value = 0;
+                    if (_leaf_demand_sum_1 +
+                        _internode_demand_sum_1 == 0) {
+                        _root_demand = _last_value * _root_demand_coef;
+                    } else {
+                        _root_demand = (_leaf_demand_sum_1 +
+                                        _internode_demand_sum_1) *
+                            _root_demand_coef;
+                    }
+                    if (_leaf_demand_sum_1 +
+                        _internode_demand_sum_1 != 0) {
+                        _last_value = _leaf_demand_sum_1 +
+                            _internode_demand_sum_1;
+                    } else {
+                        _last_value = 0;
+                    }
                 }
             }
             if (update) {
@@ -99,6 +136,13 @@ public:
             << " ; LastValue = " << _last_value
             << " ; LeafDemandSum = " << _leaf_demand_sum
             << " ; LeafDemandSum[-1] = " << _leaf_demand_sum_1
+            << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
+            << " ; LeafLastDemandSum[-1] = " << _leaf_last_demand_sum_1
+            << " ; InternodeDemandSum = " << _internode_demand_sum
+            << " ; InternodeDemandSum[-1] = " << _internode_demand_sum_1
+            << " ; InternodeLastDemandSum = " << _internode_last_demand_sum
+            << " ; InternodeLastDemandSum[-1] = "
+            << _internode_last_demand_sum_1
             << " ; RootDemandCoef = " << _root_demand_coef
             << " ; Grow = " << _grow;
         utils::Trace::trace().flush();
@@ -110,8 +154,16 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _leaf_demand_sum = 0;
+        _leaf_last_demand_sum = 0;
+        _internode_demand_sum = 0;
+        _internode_last_demand_sum = 0;
+        _leaf_demand_sum_1 = 0;
+        _leaf_last_demand_sum_1 = 0;
+        _internode_demand_sum_1 = 0;
+        _internode_last_demand_sum_1 = 0;
         _root_demand = 0;
         _root_biomass = 0;
+        _root_biomass_1 = 0;
         _last_value = 0;
         _first_day = t;
     }
@@ -120,6 +172,18 @@ public:
     {
         if (index == LEAF_DEMAND_SUM and !is_ready(t, LEAF_DEMAND_SUM)) {
             _leaf_demand_sum_1 = _leaf_demand_sum;
+        }
+        if (index == LEAF_LAST_DEMAND_SUM and
+            !is_ready(t, LEAF_LAST_DEMAND_SUM)) {
+            _leaf_last_demand_sum_1 = _leaf_last_demand_sum;
+        }
+        if (index == INTERNODE_DEMAND_SUM and
+            not is_ready(t, INTERNODE_DEMAND_SUM)) {
+            _internode_demand_sum_1 = _internode_demand_sum;
+        }
+        if (index == INTERNODE_LAST_DEMAND_SUM and
+            not is_ready(t, INTERNODE_LAST_DEMAND_SUM)) {
+            _internode_last_demand_sum_1 = _internode_last_demand_sum;
         }
         AbstractAtomicModel < RootDemand >::put(t, index, value);
     }
@@ -136,9 +200,16 @@ private:
 // external variables
     double _leaf_demand_sum;
     double _leaf_demand_sum_1;
+    double _leaf_last_demand_sum;
+    double _leaf_last_demand_sum_1;
+    double _internode_demand_sum;
+    double _internode_demand_sum_1;
+    double _internode_last_demand_sum;
+    double _internode_last_demand_sum_1;
     double _root_demand_coef;
     double _grow;
     double _phase;
+    double _state;
 };
 
 } } // namespace ecomeristem root

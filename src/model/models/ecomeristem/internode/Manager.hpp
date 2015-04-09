@@ -38,13 +38,14 @@ class Manager : public AbstractAtomicModel < Manager >
 {
 public:
     enum internals { INTERNODE_PHASE };
-    enum externals { PHASE, LEN, PREDIM, LIG };
+    enum externals { PHASE, STATE, LEN, PREDIM, LIG };
 
     Manager(int index) : _index(index)
     {
         internal(INTERNODE_PHASE, &Manager::_phase_);
 
         external(PHASE, &Manager::_phase);
+        external(STATE, &Manager::_state);
         external(LEN, &Manager::_len);
         external(PREDIM, &Manager::_predim);
         external(LIG, &Manager::_lig);
@@ -58,7 +59,7 @@ public:
         if (_phase_ == internode::INIT) {
             _phase_ = internode::VEGETATIVE;
         } else if (_phase_ == internode::VEGETATIVE and
-                   _phase == plant::ELONG and _lig == t) {
+                   _state == plant::ELONG and _lig == t) {
             _phase_ = internode::REALIZATION;
         } else if (_phase_ == internode::REALIZATION and _len >= _predim) {
             _phase_ = internode::MATURITY;
@@ -81,8 +82,11 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("INTERNODE_MANAGER", t, utils::COMPUTE)
-            << "phase = " << _phase_ << " ; phase = " << _phase
-            << " ; len = " << _len << " ; predim = " << _predim;
+            << "index = " << _index
+            << " ; phase = " << _phase_
+            << " ; phase = " << _phase
+            << " ; len = " << _len
+            << " ; predim = " << _predim;
         utils::Trace::trace().flush();
 #endif
 
@@ -103,7 +107,10 @@ public:
         }
 
         AbstractAtomicModel < Manager >::put(t, index, value);
-        if (_phase_ == internode::INIT or (is_ready(t, LEN) and _predim_init)) {
+
+        //TODO: remove _phase_ == internode::REALIZATION !!!!
+        if (_phase_ == internode::INIT or _phase_ == internode::REALIZATION
+            or (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }
     }
@@ -116,6 +123,7 @@ private:
 
 // external variables
     double _phase;
+    double _state;
     double _len;
     double _predim;
     double _lig;

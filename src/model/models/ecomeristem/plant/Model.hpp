@@ -88,6 +88,9 @@ private:
     double _leaf_biomass_sum;
     double _leaf_last_demand_sum;
     double _leaf_demand_sum;
+    double _internode_demand_sum;
+    double _internode_last_demand_sum;
+    double _internode_biomass_sum;
     double _leaf_blade_area_sum;
     double _demand_sum;
     bool _culm_is_computed;

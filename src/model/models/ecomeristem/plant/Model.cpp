@@ -89,8 +89,11 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     culm_models.push_back(meristem);
 
     _leaf_biomass_sum = 0;
-    _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
+    _leaf_last_demand_sum = 0;
+    _internode_demand_sum = 0;
+    _internode_last_demand_sum = 0;
+    _internode_biomass_sum = 0;
     _leaf_blade_area_sum = 0;
 
     _nbleaf_enabling_tillering =
@@ -174,8 +177,9 @@ void Model::compute(double t, bool /* update */)
         if (it != culm_models.end()) {
             _culm_index = i;
             _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
-            _deleted_leaf_biomass =
-                culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+            // TODO: a remettre !
+            // _deleted_leaf_biomass =
+            //     culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
         }
 
 #ifdef WITH_TRACE
@@ -201,10 +205,11 @@ void Model::compute_assimilation(double t)
                                    water_balance::Model::FCSTR));
     };
 //TODO
-    assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS, 0);
     if (_culm_is_computed) {
         assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
                                _leaf_biomass_sum);
+        assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS,
+                               _internode_biomass_sum);
         assimilation_model.put(t, assimilation::Model::PAI,
                                _leaf_blade_area_sum);
     }
@@ -227,6 +232,9 @@ void Model::compute_culms(double t)
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
     _leaf_demand_sum = 0;
+    _internode_last_demand_sum = 0;
+    _internode_demand_sum = 0;
+    _internode_biomass_sum = 0;
     _leaf_blade_area_sum = 0;
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
@@ -268,6 +276,8 @@ void Model::compute_culms(double t)
         if (manager_model.is_computed(t, Manager::PHASE)) {
             (*it)->put(t, culm::Model::PHASE,
                        manager_model.get(t, Manager::PHASE));
+            (*it)->put(t, culm::Model::STATE,
+                       manager_model.get(t, Manager::STATE));
         }
         //TODO
         (*it)->put(t, culm::Model::STOP, 0);
@@ -281,6 +291,12 @@ void Model::compute_culms(double t)
         _leaf_last_demand_sum +=
             (*it)->get(t, culm::Model::LEAF_LAST_DEMAND_SUM);
         _leaf_demand_sum += (*it)->get(t, culm::Model::LEAF_DEMAND_SUM);
+        _internode_last_demand_sum += (*it)->get(
+            t, culm::Model::INTERNODE_LAST_DEMAND_SUM);
+        _internode_demand_sum += (*it)->get(
+            t, culm::Model::INTERNODE_DEMAND_SUM);
+        _internode_biomass_sum += (*it)->get(
+            t, culm::Model::INTERNODE_BIOMASS_SUM);
         _leaf_blade_area_sum +=
             (*it)->get(t, culm::Model::LEAF_BLADE_AREA_SUM);
         _realloc_biomass_sum +=
@@ -300,6 +316,9 @@ void Model::compute_culms(double t)
         << "LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
         << " ; LeafDemandSum = " << _leaf_demand_sum
+        << " ; InternodeLastDemandSum = " << _internode_last_demand_sum
+        << " ; InternodeDemandSum = " << _internode_demand_sum
+        << " ; InternodeBiomassSum = " << _internode_biomass_sum
         << " ; LeafBladeAreaSum = " << _leaf_blade_area_sum
         << " ; ReallocBiomassSum = " << _realloc_biomass_sum
         << " ; SenescDWSum = " << _senesc_dw_sum
@@ -351,6 +370,12 @@ void Model::compute_root(double t)
     }
     root_model.put(t, root::Model::LEAF_DEMAND_SUM,
                    _leaf_demand_sum);
+    root_model.put(t, root::Model::LEAF_LAST_DEMAND_SUM,
+                   _leaf_last_demand_sum);
+    root_model.put(t, root::Model::INTERNODE_DEMAND_SUM,
+                   _internode_demand_sum);
+    root_model.put(t, root::Model::INTERNODE_LAST_DEMAND_SUM,
+                   _internode_last_demand_sum);
     if (stock_model.is_computed(t, stock::Model::GROW)) {
         root_model.put(t, root::Model::GROW,
                        stock_model.get(t, stock::Model::GROW));
@@ -358,6 +383,8 @@ void Model::compute_root(double t)
     if (manager_model.is_computed(t, Manager::PHASE)) {
         root_model.put(t, root::Model::PHASE,
                        manager_model.get(t, Manager::PHASE));
+        root_model.put(t, root::Model::STATE,
+                       manager_model.get(t, Manager::STATE));
     }
     root_model(t);
 

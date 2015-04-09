@@ -34,10 +34,13 @@ class Model : public AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
-                     LEAF_BLADE_AREA_SUM, LEAF_PREDIM, REALLOC_BIOMASS_SUM,
-                     SENESC_DW_SUM, LIG };
+                     INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
+                     INTERNODE_BIOMASS_SUM,
+                     LEAF_BLADE_AREA_SUM, LEAF_PREDIM,
+                     REALLOC_BIOMASS_SUM, SENESC_DW_SUM, LIG };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
-                     PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STOP, TEST_IC };
+                     PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STATE,
+                     STOP, TEST_IC };
 
     Model(int index);
 
@@ -78,6 +81,9 @@ private:
     double _leaf_biomass_sum;
     double _leaf_last_demand_sum;
     double _leaf_demand_sum;
+    double _internode_last_demand_sum;
+    double _internode_demand_sum;
+    double _internode_biomass_sum;
     double _leaf_blade_area_sum;
     double _leaf_predim;
     double _realloc_biomass_sum;
@@ -96,6 +102,7 @@ private:
     double _sla;
     double _grow;
     double _phase;
+    double _state;
     double _stop;
     double _test_ic;
 };
