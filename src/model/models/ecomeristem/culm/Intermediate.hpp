@@ -99,8 +99,10 @@ public:
     }
 
     void init(double /* t */,
-              const model::models::ModelParameters& /* parameters */)
+              const model::models::ModelParameters& parameters)
     {
+        _realocationCoeff = parameters.get < double >("realocationCoeff");
+
         _intermediate = 0;
         _plant_stock_1 = _plant_stock = 0;
         _plant_deficit_1 = _plant_deficit;
@@ -117,7 +119,22 @@ public:
         AbstractAtomicModel < Intermediate >::put(t, index, value);
     }
 
+void realloc_biomass(double /* t */, double value)
+{
+    if (value > 0) {
+        double qty = value * _realocationCoeff;
+
+        _plant_stock_1 = std::max(0., qty + _plant_deficit);
+        _plant_stock = _plant_stock_1;
+        _plant_deficit_1 = std::min(0., qty + _plant_deficit);
+        _plant_deficit = _plant_deficit_1;
+    }
+}
+
 private:
+// parameters
+    double _realocationCoeff;
+
 // internal variables
     double _intermediate;
 

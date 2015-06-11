@@ -93,6 +93,9 @@ public:
         _corrected_blade_area = 0;
     }
 
+    double get_blade_area() const
+    { return _blade_area; }
+
 private:
 // parameters
     double _allo_area;

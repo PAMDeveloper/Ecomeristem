@@ -63,11 +63,13 @@ public:
             if (not update) {
                 _len_1 = _len;
             }
-            if (_phase != leaf::NOGROWTH and not _stop) {
+            if (not (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
+                or _phase == plant::NOGROWTH4) and not _stop) {
                 _len = std::min(_predim,
                                 _len_1 + _ler * std::min(_delta_t, _exp_time));
             }
-            _stop = _phase == leaf::NOGROWTH;
+            _stop = _phase == plant::NOGROWTH or _phase == plant::NOGROWTH3 or
+                _phase == plant::NOGROWTH4;
         }
 
 #ifdef WITH_TRACE

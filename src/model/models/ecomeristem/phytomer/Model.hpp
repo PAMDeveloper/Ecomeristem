@@ -143,6 +143,9 @@ public:
         internode_model(t);
     }
 
+    double get_blade_area() const
+    { return leaf_model.get_blade_area(); }
+
     const leaf::Model& leaf() const
     { return leaf_model; }
 

@@ -45,12 +45,14 @@ Model::Model()
     external(DEMAND_SUM, &Model::_demand_sum);
     external(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
     external(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
+    external(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
     external(DELETED_LEAF_BIOMASS, &Model::_deleted_leaf_biomass);
     external(PHASE, &Model::_phase);
     external(STATE, &Model::_state);
     external(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
     external(CULM_STOCK, &Model::_culm_stock);
     external(CULM_DEFICIT, &Model::_culm_deficit);
+    external(CULM_SURPLUS_SUM, &Model::_culm_surplus_sum);
 }
 
 void Model::init(double t, const model::models::ModelParameters& parameters)
@@ -71,10 +73,12 @@ void Model::compute(double t, bool update)
     }
 
     if (is_ready(t, DEMAND_SUM) and is_ready(t, LEAF_LAST_DEMAND_SUM) and
-        is_ready(t, PHASE)) {
+        is_ready(t, INTERNODE_LAST_DEMAND_SUM)) {
         day_demand_model.put(t, DayDemand::DEMAND_SUM, _demand_sum);
         day_demand_model.put(t, DayDemand::LEAF_LAST_DEMAND_SUM,
                              _leaf_last_demand_sum);
+        day_demand_model.put(t, DayDemand::INTERNODE_LAST_DEMAND_SUM,
+                             _internode_last_demand_sum);
         day_demand_model.put(t, DayDemand::PHASE, _phase);
         day_demand_model(t);
 
@@ -115,6 +119,9 @@ void Model::compute(double t, bool update)
                               supply_model.get(t, Supply::SUPPLY));
             surplus_model.put(t, Surplus::REALLOC_BIOMASS_SUM,
                               _realloc_biomass_sum);
+            surplus_model.put(t, Surplus::CULM_SURPLUS_SUM,
+                              _culm_surplus_sum);
+            surplus_model.put(t, Surplus::STATE, _state);
             surplus_model(t);
 
             compute_stock(t);
@@ -127,15 +134,21 @@ void Model::compute_stock(double t)
     if (_state == plant::ELONG) {
 
         // TODO: refactor
-        stock_model.put(t, Stock::DAY_DEMAND, 0);
-        stock_model.put(t, Stock::SEED_RES, 0);
-        stock_model.put(t, Stock::SUPPLY, 0);
-        stock_model.put(t, Stock::RESERVOIR_DISPO, 0);
-        stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, 0);
-        stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, 0);
+        stock_model.put(t, Stock::DAY_DEMAND,
+                        day_demand_model.get(t, DayDemand::DAY_DEMAND));
+        stock_model.put(t, Stock::SEED_RES,
+                        seed_res_model.get(t, SeedRes::SEED_RES));
+        stock_model.put(t, Stock::SUPPLY,
+                        supply_model.get(t, Supply::SUPPLY));
+        stock_model.put(t, Stock::RESERVOIR_DISPO,
+                        reservoir_dispo_model.get(
+                            t, ReservoirDispo::RESERVOIR_DISPO));
+        stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
+        stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
         stock_model.put(t, Stock::CULM_STOCK, _culm_stock);
         stock_model.put(t, Stock::CULM_DEFICIT, _culm_deficit);
         stock_model.put(t, Stock::STATE, _state);
+        stock_model.put(t, Stock::PHASE, _phase);
         stock_model(t);
     } else {
         stock_model.put(t, Stock::DAY_DEMAND,
@@ -150,6 +163,7 @@ void Model::compute_stock(double t)
         stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
         stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
         stock_model.put(t, Stock::STATE, _state);
+        stock_model.put(t, Stock::PHASE, _phase);
         stock_model(t);
     }
 

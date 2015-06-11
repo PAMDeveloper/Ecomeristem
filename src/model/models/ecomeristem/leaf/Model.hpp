@@ -61,6 +61,9 @@ public:
     void init(double t,
               const model::models::ModelParameters& parameters);
 
+    double get_blade_area() const
+    { return blade_area_model.get_blade_area(); }
+
 private:
 // parameters
     int _index;

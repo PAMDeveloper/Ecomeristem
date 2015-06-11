@@ -32,19 +32,20 @@ namespace ecomeristem { namespace root {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    enum internals { ROOT_DEMAND_COEF, ROOT_DEMAND, ROOT_BIOMASS };
+    enum internals { ROOT_DEMAND_COEF, ROOT_DEMAND, ROOT_DEMAND_1, ROOT_BIOMASS,
+                     SURPLUS };
     enum externals { LEAF_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
                      INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM, P,
-                     STOCK, GROW, PHASE, STATE };
+                     STOCK, GROW, PHASE, STATE, CULM_SURPLUS_SUM };
 
     Model()
     {
         internal(ROOT_DEMAND_COEF, &root_demand_coef_model,
                  RootDemandCoef::ROOT_DEMAND_COEF);
-        internal(ROOT_DEMAND, &root_demand_model,
-                 RootDemand::ROOT_DEMAND);
-        internal(ROOT_BIOMASS, &root_demand_model,
-                 RootDemand::ROOT_BIOMASS);
+        internal(ROOT_DEMAND, &root_demand_model, RootDemand::ROOT_DEMAND);
+        internal(ROOT_DEMAND_1, &root_demand_model, RootDemand::ROOT_DEMAND_1);
+        internal(ROOT_BIOMASS, &root_demand_model, RootDemand::ROOT_BIOMASS);
+        internal(SURPLUS, &root_demand_model, RootDemand::SURPLUS);
 
         external(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
         external(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
@@ -55,6 +56,7 @@ public:
         external(GROW, &Model::_grow);
         external(PHASE, &Model::_phase);
         external(STATE, &Model::_state);
+        external(CULM_SURPLUS_SUM, &Model::_culm_surplus_sum);
     }
 
     virtual ~Model()
@@ -72,6 +74,8 @@ public:
         root_demand_coef_model.put(t, RootDemandCoef::P, _p);
         root_demand_coef_model(t);
 
+        root_demand_model.put(t, RootDemand::CULM_SURPLUS_SUM,
+                              _culm_surplus_sum);
         root_demand_model.put(t, RootDemand::LEAF_DEMAND_SUM,
                               _leaf_demand_sum);
         root_demand_model.put(t, RootDemand::LEAF_LAST_DEMAND_SUM,
@@ -100,6 +104,7 @@ private:
     double _grow;
     double _phase;
     double _state;
+    double _culm_surplus_sum;
 
     // submodels
     RootDemandCoef root_demand_coef_model;

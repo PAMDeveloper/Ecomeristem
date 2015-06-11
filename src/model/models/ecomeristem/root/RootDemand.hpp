@@ -34,16 +34,17 @@ namespace ecomeristem { namespace root {
 class RootDemand : public AbstractAtomicModel < RootDemand >
 {
 public:
-    enum internals { ROOT_DEMAND, ROOT_BIOMASS };
+    enum internals { ROOT_DEMAND, ROOT_DEMAND_1, ROOT_BIOMASS, SURPLUS };
     enum externals { LEAF_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
                      INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
-                     ROOT_DEMAND_COEF,
-                     GROW, PHASE, STATE };
+                     ROOT_DEMAND_COEF, GROW, PHASE, STATE, CULM_SURPLUS_SUM };
 
     RootDemand()
     {
         internal(ROOT_DEMAND, &RootDemand::_root_demand);
+        internal(ROOT_DEMAND_1, &RootDemand::_root_demand_1);
         internal(ROOT_BIOMASS, &RootDemand::_root_biomass);
+        internal(SURPLUS, &RootDemand::_surplus);
 
         external(LEAF_DEMAND_SUM, &RootDemand::_leaf_demand_sum);
         external(LEAF_LAST_DEMAND_SUM, &RootDemand::_leaf_last_demand_sum);
@@ -54,6 +55,7 @@ public:
         external(GROW, &RootDemand::_grow);
         external(PHASE, &RootDemand::_phase);
         external(STATE, &RootDemand::_state);
+        external(CULM_SURPLUS_SUM, &RootDemand::_culm_surplus_sum);
     }
 
     virtual ~RootDemand()
@@ -66,6 +68,7 @@ public:
     void compute(double t, bool update)
     {
         if (not update) {
+            _root_demand_1 = _root_demand;
             _root_biomass_1 = _root_biomass;
             _stop = false;
         }
@@ -102,6 +105,8 @@ public:
                     } else {
                         _last_value = 0;
                     }
+                    _root_demand = std::min(_culm_surplus_sum, _root_demand);
+                    _surplus = _culm_surplus_sum - _root_demand;
                 } else {
                     if (_leaf_demand_sum_1 +
                         _internode_demand_sum_1 == 0) {
@@ -118,6 +123,7 @@ public:
                     } else {
                         _last_value = 0;
                     }
+                    _surplus = 0;
                 }
             }
             if (update) {
@@ -133,6 +139,7 @@ public:
             << "RootDemand = " << _root_demand
             << " ; RootBiomass = " << _root_biomass
             << " ; phase = " << _phase
+            << " ; Surplus = " << _surplus
             << " ; LastValue = " << _last_value
             << " ; LeafDemandSum = " << _leaf_demand_sum
             << " ; LeafDemandSum[-1] = " << _leaf_demand_sum_1
@@ -162,8 +169,11 @@ public:
         _internode_demand_sum_1 = 0;
         _internode_last_demand_sum_1 = 0;
         _root_demand = 0;
+        _root_demand_1 = 0;
         _root_biomass = 0;
         _root_biomass_1 = 0;
+        _surplus = 0;
+        _culm_surplus_sum = 0;
         _last_value = 0;
         _first_day = t;
     }
@@ -191,10 +201,12 @@ public:
 private:
 // internal variable
     double _root_demand;
+    double _root_demand_1;
     double _root_biomass;
     double _root_biomass_1;
     double _first_day;
     double _last_value;
+    double _surplus;
     bool _stop;
 
 // external variables
@@ -210,6 +222,7 @@ private:
     double _grow;
     double _phase;
     double _state;
+    double _culm_surplus_sum;
 };
 
 } } // namespace ecomeristem root

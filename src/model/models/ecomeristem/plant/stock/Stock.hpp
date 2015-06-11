@@ -37,7 +37,7 @@ public:
     enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
                      DELETED_LEAF_BIOMASS, REALLOC_BIOMASS_SUM,
                      DAILY_SENESCED_LEAF_BIOMASS, STATE, CULM_STOCK,
-                     CULM_DEFICIT };
+                     CULM_DEFICIT, PHASE };
 
     Stock()
     {
@@ -54,6 +54,7 @@ public:
         external(STATE, &Stock::_state);
         external(CULM_STOCK, &Stock::_culm_stock);
         external(CULM_DEFICIT, &Stock::_culm_deficit);
+        external(PHASE, &Stock::_phase);
     }
 
     virtual ~Stock()
@@ -110,6 +111,7 @@ public:
                                             _supply - _day_demand +
                                             _realloc_biomass_sum);
             }
+
             _stock = std::max(0., _deficit + stock);
             _deficit = std::min(0., _deficit + stock);
         }
@@ -126,7 +128,8 @@ public:
             << " ; Supply = " << _supply
             << " ; DayDemand = " << _day_demand
             << " ; ReallocBiomassSum = " << _realloc_biomass_sum
-            << " ; State = " << _state;
+            << " ; State = " << _state
+            << " ; Phase = " << _phase;
         utils::Trace::trace().flush();
 #endif
 
@@ -207,6 +210,7 @@ private:
     double _state;
     double _culm_stock;
     double _culm_deficit;
+    double _phase;
 };
 
 } } } // namespace ecomeristem plant stock

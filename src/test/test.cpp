@@ -171,29 +171,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
 //                  "plant", "CSTR");
 // }
 
-// TEST_CASE("Assimilation_tests", "variables")
-// {
-//     kernel::Model* model = new kernel::Model;
-//     kernel::Simulator simulator(model);
-//     model::models::ModelParameters parameters;
-//     utils::ParametersReader reader;
-//     std::string begin;
-//     std::string end;
-
-//     utils::Trace::trace().clear();
-//     reader.load(SIMULATION_NAME, parameters);
-//     format_dates(parameters, begin, end);
-//     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-//     simulator.run(utils::DateTime::toJulianDayNumber(begin),
-//                   utils::DateTime::toJulianDayNumber(end));
-
-//     check_values("assim_out.txt",
-//                  utils::DateTime::toJulianDayNumber(begin),
-//                  utils::DateTime::toJulianDayNumber(end), simulator,
-//                  "plant", "ASSIM");
-// }
-
-TEST_CASE("Root_tests", "variables")
+TEST_CASE("Assimilation_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -209,15 +187,37 @@ TEST_CASE("Root_tests", "variables")
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
                   utils::DateTime::toJulianDayNumber(end));
 
-    check_values("R_d_out.txt",
+    check_values("assim_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "ROOT_DEMAND_COEF");
-    check_values("biomRoot_out.txt",
-                 utils::DateTime::toJulianDayNumber(begin),
-                 utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "ROOT_BIOMASS");
+                 "plant", "ASSIM");
 }
+
+// TEST_CASE("Root_tests", "variables")
+// {
+//     kernel::Model* model = new kernel::Model;
+//     kernel::Simulator simulator(model);
+//     model::models::ModelParameters parameters;
+//     utils::ParametersReader reader;
+//     std::string begin;
+//     std::string end;
+
+//     utils::Trace::trace().clear();
+//     reader.load(SIMULATION_NAME, parameters);
+//     format_dates(parameters, begin, end);
+//     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
+//     simulator.run(utils::DateTime::toJulianDayNumber(begin),
+//                   utils::DateTime::toJulianDayNumber(end));
+
+//     check_values("R_d_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "ROOT_DEMAND_COEF");
+//     check_values("biomRoot_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "ROOT_BIOMASS");
+// }
 
 // TEST_CASE("Stock_tests", "variables")
 // {

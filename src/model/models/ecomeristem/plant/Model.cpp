@@ -125,7 +125,16 @@ void Model::compute(double t, bool /* update */)
 #endif
 
         culm_models[_culm_index]->delete_leaf(_leaf_index);
+
+        std::vector < culm::Model* >::const_iterator it =
+            culm_models.begin();
+
+        while (it != culm_models.end()) {
+            (*it)->realloc_biomass(t, _deleted_leaf_biomass);
+            ++it;
+        }
         stock_model.realloc_biomass(t, _deleted_leaf_biomass);
+        _leaf_blade_area_sum -= _deleted_leaf_blade_area;
     } else {
         stock_model.realloc_biomass(t, 0);
     }
@@ -152,9 +161,10 @@ void Model::compute(double t, bool /* update */)
         compute_stock(t);
         compute_manager(t);
 
-        //TODO: c'est genant !
-        compute_culms(t);
-        //TODO: fin du genant !
+        //TODO: refactor
+        if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
+            compute_culms(t);
+        }
 
         if (not create and
             (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
@@ -172,6 +182,7 @@ void Model::compute(double t, bool /* update */)
     _culm_index = -1;
     _leaf_index = -1;
     _deleted_leaf_biomass = 0;
+    _deleted_leaf_blade_area = 0;
     if (stock_model.get(t, stock::Model::STOCK) == 0) {
         std::vector < culm::Model* >::const_iterator it = culm_models.begin();
         int i = 0;
@@ -183,9 +194,13 @@ void Model::compute(double t, bool /* update */)
         if (it != culm_models.end()) {
             _culm_index = i;
             _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
-            // TODO: a remettre !
-            // _deleted_leaf_biomass =
-            //     culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+            if (_leaf_index != -1) {
+                _deleted_leaf_biomass =
+                    culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+                _deleted_leaf_blade_area =
+                    culm_models[_culm_index]->get_leaf_blade_area(t,
+                                                                  _leaf_index);
+            }
         }
 
 #ifdef WITH_TRACE
@@ -383,11 +398,25 @@ void Model::compute_manager(double t)
 
 void Model::compute_root(double t)
 {
+    double _culm_surplus_sum = 0;
+
+    std::vector < culm::Model* >::const_iterator it =
+        culm_models.begin();
+
+    while (it != culm_models.end()) {
+        if ((*it)->is_computed(t, culm::Model::CULM_STOCK)) {
+            _culm_surplus_sum += (*it)->get(t,
+                                            culm::Model::CULM_SURPLUS_SUM);
+        }
+        ++it;
+    }
+
     root_model.put(t, root::Model::P, _p);
     if (stock_model.is_computed(t, stock::Model::STOCK)) {
         root_model.put(t, root::Model::STOCK,
                        stock_model.get(t, stock::Model::STOCK));
     }
+    root_model.put(t, root::Model::CULM_SURPLUS_SUM, _culm_surplus_sum);
     root_model.put(t, root::Model::LEAF_DEMAND_SUM,
                    _leaf_demand_sum);
     root_model.put(t, root::Model::LEAF_LAST_DEMAND_SUM,
@@ -408,8 +437,14 @@ void Model::compute_root(double t)
     }
     root_model(t);
 
-    _demand_sum = _leaf_demand_sum +
-        root_model.get(t, root::Model::ROOT_DEMAND);
+    // TODO: est-ce un bug dans la version Delphi ?
+    if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
+        _demand_sum = _leaf_demand_sum + _internode_demand_sum +
+            root_model.get(t, root::Model::ROOT_DEMAND_1);
+    } else {
+        _demand_sum = _leaf_demand_sum + _internode_demand_sum +
+            root_model.get(t, root::Model::ROOT_DEMAND);
+    }
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
@@ -461,6 +496,8 @@ void Model::compute_stock(double t)
                         _leaf_biomass_sum);
         stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
                         _leaf_last_demand_sum);
+        stock_model.put(t, stock::Model::INTERNODE_LAST_DEMAND_SUM,
+                        _internode_last_demand_sum);
         stock_model.put(t, stock::Model::REALLOC_BIOMASS_SUM,
                         _realloc_biomass_sum);
 
@@ -470,6 +507,8 @@ void Model::compute_stock(double t)
                         _culm_stock_sum);
         stock_model.put(t, stock::Model::CULM_DEFICIT,
                         _culm_deficit_sum);
+        stock_model.put(t, stock::Model::CULM_SURPLUS_SUM,
+                        root_model.get(t, root::Model::SURPLUS));
         stock_model(t);
     } else {
         if (assimilation_model.is_computed(t, assimilation::Model::ASSIM)) {
@@ -487,6 +526,8 @@ void Model::compute_stock(double t)
                         _leaf_biomass_sum);
         stock_model.put(t, stock::Model::LEAF_LAST_DEMAND_SUM,
                         _leaf_last_demand_sum);
+        stock_model.put(t, stock::Model::INTERNODE_LAST_DEMAND_SUM,
+                        _internode_last_demand_sum);
         stock_model.put(t, stock::Model::REALLOC_BIOMASS_SUM,
                         _realloc_biomass_sum);
         //TODO

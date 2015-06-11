@@ -98,6 +98,7 @@ private:
     double _senesc_dw_sum;
     double _lig;
     double _deleted_leaf_biomass;
+    double _deleted_leaf_blade_area;
 
 // external variables
     double _etp;

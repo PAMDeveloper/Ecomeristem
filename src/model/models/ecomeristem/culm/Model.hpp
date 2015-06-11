@@ -44,7 +44,7 @@ public:
                      INTERNODE_BIOMASS_SUM,
                      LEAF_BLADE_AREA_SUM, LEAF_PREDIM,
                      REALLOC_BIOMASS_SUM, SENESC_DW_SUM, LIG, CULM_STOCK,
-                     CULM_DEFICIT };
+                     CULM_DEFICIT, CULM_SURPLUS_SUM };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STATE,
                      STOP, TEST_IC, PLANT_STOCK, PLANT_DEFICIT,
@@ -68,11 +68,15 @@ public:
     void create_phytomer(double t);
     void delete_leaf(int index);
     double get_leaf_biomass(double t, int index) const;
+    double get_leaf_blade_area(double t, int index) const;
 
     int get_phytomer_number() const
     { return phytomer_models.size(); }
 
     int get_first_ligulated_leaf_index(double t) const;
+
+    void realloc_biomass(double t, double value)
+    { intermediate_model.realloc_biomass(t, value); }
 
 private:
 // parameters

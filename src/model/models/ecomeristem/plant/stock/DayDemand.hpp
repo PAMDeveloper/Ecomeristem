@@ -35,7 +35,8 @@ class DayDemand : public AbstractAtomicModel < DayDemand >
 {
 public:
     enum internals { DAY_DEMAND };
-    enum externals { DEMAND_SUM, LEAF_LAST_DEMAND_SUM, GROW, PHASE };
+    enum externals { DEMAND_SUM, LEAF_LAST_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
+                     GROW, PHASE };
 
     DayDemand()
     {
@@ -43,6 +44,8 @@ public:
 
         external(DEMAND_SUM, &DayDemand::_demand_sum);
         external(LEAF_LAST_DEMAND_SUM, &DayDemand::_leaf_last_demand_sum);
+        external(INTERNODE_LAST_DEMAND_SUM,
+                 &DayDemand::_internode_last_demand_sum);
         external(GROW, &DayDemand::_grow);
         external(PHASE, &DayDemand::_phase);
     }
@@ -64,15 +67,18 @@ public:
             _day_demand = 0;
             _stop = _phase == ecomeristem::plant::NOGROWTH4;
         } else {
-            _day_demand = _demand_sum + _leaf_last_demand_sum;
+            _day_demand = _demand_sum + _leaf_last_demand_sum +
+                _internode_last_demand_sum;
         }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("DAY_DEMAND", t, utils::COMPUTE)
-            << "dayDemand = " << _day_demand << " ; phase = " << _phase
-            << " ; DemandSum = " << _demand_sum << " ; Leaflastdemand = "
-            << _leaf_last_demand_sum;
+            << "dayDemand = " << _day_demand
+            << " ; phase = " << _phase
+            << " ; DemandSum = " << _demand_sum
+            << " ; LeafLastdemand = " << _leaf_last_demand_sum
+            << " ; InternodeLastdemand = " << _internode_last_demand_sum;
         utils::Trace::trace().flush();
 #endif
 
@@ -92,6 +98,7 @@ private:
 // external variables
     double _demand_sum;
     double _leaf_last_demand_sum;
+    double _internode_last_demand_sum;
     double _grow;
     double _phase;
 };

@@ -39,8 +39,10 @@ public:
     enum internals { STOCK, GROW, SUPPLY, DEFICIT, IC, SURPLUS, TEST_IC,
                      DAY_DEMAND, RESERVOIR_DISPO, SEED_RES };
     enum externals { ASSIM, DEMAND_SUM, LEAF_BIOMASS_SUM,
-                     LEAF_LAST_DEMAND_SUM, DELETED_LEAF_BIOMASS, PHASE,
-                     REALLOC_BIOMASS_SUM, STATE, CULM_STOCK, CULM_DEFICIT };
+                     LEAF_LAST_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
+                     DELETED_LEAF_BIOMASS, PHASE,
+                     REALLOC_BIOMASS_SUM, STATE, CULM_STOCK, CULM_DEFICIT,
+                     CULM_SURPLUS_SUM };
 
     Model();
 
@@ -73,12 +75,14 @@ private:
     double _demand_sum;
     double _leaf_biomass_sum;
     double _leaf_last_demand_sum;
+    double _internode_last_demand_sum;
     double _deleted_leaf_biomass;
     double _phase;
     double _realloc_biomass_sum;
     double _state;
     double _culm_stock;
     double _culm_deficit;
+    double _culm_surplus_sum;
 };
 
 } } } // namespace ecomeristem plant stock

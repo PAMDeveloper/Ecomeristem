@@ -41,6 +41,7 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     internal(LIG, &Model::_lig);
     internal(CULM_STOCK, &stock_model, Stock::STOCK);
     internal(CULM_DEFICIT, &deficit_model, Deficit::DEFICIT);
+    internal(CULM_SURPLUS_SUM, &surplus_model, Surplus::SURPLUS);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);
@@ -370,6 +371,21 @@ double Model::get_leaf_biomass(double t, int index) const
         return corrected_biomass;
     } else {
         return biomass;
+    }
+}
+
+double Model::get_leaf_blade_area(double t, int index) const
+{
+    double blade_area = phytomer_models[index]->get(
+        t, phytomer::Model::LEAF_BLADE_AREA);
+    double corrected_blade_area =
+        phytomer_models[index]->get(
+            t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA);
+
+    if (corrected_blade_area > 0) {
+        return corrected_blade_area;
+    } else {
+        return blade_area;
     }
 }
 

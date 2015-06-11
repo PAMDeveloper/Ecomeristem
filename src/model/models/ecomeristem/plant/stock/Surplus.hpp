@@ -34,7 +34,7 @@ class Surplus : public AbstractAtomicModel < Surplus >
 public:
     enum internals { SURPLUS };
     enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
-                     REALLOC_BIOMASS_SUM };
+                     REALLOC_BIOMASS_SUM, CULM_SURPLUS_SUM, STATE };
 
     Surplus()
     {
@@ -45,6 +45,8 @@ public:
         external(SEED_RES, &Surplus::_seed_res);
         external(SUPPLY, &Surplus::_supply);
         external(REALLOC_BIOMASS_SUM, &Surplus::_realloc_biomass_sum);
+        external(CULM_SURPLUS_SUM, &Surplus::_culm_surplus_sum);
+        external(STATE, &Surplus::_state);
     }
 
     virtual ~Surplus()
@@ -56,17 +58,23 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_seed_res_1 > 0) {
-            if (_seed_res_1 > _day_demand) {
-                _surplus = std::max(0., _supply - _reservoir_dispo +
-                                    _realloc_biomass_sum);
-            } else {
-                _surplus = std::max(0., _supply - (_day_demand - _seed_res_1) -
-                                    _reservoir_dispo + _realloc_biomass_sum);
-            }
+        if (_state == plant::ELONG) {
+            _surplus = _culm_surplus_sum;
         } else {
-            _surplus = std::max(0., _supply - _reservoir_dispo - _day_demand +
-                                _realloc_biomass_sum);
+            if (_seed_res_1 > 0) {
+                if (_seed_res_1 > _day_demand) {
+                    _surplus = std::max(0., _supply - _reservoir_dispo +
+                                        _realloc_biomass_sum);
+                } else {
+                    _surplus = std::max(0., _supply -
+                                        (_day_demand - _seed_res_1) -
+                                        _reservoir_dispo + _realloc_biomass_sum);
+                }
+            } else {
+                _surplus = std::max(0.,
+                                    _supply - _reservoir_dispo - _day_demand +
+                                    _realloc_biomass_sum);
+            }
         }
 
 #ifdef WITH_TRACE
@@ -78,7 +86,8 @@ public:
             << " ; ReservoirDispo = " << _reservoir_dispo
             << " ; Supply = " << _supply
             << " ; DayDemand = " << _day_demand
-            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum
+            << " ; State = " << _state;
         utils::Trace::trace().flush();
 #endif
 
@@ -111,6 +120,8 @@ private:
     double _seed_res_1;
     double _supply;
     double _realloc_biomass_sum;
+    double _culm_surplus_sum;
+    double _state;
 };
 
 } } } // namespace ecomeristem plant stock
