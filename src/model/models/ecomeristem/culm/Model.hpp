@@ -24,6 +24,12 @@
 
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/phytomer/Model.hpp>
+#include <model/models/ecomeristem/culm/Deficit.hpp>
+#include <model/models/ecomeristem/culm/Intermediate.hpp>
+#include <model/models/ecomeristem/culm/MaxReservoirDispo.hpp>
+#include <model/models/ecomeristem/culm/Stock.hpp>
+#include <model/models/ecomeristem/culm/Surplus.hpp>
+#include <model/models/ecomeristem/culm/Supply.hpp>
 #include <utils/Trace.hpp>
 
 #include <deque>
@@ -37,10 +43,12 @@ public:
                      INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
                      INTERNODE_BIOMASS_SUM,
                      LEAF_BLADE_AREA_SUM, LEAF_PREDIM,
-                     REALLOC_BIOMASS_SUM, SENESC_DW_SUM, LIG };
+                     REALLOC_BIOMASS_SUM, SENESC_DW_SUM, LIG, CULM_STOCK,
+                     CULM_DEFICIT };
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STATE,
-                     STOP, TEST_IC };
+                     STOP, TEST_IC, PLANT_STOCK, PLANT_DEFICIT,
+                     PLANT_BIOMASS_SUM, PLANT_BLADE_AREA_SUM, ASSIM };
 
     Model(int index);
 
@@ -76,6 +84,12 @@ private:
 
 //submodels
     std::deque < phytomer::Model* > phytomer_models;
+    Deficit deficit_model;
+    Intermediate intermediate_model;
+    Stock stock_model;
+    Surplus surplus_model;
+    Supply supply_model;
+    MaxReservoirDispo max_reservoir_dispo_model;
 
 // internal
     double _leaf_biomass_sum;
@@ -105,6 +119,11 @@ private:
     double _state;
     double _stop;
     double _test_ic;
+    double _plant_stock;
+    double _plant_deficit;
+    double _plant_biomass_sum;
+    double _plant_blade_area_sum;
+    double _assim;
 };
 
 } } // namespace ecomeristem culm

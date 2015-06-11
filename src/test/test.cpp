@@ -193,33 +193,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
 //                  "plant", "ASSIM");
 // }
 
-// TEST_CASE("Root_tests", "variables")
-// {
-//     kernel::Model* model = new kernel::Model;
-//     kernel::Simulator simulator(model);
-//     model::models::ModelParameters parameters;
-//     utils::ParametersReader reader;
-//     std::string begin;
-//     std::string end;
-
-//     utils::Trace::trace().clear();
-//     reader.load(SIMULATION_NAME, parameters);
-//     format_dates(parameters, begin, end);
-//     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
-//     simulator.run(utils::DateTime::toJulianDayNumber(begin),
-//                   utils::DateTime::toJulianDayNumber(end));
-
-//     check_values("R_d_out.txt",
-//                  utils::DateTime::toJulianDayNumber(begin),
-//                  utils::DateTime::toJulianDayNumber(end), simulator,
-//                  "plant", "ROOT_DEMAND_COEF");
-//     check_values("biomRoot_out.txt",
-//                  utils::DateTime::toJulianDayNumber(begin),
-//                  utils::DateTime::toJulianDayNumber(end), simulator,
-//                  "plant", "ROOT_BIOMASS");
-// }
-
-TEST_CASE("Stock_tests", "variables")
+TEST_CASE("Root_tests", "variables")
 {
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model);
@@ -235,36 +209,62 @@ TEST_CASE("Stock_tests", "variables")
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
                   utils::DateTime::toJulianDayNumber(end));
 
-    // check_values("supply_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "SUPPLY");
-    // check_values("Ic_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "IC");
-    // check_values("stock_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "STOCK");
-    check_values("surplus_out.txt",
+    check_values("R_d_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "SURPLUS");
-    // check_values("deficit_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "DEFICIT");
-    // check_values("reservoirDispo_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "RESERVOIR_DISPO");
-    // check_values("dayDemand_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "DAY_DEMAND");
-    // check_values("seedres_out.txt",
-    //              utils::DateTime::toJulianDayNumber(begin),
-    //              utils::DateTime::toJulianDayNumber(end), simulator,
-    //              "plant", "SEED_RES");
+                 "plant", "ROOT_DEMAND_COEF");
+    check_values("biomRoot_out.txt",
+                 utils::DateTime::toJulianDayNumber(begin),
+                 utils::DateTime::toJulianDayNumber(end), simulator,
+                 "plant", "ROOT_BIOMASS");
 }
+
+// TEST_CASE("Stock_tests", "variables")
+// {
+//     kernel::Model* model = new kernel::Model;
+//     kernel::Simulator simulator(model);
+//     model::models::ModelParameters parameters;
+//     utils::ParametersReader reader;
+//     std::string begin;
+//     std::string end;
+
+//     utils::Trace::trace().clear();
+//     reader.load(SIMULATION_NAME, parameters);
+//     format_dates(parameters, begin, end);
+//     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
+//     simulator.run(utils::DateTime::toJulianDayNumber(begin),
+//                   utils::DateTime::toJulianDayNumber(end));
+
+//     check_values("supply_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "SUPPLY");
+//     check_values("Ic_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "IC");
+//     check_values("stock_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "STOCK");
+//     check_values("surplus_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "SURPLUS");
+//     check_values("deficit_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "DEFICIT");
+//     check_values("reservoirDispo_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "RESERVOIR_DISPO");
+//     check_values("dayDemand_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "DAY_DEMAND");
+//     check_values("seedres_out.txt",
+//                  utils::DateTime::toJulianDayNumber(begin),
+//                  utils::DateTime::toJulianDayNumber(end), simulator,
+//                  "plant", "SEED_RES");
+// }

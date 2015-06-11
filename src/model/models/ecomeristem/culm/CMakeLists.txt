@@ -3,7 +3,8 @@ INCLUDE_DIRECTORIES(
 
 LINK_DIRECTORIES()
 
-SET(ECOMERISTEM_CULM_HPP Model.hpp)
+SET(ECOMERISTEM_CULM_HPP Model.hpp Deficit.hpp Intermediate.hpp
+  MaxReservoirDispo.hpp Stock.hpp Supply.hpp Surplus.hpp)
 
 SET(ECOMERISTEM_CULM_CPP Model.cpp)
 

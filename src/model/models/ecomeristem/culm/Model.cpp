@@ -39,6 +39,8 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     internal(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
     internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
     internal(LIG, &Model::_lig);
+    internal(CULM_STOCK, &stock_model, Stock::STOCK);
+    internal(CULM_DEFICIT, &deficit_model, Deficit::DEFICIT);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);
@@ -53,6 +55,11 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     external(STATE, &Model::_state);
     external(STOP, &Model::_stop);
     external(TEST_IC, &Model::_test_ic);
+    external(PLANT_STOCK, &Model::_plant_stock);
+    external(PLANT_DEFICIT, &Model::_plant_deficit);
+    external(PLANT_BIOMASS_SUM, &Model::_plant_biomass_sum);
+    external(PLANT_BLADE_AREA_SUM, &Model::_plant_blade_area_sum);
+    external(ASSIM, &Model::_assim);
 }
 
 void Model::init(double t, const model::models::ModelParameters& parameters)
@@ -62,6 +69,13 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
     first_phytomer->init(t, parameters);
     phytomer_models.push_back(first_phytomer);
+
+    deficit_model.init(t, parameters);
+    intermediate_model.init(t, parameters);
+    stock_model.init(t, parameters);
+    surplus_model.init(t, parameters);
+    supply_model.init(t, parameters);
+    max_reservoir_dispo_model.init(t, parameters);
 
     _parameters = &parameters;
     _first_day = t;
@@ -208,6 +222,91 @@ void Model::compute(double t, bool /* update */)
         ++i;
     }
 
+    intermediate_model.put(t, culm::Intermediate::PLANT_DEFICIT,
+                           _plant_deficit);
+    intermediate_model.put(t, culm::Intermediate::PLANT_STOCK,
+                           _plant_stock);
+    if (_state == plant::ELONG and is_ready(t, PLANT_BIOMASS_SUM) and
+        is_ready(t, ASSIM)) {
+
+        max_reservoir_dispo_model.put(
+            t, culm::MaxReservoirDispo::LEAF_BIOMASS_SUM,
+            _leaf_biomass_sum);
+        max_reservoir_dispo_model.put(
+            t, culm::MaxReservoirDispo::INTERNODE_BIOMASS_SUM,
+            _internode_biomass_sum);
+        max_reservoir_dispo_model(t);
+
+        supply_model.put(t, culm::Supply::PLANT_BLADE_AREA,
+                         _plant_blade_area_sum);
+        supply_model.put(t, culm::Supply::BLADE_AREA_SUM,
+                         _leaf_blade_area_sum);
+        supply_model.put(t, culm::Supply::ASSIM, _assim);
+        supply_model(t);
+        intermediate_model.put(t, culm::Intermediate::SUPPLY,
+                               supply_model.get(t, culm::Supply::SUPPLY));
+        intermediate_model.put(t, culm::Intermediate::LEAF_BIOMASS_SUM,
+                               _leaf_biomass_sum);
+        intermediate_model.put(t, culm::Intermediate::INTERNODE_BIOMASS_SUM,
+                               _internode_biomass_sum);
+        intermediate_model.put(t, culm::Intermediate::PLANT_BIOMASS_SUM,
+                               _plant_biomass_sum);
+        intermediate_model.put(t, culm::Intermediate::LEAF_DEMAND_SUM,
+                               _leaf_demand_sum);
+        intermediate_model.put(t, culm::Intermediate::INTERNODE_DEMAND_SUM,
+                               _internode_demand_sum);
+        intermediate_model.put(t, culm::Intermediate::LEAF_LAST_DEMAND_SUM,
+                               _leaf_last_demand_sum);
+        intermediate_model.put(t,
+                               culm::Intermediate::INTERNODE_LAST_DEMAND_SUM,
+                               _internode_last_demand_sum);
+        intermediate_model.put(t,
+                               culm::Intermediate::REALLOC_BIOMASS_SUM,
+                               _realloc_biomass_sum);
+        intermediate_model(t);
+
+        deficit_model.put(
+            t, culm::Deficit::INTERMEDIATE,
+            intermediate_model.get(
+                t, culm::Intermediate::INTERMEDIATE));
+        deficit_model(t);
+
+        surplus_model.put(t, culm::Surplus::SUPPLY,
+                          supply_model.get(t, culm::Supply::SUPPLY));
+        surplus_model.put(t, culm::Surplus::PLANT_STOCK,
+                               _plant_stock);
+        surplus_model.put(
+            t, culm::Surplus::MAX_RESERVOIR_DISPO,
+            max_reservoir_dispo_model.get(
+                t, culm::MaxReservoirDispo::MAX_RESERVOIR_DISPO));
+        surplus_model.put(t, culm::Surplus::LEAF_DEMAND_SUM,
+                          _leaf_demand_sum);
+        surplus_model.put(t, culm::Surplus::INTERNODE_DEMAND_SUM,
+                          _internode_demand_sum);
+        surplus_model.put(t, culm::Surplus::LEAF_LAST_DEMAND_SUM,
+                          _leaf_last_demand_sum);
+        surplus_model.put(t,
+                          culm::Surplus::INTERNODE_LAST_DEMAND_SUM,
+                          _internode_last_demand_sum);
+        surplus_model.put(t,
+                          culm::Surplus::REALLOC_BIOMASS_SUM,
+                          _realloc_biomass_sum);
+        surplus_model(t);
+
+        stock_model.put(
+            t, culm::Stock::MAX_RESERVOIR_DISPO,
+            max_reservoir_dispo_model.get(
+                t, culm::MaxReservoirDispo::MAX_RESERVOIR_DISPO));
+        stock_model.put(
+            t, culm::Stock::INTERMEDIATE,
+            intermediate_model.get(
+                t, culm::Intermediate::INTERMEDIATE));
+        stock_model(t);
+
+        surplus_model.put(t, culm::Surplus::STOCK,
+                          stock_model.get(t, culm::Stock::STOCK));
+    }
+
     if (not ok) {
         _lig = old_lig;
     }
@@ -217,6 +316,9 @@ void Model::compute(double t, bool /* update */)
         << utils::TraceElement("CULM", t, utils::COMPUTE)
         << "Predim = " << _leaf_predim
         << " ; index = " << _index
+        << " ; assim = " << _assim
+        << " ; stock = " << _plant_stock
+        << " ; deficit = " << _plant_deficit
         << " ; lig = " << _lig
         << " ; leaf biomass sum = " << _leaf_biomass_sum
         << " ; intenade biomass sum = " << _internode_biomass_sum

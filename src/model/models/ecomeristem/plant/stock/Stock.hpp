@@ -36,7 +36,8 @@ public:
     enum internals { STOCK, GROW, DEFICIT };
     enum externals { DAY_DEMAND, RESERVOIR_DISPO, SEED_RES, SUPPLY,
                      DELETED_LEAF_BIOMASS, REALLOC_BIOMASS_SUM,
-                     DAILY_SENESCED_LEAF_BIOMASS };
+                     DAILY_SENESCED_LEAF_BIOMASS, STATE, CULM_STOCK,
+                     CULM_DEFICIT };
 
     Stock()
     {
@@ -50,20 +51,23 @@ public:
         external(SUPPLY, &Stock::_supply);
         external(DELETED_LEAF_BIOMASS, &Stock::_deleted_leaf_biomass);
         external(REALLOC_BIOMASS_SUM, &Stock::_realloc_biomass_sum);
+        external(STATE, &Stock::_state);
+        external(CULM_STOCK, &Stock::_culm_stock);
+        external(CULM_DEFICIT, &Stock::_culm_deficit);
     }
 
     virtual ~Stock()
     { }
 
     bool check(double t) const
-    { return is_ready(t, DAY_DEMAND) and is_ready(t,RESERVOIR_DISPO)
-            and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
-            and is_ready(t, DELETED_LEAF_BIOMASS)
-            and is_ready(t, REALLOC_BIOMASS_SUM); }
+    { return (_state == plant::ELONG) or
+            (is_ready(t, DAY_DEMAND) and is_ready(t, RESERVOIR_DISPO)
+             and is_ready(t, SEED_RES) and is_ready(t, SUPPLY)
+             and is_ready(t, DELETED_LEAF_BIOMASS)
+             and is_ready(t, REALLOC_BIOMASS_SUM)); }
 
-     void compute(double t, bool update)
+    void compute(double t, bool update)
     {
-        double stock = 0;
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -76,30 +80,39 @@ public:
             << " ; ReservoirDispo = " << _reservoir_dispo
             << " ; Supply = " << _supply
             << " ; DayDemand = " << _day_demand
-            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum
+            << " ; CulmStock = " << _culm_stock
+            << " ; CulmDeficit = " << _culm_deficit;
         utils::Trace::trace().flush();
 #endif
 
-        if (not update) {
-            _stock_1 = _stock;
-        }
-        if (_seed_res > 0 or _seed_res_1 > 0) {
-            if (_seed_res > _day_demand) {
-                stock = _stock_1 + std::min(_reservoir_dispo, _supply +
-                    _realloc_biomass_sum);
-            } else {
-                stock = _stock_1 +
-                    std::min(_reservoir_dispo,
-                             _supply - (_day_demand - _seed_res_1) +
-                             _realloc_biomass_sum);
-            }
+        if (_state == plant::ELONG) {
+            _stock = _culm_stock;
+            _deficit = _culm_deficit;
         } else {
-            stock = _stock_1 + std::min(_reservoir_dispo,
-                                        _supply - _day_demand +
-                                        _realloc_biomass_sum);
+            double stock = 0;
+
+            if (not update) {
+                _stock_1 = _stock;
+            }
+            if (_seed_res > 0 or _seed_res_1 > 0) {
+                if (_seed_res > _day_demand) {
+                    stock = _stock_1 + std::min(_reservoir_dispo, _supply +
+                                                _realloc_biomass_sum);
+                } else {
+                    stock = _stock_1 +
+                        std::min(_reservoir_dispo,
+                                 _supply - (_day_demand - _seed_res_1) +
+                                 _realloc_biomass_sum);
+                }
+            } else {
+                stock = _stock_1 + std::min(_reservoir_dispo,
+                                            _supply - _day_demand +
+                                            _realloc_biomass_sum);
+            }
+            _stock = std::max(0., _deficit + stock);
+            _deficit = std::min(0., _deficit + stock);
         }
-        _stock = std::max(0., _deficit + stock);
-        _deficit = std::min(0., _deficit + stock);
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -112,7 +125,8 @@ public:
             << " ; ReservoirDispo = " << _reservoir_dispo
             << " ; Supply = " << _supply
             << " ; DayDemand = " << _day_demand
-            << " ; ReallocBiomassSum = " << _realloc_biomass_sum;
+            << " ; ReallocBiomassSum = " << _realloc_biomass_sum
+            << " ; State = " << _state;
         utils::Trace::trace().flush();
 #endif
 
@@ -190,6 +204,9 @@ private:
     double _supply;
     double _deleted_leaf_biomass;
     double _realloc_biomass_sum;
+    double _state;
+    double _culm_stock;
+    double _culm_deficit;
 };
 
 } } } // namespace ecomeristem plant stock
