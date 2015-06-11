@@ -334,17 +334,23 @@ void Model::compute(double t, bool /* update */)
 void Model::create_phytomer(double t)
 {
     if (t != _first_day) {
+        int index;
+
+        if (phytomer_models.empty()) {
+            index = 1;
+        } else {
+            index = phytomer_models.back()->get_index() + 1;
+        }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM", t, utils::COMPUTE)
-            << "CREATE PHYTOMER: " << (phytomer_models.size() + 1)
+            << "CREATE PHYTOMER: " << index
             << " ; index = " << _index;
         utils::Trace::trace().flush();
 #endif
 
-        phytomer::Model* phytomer = new phytomer::Model(
-            phytomer_models.size() + 1, _is_first_culm);
+        phytomer::Model* phytomer = new phytomer::Model(index, _is_first_culm);
 
         phytomer->init(t, *_parameters);
         phytomer_models.push_back(phytomer);

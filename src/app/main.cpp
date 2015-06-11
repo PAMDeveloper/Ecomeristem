@@ -72,6 +72,14 @@ static void run(const std::string& simulation, int /* verbose */)
 
     std::string date;
 
+    utils::DateTime::format_date("06-07-2014", date);
+    std::cout << utils::Trace::trace().elements().filter_time(
+        utils::DateTime::toJulianDayNumber(date)).to_string()
+              << std::endl;
+    utils::DateTime::format_date("07-07-2014", date);
+    std::cout << utils::Trace::trace().elements().filter_time(
+        utils::DateTime::toJulianDayNumber(date)).to_string()
+              << std::endl;
     utils::DateTime::format_date("08-07-2014", date);
     std::cout << utils::Trace::trace().elements().filter_time(
         utils::DateTime::toJulianDayNumber(date)).to_string()

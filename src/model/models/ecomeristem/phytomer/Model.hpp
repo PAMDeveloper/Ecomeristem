@@ -152,6 +152,9 @@ public:
     const internode::Model& internode() const
     { return internode_model; }
 
+    int get_index() const
+    { return _index; }
+
 private:
 // parameters
     int _index;

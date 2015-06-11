@@ -82,7 +82,8 @@ public:
             << " ; DeltaT = " << _delta_t
             << " ; ExpTime = " << _exp_time
             << " ; LER = " << _ler
-            << " ; DD = " << _dd;
+            << " ; DD = " << _dd
+            << " ; update = " << update;
         utils::Trace::trace().flush();
 #endif
 
