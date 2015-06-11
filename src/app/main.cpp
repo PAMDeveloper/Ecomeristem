@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2014 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2014 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -90,7 +90,7 @@ static int show_infos()
 {
     std::cout << boost::format(
         "Ecomeristem - %1%\n"
-        "Copyright (C) 2005 - 2014 The Ecomeristem Development Team.\n"
+        "Copyright (C) 2005 - 2015 The Ecomeristem Development Team.\n"
         "Ecomeristem comes with ABSOLUTELY NO WARRANTY.\n"
         "You may redistribute copies of Ecomeristem\n"
         "under the terms of the GNU General Public License.\n"
