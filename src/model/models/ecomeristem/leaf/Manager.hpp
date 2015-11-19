@@ -62,7 +62,7 @@ public:
                     or _phase == plant::NOGROWTH4)) {
             _phase_ = leaf::NOGROWTH;
         } else if (_phase_ == leaf::NOGROWTH and
-                   _phase == plant::PHYTOMER_MORPHO_GENESIS) {
+                   _phase == plant::GROWTH) {
             _phase_ = leaf::INITIAL;
         }
 

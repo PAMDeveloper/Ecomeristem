@@ -47,12 +47,16 @@ public:
     virtual ~LastDemand()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
+        if (update and _maturity) {
+            _maturity = false;
+        }
         if (_first_day == t) {
             _last_demand = 0;
         } else {
-            if (!_maturity and _phase == internode::MATURITY) {
+            if (not _maturity and (_phase == internode::MATURITY or
+                                   _phase == internode::MATURITY_NOGROWTH)) {
                 _last_demand = _biomass - _biomass_1;
                 _maturity = true;
             } else {

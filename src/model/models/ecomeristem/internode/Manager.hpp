@@ -68,14 +68,14 @@ public:
                     or _phase == plant::NOGROWTH4)) {
             _phase_ = internode::REALIZATION_NOGROWTH;
         } else if (_phase_ == internode::REALIZATION_NOGROWTH and
-                   _phase == plant::PHYTOMER_MORPHO_GENESIS) {
+                   _phase == plant::GROWTH) {
             _phase_ = internode::REALIZATION;
         } else if (_phase_ == internode::MATURITY and
                    (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
                     or _phase == plant::NOGROWTH4)) {
             _phase_ = internode::MATURITY_NOGROWTH;
         } else if (_phase_ == internode::MATURITY_NOGROWTH and
-                   _phase == plant::PHYTOMER_MORPHO_GENESIS) {
+                   _phase == plant::GROWTH) {
             _phase_ = internode::MATURITY;
         }
 
@@ -110,6 +110,7 @@ public:
 
         //TODO: remove _phase_ == internode::REALIZATION !!!!
         if (_phase_ == internode::INIT or _phase_ == internode::REALIZATION
+            or _phase_ == internode::REALIZATION_NOGROWTH
             or (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }

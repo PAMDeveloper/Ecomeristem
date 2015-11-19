@@ -115,6 +115,7 @@ public:
         _phase = internode::INIT;
         _phase_1 = internode::INIT;
         _len = 0;
+        _len_1 = 0;
     }
 
     void put(double t, unsigned int index, double value)

@@ -223,10 +223,12 @@ void Model::compute(double t, bool /* update */)
         ++i;
     }
 
+    // if (is_ready(t, PLANT_DEFICIT) and is_ready(t, PLANT_STOCK)) {
     intermediate_model.put(t, culm::Intermediate::PLANT_DEFICIT,
                            _plant_deficit);
     intermediate_model.put(t, culm::Intermediate::PLANT_STOCK,
                            _plant_stock);
+    // }
     if (_state == plant::ELONG and is_ready(t, PLANT_BIOMASS_SUM) and
         is_ready(t, ASSIM)) {
 
@@ -322,7 +324,7 @@ void Model::compute(double t, bool /* update */)
         << " ; deficit = " << _plant_deficit
         << " ; lig = " << _lig
         << " ; leaf biomass sum = " << _leaf_biomass_sum
-        << " ; intenade biomass sum = " << _internode_biomass_sum
+        << " ; internode biomass sum = " << _internode_biomass_sum
         << " ; leaf number = "
         << (_deleted_leaf_number + phytomer_models.size())
         << " ; deleted leaf number = " << _deleted_leaf_number;

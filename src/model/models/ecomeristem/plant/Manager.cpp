@@ -27,6 +27,12 @@
 
 namespace ecomeristem { namespace plant {
 
+bool Manager::check(double t) const
+{
+    // TODO
+    return true;
+}
+
 // INIT ---------------------------------------------------------> INITIAL
 // INITIAL ------------------ c1/output4 ----------> PHYTOMER_MORPHO_GENESIS
 // INITIAL ------------------ c2 --------------------------------> NOGROWTH
@@ -57,7 +63,7 @@ namespace ecomeristem { namespace plant {
 // NEW_PHYTOMER_NOGROWTH ---- stock/action1 --------> NEW_PHYTOMER_NOGROWTH4
 // NEW_PHYTOMER_NOGROWTH ---- c6/output3 ------------------------> DEAD
 
-void Manager::compute(double t, bool /* update */)
+void Manager::compute(double t, bool update)
 {
     phase_t old_phase;
 
@@ -72,13 +78,13 @@ void Manager::compute(double t, bool /* update */)
         }
         case INITIAL: {
             if (_stock > 0 and _phenoStage < nbleaf_pi) {
-                _phase = PHYTOMER_MORPHO_GENESIS;
+                _phase = GROWTH;
             } else {
                 _phase = DEAD;
             }
             break;
         }
-        case PHYTOMER_MORPHO_GENESIS:
+        case GROWTH:
             if (_boolCrossedPlasto > 0 and _stock > 0) {
                 leaf_number += culm_number;
                 _phase = NEW_PHYTOMER;
@@ -89,7 +95,7 @@ void Manager::compute(double t, bool /* update */)
             break;
         case NOGROWTH: {
             if (_stock > 0) {
-                _phase = PHYTOMER_MORPHO_GENESIS;
+                _phase = GROWTH;
             }
             break;
         }
@@ -101,21 +107,6 @@ void Manager::compute(double t, bool /* update */)
             _phase = NEW_PHYTOMER3;
             break;
         }
-        // case ELONG: {
-        //     _phase = ELONG;
-        //     break;
-        // }
-        // case PI:
-        // case NOGROWTH_ELONG:
-        // case NOGROWTH_PI:
-        // case PRE_FLO:
-        // case NOGROWTH_PRE_FLO:
-        // case FLO:
-        // case NOGROWTH_FLO:
-        // case NEW_PHYTOMER_NOGROWTH:
-        // case NEW_PHYTOMER_NOGROWTH2:
-        // case NEW_PHYTOMER_NOGROWTH3:
-        // case NEW_PHYTOMER_NOGROWTH4:
         case NOGROWTH2: {
             _last_time = t;
             _phase = NOGROWTH3;
@@ -129,15 +120,16 @@ void Manager::compute(double t, bool /* update */)
         }
         case NOGROWTH4: {
             if (_stock > 0) {
-                _phase = PHYTOMER_MORPHO_GENESIS;
+                _phase = GROWTH;
             }
             break;
         }
-        // case NOGROWTH5: break;
-        // case NEW_PHYTOMER2: break;
         case NEW_PHYTOMER3: {
             if (_boolCrossedPlasto <= 0) {
-                _phase = PHYTOMER_MORPHO_GENESIS;
+                _phase = GROWTH;
+            }
+            if (_stock <= 0) {
+                _phase = NOGROWTH2;
             }
             break;
         }

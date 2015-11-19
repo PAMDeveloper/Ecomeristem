@@ -121,6 +121,7 @@ private:
     ecomeristem::plant::Sla sla_model;
 
     std::vector < culm::Model* > culm_models;
+    double _begin;
 };
 
 } } // namespace ecomeristem plant

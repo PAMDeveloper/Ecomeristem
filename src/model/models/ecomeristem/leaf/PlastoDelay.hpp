@@ -46,6 +46,12 @@ public:
     virtual ~PlastoDelay()
     { }
 
+    virtual bool check(double t) const
+    {
+        return is_ready(t, DELTA_T) and is_ready(t, EXP_TIME) and
+            is_ready(t, REDUCTION_LER);
+    }
+
     void compute(double /* t */, bool /* update */)
     {
         _plasto_delay = std::min(((_delta_t > _exp_time) ? _exp_time :

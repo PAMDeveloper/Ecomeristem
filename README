@@ -1,0 +1,8 @@
+Ecomeristem
+===========
+
+La description des simulations est dans la base de données ecomeristem.
+
+Lancer une simulation :
+ * ecomeristem -S sim_rice
+ * ecomeristem -S sim_sorghum

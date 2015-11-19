@@ -105,7 +105,7 @@ public:
 
         _intermediate = 0;
         _plant_stock_1 = _plant_stock = 0;
-        _plant_deficit_1 = _plant_deficit;
+        _plant_deficit_1 = _plant_deficit = 0;
     }
 
     void put(double t, unsigned int index, double value)

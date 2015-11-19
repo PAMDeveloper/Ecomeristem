@@ -23,6 +23,7 @@
  */
 
 #include <model/models/ecomeristem/plant/Model.hpp>
+#include <utils/DateTime.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant {
@@ -104,11 +105,17 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
     _culm_index = -1;
     _leaf_index = -1;
+    _begin = t;
 }
 
-void Model::compute(double t, bool /* update */)
+void Model::compute(double t, bool update)
 {
     bool create = false;
+    bool no_stock = false;
+
+    if (not update and t > _begin) {
+        no_stock = (manager_model.get(t - 1, Manager::PHASE) == NOGROWTH3);
+    }
 
     _culm_is_computed = false;
 
@@ -157,6 +164,13 @@ void Model::compute(double t, bool /* update */)
         compute_culms(t);
         //TODO: fin du genant !
 
+        if (not no_stock and not create and
+            (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
+             manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
+            create = true;
+            create_phytomer(t);
+        }
+
         compute_root(t);
         compute_stock(t);
         compute_manager(t);
@@ -164,13 +178,6 @@ void Model::compute(double t, bool /* update */)
         //TODO: refactor
         if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
             compute_culms(t);
-        }
-
-        if (not create and
-            (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
-             manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
-            create = true;
-            create_phytomer(t);
         }
     } while (not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or

@@ -32,13 +32,9 @@ namespace ecomeristem { namespace plant {
 
 enum phase_t { INIT = 0,
                INITIAL = 1,
-               PHYTOMER_MORPHO_GENESIS = 2,
+               GROWTH = 2,
                NOGROWTH = 3,
                NEW_PHYTOMER = 5,
-               NOGROWTH_ELONG = 8,
-               NOGROWTH_PI = 9,
-               NOGROWTH_PRE_FLO = 11,
-               NOGROWTH_FLO = 13,
                NEW_PHYTOMER_NOGROWTH = 14,
                NEW_PHYTOMER_NOGROWTH2 = 15,
                NEW_PHYTOMER_NOGROWTH3 = 16,
@@ -76,6 +72,8 @@ public:
     virtual ~Manager()
     { }
 
+    virtual bool check(double t) const;
+
     virtual void init(double /* t */,
                       const model::models::ModelParameters& parameters)
     {
@@ -89,6 +87,11 @@ public:
 
         // TODO
         _stock = 1e-10;
+        _phenoStage = 0;
+        _boolCrossedPlasto = 0;
+
+        _phase = INIT;
+        _state = VEGETATIVE;
     }
 
     virtual void compute(double t, bool /* update */);

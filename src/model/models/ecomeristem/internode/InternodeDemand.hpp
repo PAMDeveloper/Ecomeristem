@@ -52,7 +52,8 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        if (_phase == internode::MATURITY) {
+        if (_phase == internode::MATURITY or
+            _phase == internode::MATURITY_NOGROWTH) {
             _demand = 0;
         } else {
             _demand = _biomass - _biomass_1;

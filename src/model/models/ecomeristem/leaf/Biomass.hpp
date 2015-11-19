@@ -59,10 +59,9 @@ public:
 
     void compute(double t, bool update)
     {
-        double _old_biomass = 0;
-
         if (not update) {
             _stop = false;
+            _old_biomass = 0;
         }
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
@@ -86,8 +85,6 @@ public:
                             _old_biomass = _biomass;
                         }
                     }
-                    // _corrected_biomass = _biomass - _blade_area *
-                    //     (1 + _G_L) * (_TT / _life_span) / _sla_cste;
                     _corrected_biomass = _biomass * (1. - _TT / _life_span);
                     _realloc_biomass = (_old_biomass - _corrected_biomass) *
                         _realocationCoeff;
@@ -144,6 +141,7 @@ private:
     bool _lig;
     int _index;
     bool _stop;
+    double _old_biomass;
 
 // external variables
     double _blade_area;
