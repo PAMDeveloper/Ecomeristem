@@ -56,6 +56,8 @@ public:
     {
         if (not update) {
             _stop = false;
+        } else {
+            _len = _len_1;
         }
         if (_first_day == t) {
             _len = _ler * _dd;
@@ -83,7 +85,8 @@ public:
             << " ; ExpTime = " << _exp_time
             << " ; LER = " << _ler
             << " ; DD = " << _dd
-            << " ; update = " << update;
+            << " ; update = " << update
+            << " ; first_day = " << (_first_day == t);
         utils::Trace::trace().flush();
 #endif
 
@@ -92,8 +95,10 @@ public:
     void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
-        _first_day = t;
         _len = 0;
+        _len_1 = 0;
+        _first_day = t;
+        _stop = false;
     }
 
 private:

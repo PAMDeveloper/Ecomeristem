@@ -46,28 +46,58 @@ public:
     virtual ~PhenoStage()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
+        bool no_stock = false;
+
+        if (not update and t > _begin) {
+            no_stock = (_phase_1 == NOGROWTH3);
+        }
+        if (_phase == ThermalTimeManager::STOCK_AVAILABLE and not no_stock) {
             if (_boolCrossedPlasto >= 0) {
                 _PhenoStage = _PhenoStage + 1;
             }
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PHENO_STAGE", t, utils::COMPUTE)
+            << "phenoStage = " << _PhenoStage
+            << " ; phase = " << _phase
+            << " ; phase[-1] = " << _phase_1
+            << " ; no_stock = " << no_stock
+            << " ; boolCrossedPlasto = " << _boolCrossedPlasto;
+        utils::Trace::trace().flush();
+#endif
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
         _PhenoStage = 1;
+        _PhenoStage_1 = 1;
+        _begin = t;
+    }
+
+    void put(double t, unsigned int index, double value)
+    {
+        if (index == PHASE and !is_ready(t, PHASE)) {
+            _phase_1 = _phase;
+        }
+
+        AbstractAtomicModel < PhenoStage >::put(t, index, value);
     }
 
 private:
 // internal variable
     double _PhenoStage;
+    double _PhenoStage_1;
+    double _begin;
 
 // external variables
     double _boolCrossedPlasto;
     double _phase;
+    double _phase_1;
 };
 
 } } } // namespace ecomeristem plant thermal_time

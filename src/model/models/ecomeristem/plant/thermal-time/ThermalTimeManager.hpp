@@ -27,6 +27,8 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 
+#include <model/models/ecomeristem/plant/Manager.hpp>
+
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
 class ThermalTimeManager : public AbstractAtomicModel < ThermalTimeManager >
@@ -34,22 +36,28 @@ class ThermalTimeManager : public AbstractAtomicModel < ThermalTimeManager >
 public:
     enum state_t { INIT, DEAD, STOCK_AVAILABLE, NO_STOCK };
 
-    static const unsigned int PHASE = 0;
-    static const unsigned int STOCK = 0;
+    enum internals { STATE };
+    enum externals { STOCK, PHASE };
 
     ThermalTimeManager()
     {
-        internal(PHASE, &ThermalTimeManager::_state);
+        internal(STATE, &ThermalTimeManager::_state);
+
         external(STOCK, &ThermalTimeManager::_stock);
+        external(PHASE, &ThermalTimeManager::_phase);
     }
 
     virtual ~ThermalTimeManager()
     { }
 
-    void compute(double /* t */, bool /* update */)
+    void compute(double t, bool update)
     {
+        bool no_stock = false;
         state_t old_state;
 
+        if (not update and t > _begin) {
+            no_stock = (_phase_1 == NOGROWTH3);
+        }
         do {
             old_state = (state_t)_state;
 
@@ -68,7 +76,7 @@ public:
                 break;
             }
             case NO_STOCK: {
-                if (_stock > 0){
+                if (_stock > 0 and not no_stock){
                     _state = STOCK_AVAILABLE;
                 }
                 // TODO: => dead
@@ -76,18 +84,34 @@ public:
             }
             };
         } while (old_state != _state);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("THERMAL_TIME_MANAGER", t, utils::COMPUTE)
+            << "phase = " << _phase
+            << " ; state = " << _state
+            << " ; stock = " << _stock;
+        utils::Trace::trace().flush();
+#endif
     }
 
-    void init(double /* t */,
+    void init(double t,
               const model::models::ModelParameters& /* parameters */)
     {
         _state = INIT;
         // TODO: why ?
         _stock = 1e-10;
+        _phase = plant::INIT;
+        _phase_1 = plant::INIT;
+        _begin = t;
     }
 
     void put(double t, unsigned int index, double value)
     {
+        if (index == PHASE and !is_ready(t, PHASE)) {
+            _phase_1 = _phase;
+        }
+
         AbstractAtomicModel < ThermalTimeManager >::put(t, index, value);
         (*this)(t);
     }
@@ -95,9 +119,12 @@ public:
 private:
 // internal variable
     double _state;
+    double _begin;
 
 // external variables
     double _stock;
+    double _phase;
+    double _phase_1;
 };
 
 } } } // namespace ecomeristem plant thermal_time

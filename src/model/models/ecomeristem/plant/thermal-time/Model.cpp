@@ -40,6 +40,7 @@ Model::Model()
     internal(BOOL_CROSSED_PLASTO, &DD_model, Dd::BOOL_CROSSED_PLASTO);
 
     external(STOCK, &Model::_stock);
+    external(PHASE, &Model::_phase);
     external(TA, &Model::_Ta);
     external(GROW, &Model::_grow);
     external(LIG, &Model::_lig);
@@ -67,6 +68,7 @@ void Model::compute(double t, bool /* update */)
     TT_model.put(t, Tt::DELTA_T, DeltaT_model.get(t, DeltaT::DELTA_T));
     TT_model(t);
 
+    ThermalTimeManager_model.put(t, ThermalTimeManager::PHASE, _phase);
     if (is_ready(t, STOCK)) {
         ThermalTimeManager_model.put(t, ThermalTimeManager::STOCK, _stock);
     } else {
@@ -76,13 +78,13 @@ void Model::compute(double t, bool /* update */)
     DD_model.put(t, Dd::DELTA_T, DeltaT_model.get(t, DeltaT::DELTA_T));
     DD_model.put(t, Dd::GROW, _grow);
     DD_model.put(t, Dd::PHASE,
-                 ThermalTimeManager_model.get(t, ThermalTimeManager::PHASE));
+                 ThermalTimeManager_model.get(t, ThermalTimeManager::STATE));
     DD_model.put(t, Dd::PLASTO_DELAY, _plasto_delay);
     DD_model(t);
 
     TT_lig_model.put(t, TT_lig::PHASE,
                      ThermalTimeManager_model.get(
-                         t, ThermalTimeManager::PHASE));
+                         t, ThermalTimeManager::STATE));
     TT_lig_model.put(t, TT_lig::EDD, DD_model.get(t, Dd::EDD));
     TT_lig_model.put(t, TT_lig::LIG, _lig);
     TT_lig_model(t);
@@ -91,7 +93,7 @@ void Model::compute(double t, bool /* update */)
     PlastoVisu_model.put(t, PlastoVisu::EDD, DD_model.get(t, Dd::EDD));
     PlastoVisu_model.put(t, PlastoVisu::PHASE,
                          ThermalTimeManager_model.get(
-                             t, ThermalTimeManager::PHASE));
+                             t, ThermalTimeManager::STATE));
     PlastoVisu_model.put(t, PlastoVisu::PLASTO_DELAY, _plasto_delay);
     PlastoVisu_model(t);
 
@@ -99,19 +101,19 @@ void Model::compute(double t, bool /* update */)
                          DD_model.get(t, Dd::BOOL_CROSSED_PLASTO));
     PhenoStage_model.put(t, PhenoStage::PHASE,
                          ThermalTimeManager_model.get(
-                             t, ThermalTimeManager::PHASE));
+                             t, ThermalTimeManager::STATE));
     PhenoStage_model(t);
 
     LiguloVisu_model.put(t, LiguloVisu::EDD, DD_model.get(t, Dd::EDD));
     LiguloVisu_model.put(t, LiguloVisu::PHASE,
                          ThermalTimeManager_model.get(
-                             t, ThermalTimeManager::PHASE));
+                             t, ThermalTimeManager::STATE));
     LiguloVisu_model.put(t, LiguloVisu::PLASTO_DELAY, _plasto_delay);
     LiguloVisu_model(t);
 
     IH_model.put(t, Ih::LIG, _lig);
     IH_model.put(t, Ih::PHASE,
-                 ThermalTimeManager_model.get(t, ThermalTimeManager::PHASE));
+                 ThermalTimeManager_model.get(t, ThermalTimeManager::STATE));
     IH_model.put(t, Ih::LIGULO_VISU,
                  LiguloVisu_model.get(t, LiguloVisu::LIGULO_VISU));
     IH_model(t);

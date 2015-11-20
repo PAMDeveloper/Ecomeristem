@@ -87,6 +87,7 @@ public:
 
         // TODO
         _stock = 1e-10;
+        _stock_1 = 1e-10;
         _phenoStage = 0;
         _boolCrossedPlasto = 0;
 
@@ -114,6 +115,7 @@ private:
 
 // external variables
     double _stock;
+    double _stock_1;
     double _phenoStage;
     double _boolCrossedPlasto;
     double _FTSW;

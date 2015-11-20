@@ -77,7 +77,7 @@ void Manager::compute(double t, bool update)
             break;
         }
         case INITIAL: {
-            if (_stock > 0 and _phenoStage < nbleaf_pi) {
+            if (_stock_1 > 0 and _phenoStage < nbleaf_pi) {
                 _phase = GROWTH;
             } else {
                 _phase = DEAD;
@@ -85,16 +85,16 @@ void Manager::compute(double t, bool update)
             break;
         }
         case GROWTH:
-            if (_boolCrossedPlasto > 0 and _stock > 0) {
+            if (_boolCrossedPlasto > 0 and _stock_1 > 0) {
                 leaf_number += culm_number;
                 _phase = NEW_PHYTOMER;
             }
-            if (_stock <= 0) {
+            if (_stock_1 <= 0) {
                 _phase = NOGROWTH2;
             }
             break;
         case NOGROWTH: {
-            if (_stock > 0) {
+            if (_stock_1 > 0) {
                 _phase = GROWTH;
             }
             break;
@@ -119,7 +119,7 @@ void Manager::compute(double t, bool update)
             break;
         }
         case NOGROWTH4: {
-            if (_stock > 0) {
+            if (_stock_1 > 0) {
                 _phase = GROWTH;
             }
             break;
@@ -128,7 +128,7 @@ void Manager::compute(double t, bool update)
             if (_boolCrossedPlasto <= 0) {
                 _phase = GROWTH;
             }
-            if (_stock <= 0) {
+            if (_stock_1 <= 0) {
                 _phase = NOGROWTH2;
             }
             break;
@@ -143,6 +143,7 @@ void Manager::compute(double t, bool update)
             << "phase = " << _phase
             << " ; state = " << _state
             << " ; stock = " << _stock
+            << " ; stock[-1] = " << _stock_1
             << " ; phenoStage = " << _phenoStage
             << " ; boolCrossedPlasto = " << _boolCrossedPlasto
             << " ; FTSW = " << _FTSW
@@ -158,6 +159,10 @@ void Manager::compute(double t, bool update)
 
 void Manager::put(double t, unsigned int index, double value)
 {
+    if (index == STOCK and !is_ready(t, STOCK)) {
+        _stock_1 = _stock;
+    }
+
     AbstractAtomicModel < Manager >::put(t, index, value);
     (*this)(t);
 }

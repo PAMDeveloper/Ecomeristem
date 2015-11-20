@@ -39,7 +39,7 @@ public:
     enum internals { LEAF_PHASE };
     enum externals { PHASE, STOP, LEN, PREDIM };
 
-    Manager()
+    Manager(int index) : _index(index)
     {
         internal(LEAF_PHASE, &Manager::_phase_);
         external(PHASE, &Manager::_phase);
@@ -70,6 +70,7 @@ public:
         utils::Trace::trace()
             << utils::TraceElement("LEAF_MANAGER", t, utils::COMPUTE)
             << "phase = " << _phase_
+            << " ; index = " << _index
             << " ; plant phase = " << _phase
             << " ; len = " << _len
             << " ; predim = " << _predim;
@@ -102,6 +103,7 @@ private:
 // internal variable
     double _phase_;
     bool   _predim_init;
+    int    _index;
 
 // external variables
     double _phase;

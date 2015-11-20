@@ -40,7 +40,7 @@ class Model : public AbstractCoupledModel < Model >
 public:
     enum internals { DD, DELTA_T, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO };
-    enum externals { STOCK, TA, GROW, LIG, PLASTO_DELAY };
+    enum externals { STOCK, PHASE, TA, GROW, LIG, PLASTO_DELAY };
 
     Model();
 
@@ -53,6 +53,7 @@ public:
 private:
 // external variables
     double _stock;
+    double _phase;
     double _Ta;
     double _grow;
     double _lig;

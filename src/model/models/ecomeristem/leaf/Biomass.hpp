@@ -62,6 +62,8 @@ public:
         if (not update) {
             _stop = false;
             _old_biomass = 0;
+        } else {
+            _lig = _lig_1;
         }
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
@@ -71,6 +73,9 @@ public:
             _old_biomass = _biomass;
         } else {
             if (_phase != leaf::NOGROWTH and not _stop) {
+                if (not update) {
+                    _lig_1 = _lig;
+                }
                 if (not _lig) {
                     _lig = _phase == leaf::LIG;
                     _biomass = (1. / _G_L) * _blade_area / _sla_cste;
@@ -110,7 +115,10 @@ public:
             << " ; old_biomass = " << _old_biomass
             << " ; realloc_biomass = " << _realloc_biomass
             << " ; senesc_dw = " << _senesc_dw
-            << " ; lig = " << _lig;
+            << " ; lig = " << _lig
+            << " ; lig[-1] = " << _lig_1
+            << " ; update = " << update
+            << " ; stop = " << _stop;
         utils::Trace::trace().flush();
 #endif
 
@@ -123,6 +131,7 @@ public:
         _realocationCoeff = parameters.get < double >("realocationCoeff");
         _first_day = t;
         _lig = false;
+        _lig_1 = false;
         _biomass = 0;
         _corrected_biomass = 0;
     }
@@ -139,6 +148,7 @@ private:
     double _senesc_dw;
     double _first_day;
     bool _lig;
+    bool _lig_1;
     int _index;
     bool _stop;
     double _old_biomass;

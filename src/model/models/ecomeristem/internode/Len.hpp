@@ -72,6 +72,8 @@ public:
     {
         if (not update) {
             _stop = false;
+        } else {
+            _len = _len_1;
         }
         if (_phase == internode::VEGETATIVE) {
             _len = 0;
@@ -83,7 +85,8 @@ public:
                 if (not update) {
                     _len_1 = _len;
                 }
-                if (_phase != internode::REALIZATION_NOGROWTH and not _stop) {
+                if (_phase != internode::REALIZATION_NOGROWTH and
+                    _phase != internode::MATURITY_NOGROWTH and not _stop) {
                     _len = std::min(_predim,
                                     _len_1 + _iner * std::min(_delta_t,
                                                               _exp_time));

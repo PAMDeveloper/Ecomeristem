@@ -37,6 +37,7 @@ Model::Model(int index, bool is_on_mainstem) :
     blade_area_model(index),
     ler_model(index),
     leaf_demand_model(index),
+    manager_model(index),
     life_span_model(index)
 {
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);

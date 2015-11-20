@@ -561,6 +561,10 @@ void Model::compute_thermal_time(double t)
         thermal_time_model.put(t, thermal_time::Model::STOCK,
                                stock_model.get(t, stock::Model::STOCK));
     }
+    if (manager_model.is_computed(t, Manager::PHASE)) {
+        thermal_time_model.put(t, thermal_time::Model::PHASE,
+                               manager_model.get(t, Manager::PHASE));
+    }
     if (stock_model.is_computed(t, stock::Model::GROW)) {
         thermal_time_model.put(t, thermal_time::Model::GROW,
                                stock_model.get(t, stock::Model::GROW));
