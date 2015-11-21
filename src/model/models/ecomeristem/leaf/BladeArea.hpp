@@ -52,9 +52,15 @@ public:
     virtual ~BladeArea()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
+        if (update) {
+            _lig = _lig_1;
+        }
         _blade_area = _len * _width * _allo_area / _LL_BL;
+        if (not update) {
+            _lig_1 = _lig;
+        }
         if (not _lig) {
             _corrected_blade_area = 0;
             _lig = _phase == leaf::LIG;
@@ -76,6 +82,7 @@ public:
             << " ; allo_area = " << _allo_area
             << " ; LL_BL = " << _LL_BL
             << " ; TT = " << _TT
+            << " ; lig = " << _lig
             << " ; life_span = " << _life_span;
         utils::Trace::trace().flush();
 #endif
@@ -90,6 +97,7 @@ public:
         _width = 0;
         _phase = leaf::INITIAL;
         _lig = false;
+        _lig_1 = false;
         _corrected_blade_area = 0;
     }
 
@@ -106,6 +114,7 @@ private:
     double _blade_area_1;
     double _corrected_blade_area;
     bool _lig;
+    bool _lig_1;
     int _index;
 
 // external variables

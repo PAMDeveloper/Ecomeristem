@@ -47,9 +47,12 @@ public:
     virtual ~LastDemand()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-       if (_first_day == t) {
+        if (update and _lig) {
+            _lig = false;
+        }
+        if (_first_day == t) {
            _last_demand = 0;
         } else {
             if (!_lig and _phase == leaf::LIG) {
@@ -63,7 +66,8 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("LEAF_LAST_DEMAND", t, utils::COMPUTE)
-            << "LastDemand = " << _last_demand << " ; phase = " << _phase
+            << "LastDemand = " << _last_demand
+            << " ; phase = " << _phase
             << " ; Biomass = " << _biomass
             << " ; Biomass[-1] = " << _biomass_1
             << " ; Biomass[-2] = " << _biomass_2

@@ -59,36 +59,47 @@ public:
     void compute(double t, bool update)
     {
         if (not update) {
+            _stop = false;
             _DD_1 = _DD;
             _EDD_1 = _EDD;
-            if (_phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
-                double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
+        }
+        if (_stop or (_phase == ThermalTimeManager::NO_STOCK and
+             _phase_1 == ThermalTimeManager::STOCK_AVAILABLE) or
+            _phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
+            double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
 
-                _BoolCrossedPlasto = tempDD - _plasto;
-                if (_BoolCrossedPlasto >= 0) {
-                    _DD = tempDD - _plasto;
-                } else {
-                    _DD = tempDD;
-                }
-                if (_BoolCrossedPlasto <= 0) {
-                    _EDD = _DeltaT + _PlastoDelay_1;
-                } else {
-                    _EDD = _plasto - _DD_1;
-                }
+            _BoolCrossedPlasto = tempDD - _plasto;
+            if (_BoolCrossedPlasto >= 0) {
+                _DD = tempDD - _plasto;
             } else {
-                _DD = _DD_1;
-                _EDD = _EDD_1;
+                _DD = tempDD;
             }
+            if (_BoolCrossedPlasto <= 0) {
+                _EDD = _DeltaT + _PlastoDelay_1;
+            } else {
+                _EDD = _plasto - _DD_1;
+            }
+            _stop = _phase_1 == ThermalTimeManager::NO_STOCK and
+                _phase == ThermalTimeManager::STOCK_AVAILABLE;
+        } else {
+            _DD = _DD_1;
+            _EDD = _EDD_1;
         }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("DD", t, utils::COMPUTE)
-            << "DD = " << _DD << " ; EDD = " << _EDD
-            << " ; DD[-1] = " << _DD_1 << " ; EDD[-1] = " << _EDD_1
-            << " ; DeltaT = " << _DeltaT << " ; PlastoDelay = "
-            << _PlastoDelay << " ; PlastoDelay[-1] = " << _PlastoDelay_1
+            << "DD = " << _DD
+            << " ; EDD = " << _EDD
+            << " ; DD[-1] = " << _DD_1
+            << " ; EDD[-1] = " << _EDD_1
+            << " ; DeltaT = " << _DeltaT
+            << " ; PlastoDelay = " << _PlastoDelay
+            << " ; PlastoDelay[-1] = " << _PlastoDelay_1
             << " ; BoolCrossedPlasto = " << _BoolCrossedPlasto
+            << " ; stop = " << _stop
+            << " ; phase = " << _phase
+            << " ; phase[-1] = " << _phase_1
             << " ; plasto = " << _plasto;
         utils::Trace::trace().flush();
 #endif
@@ -106,12 +117,17 @@ public:
         _BoolCrossedPlasto = 0;
         _PlastoDelay_1 = 0;
         _PlastoDelay = 0;
+        _phase = ThermalTimeManager::INIT;
+        _phase_1 = ThermalTimeManager::INIT;
     }
 
     virtual void put(double t, unsigned int index, double value)
     {
         if (index == PLASTO_DELAY and !is_ready(t, PLASTO_DELAY)) {
             _PlastoDelay_1 = _PlastoDelay;
+        }
+        if (index == PHASE and !is_ready(t, PHASE)) {
+            _phase_1 = _phase;
         }
         AbstractAtomicModel < Dd >::put(t, index, value);
     }
@@ -125,6 +141,7 @@ private:
     double _PlastoDelay;
     double _PlastoDelay_1;
     double _phase;
+    double _phase_1;
     double _grow;
 
     // internal variable
@@ -133,6 +150,7 @@ private:
     double _EDD;
     double _EDD_1;
     double _BoolCrossedPlasto;
+    double _stop;
 };
 
 } } } // namespace ecomeristem plant thermal_time

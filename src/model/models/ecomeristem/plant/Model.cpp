@@ -108,14 +108,10 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _begin = t;
 }
 
-void Model::compute(double t, bool update)
+        void Model::compute(double t, bool /* update */)
 {
     bool create = false;
-    bool no_stock = false;
-
-    if (not update and t > _begin) {
-        no_stock = (manager_model.get(t - 1, Manager::PHASE) == NOGROWTH3);
-    }
+    bool stable = true;
 
     _culm_is_computed = false;
 
@@ -149,6 +145,9 @@ void Model::compute(double t, bool update)
     compute_lig(t);
 //    lig_model(t);
     do {
+        if (not stable) {
+            stable = true;
+        }
         compute_assimilation(t);
         compute_water_balance(t);
         compute_thermal_time(t);
@@ -164,10 +163,11 @@ void Model::compute(double t, bool update)
         compute_culms(t);
         //TODO: fin du genant !
 
-        if (not no_stock and not create and
+        if (not create and
             (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
              manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
             create = true;
+            stable = false;
             create_phytomer(t);
         }
 
@@ -179,7 +179,7 @@ void Model::compute(double t, bool update)
         if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
             compute_culms(t);
         }
-    } while (not assimilation_model.is_stable(t) or
+    } while (not stable or not assimilation_model.is_stable(t) or
              not water_balance_model.is_stable(t) or
              not thermal_time_model.is_stable(t) or
              not sla_model.is_stable(t) or not manager_model.is_stable(t) or
@@ -250,6 +250,14 @@ void Model::compute_assimilation(double t)
                                    water_balance::Model::CSTR));
     }
     assimilation_model(t);
+
+#ifdef WITH_TRACE
+    utils::Trace::trace()
+        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << "COMPUTE ASSIMILATION ";
+    utils::Trace::trace().flush();
+#endif
+
 }
 
 void Model::compute_culms(double t)
@@ -355,7 +363,8 @@ void Model::compute_culms(double t)
 #ifdef WITH_TRACE
     utils::Trace::trace()
         << utils::TraceElement("PLANT", t, utils::COMPUTE)
-        << "LeafBiomassSum = " << _leaf_biomass_sum
+        << "COMPUTE CULMS "
+        << " ; LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
         << " ; LeafDemandSum = " << _leaf_demand_sum
         << " ; InternodeLastDemandSum = " << _internode_last_demand_sum

@@ -50,14 +50,10 @@ public:
     virtual ~ThermalTimeManager()
     { }
 
-    void compute(double t, bool update)
+    void compute(double t, bool /* update */)
     {
-        bool no_stock = false;
         state_t old_state;
 
-        if (not update and t > _begin) {
-            no_stock = (_phase_1 == NOGROWTH3);
-        }
         do {
             old_state = (state_t)_state;
 
@@ -76,7 +72,7 @@ public:
                 break;
             }
             case NO_STOCK: {
-                if (_stock > 0 and not no_stock){
+                if (_stock > 0){
                     _state = STOCK_AVAILABLE;
                 }
                 // TODO: => dead

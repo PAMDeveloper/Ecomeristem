@@ -110,26 +110,50 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
-        if (index == PLANT_STOCK and !is_ready(t, PLANT_STOCK)) {
+        if (index == PLANT_STOCK and not is_ready(t, PLANT_STOCK)) {
             _plant_stock_1 = _plant_stock;
         }
-        if (index == PLANT_DEFICIT and !is_ready(t, PLANT_DEFICIT)) {
+        if (index == PLANT_DEFICIT and not is_ready(t, PLANT_DEFICIT)) {
             _plant_deficit_1 = _plant_deficit;
         }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM_INTERMEDIATE", t, utils::PUT)
+            << "Intermediaire = " << _intermediate
+            << " ; Stock[-1] = " << _plant_stock_1
+            << " ; Deficit[-1] = " << _plant_deficit_1
+            << " ; Stock[0] = " << _plant_stock
+            << " ; Deficit[0] = " << _plant_deficit;
+        utils::Trace::trace().flush();
+#endif
+
         AbstractAtomicModel < Intermediate >::put(t, index, value);
     }
 
-void realloc_biomass(double /* t */, double value)
-{
-    if (value > 0) {
-        double qty = value * _realocationCoeff;
+    void realloc_biomass(double t, double value)
+    {
+        if (value > 0) {
+            double qty = value * _realocationCoeff;
 
-        _plant_stock_1 = std::max(0., qty + _plant_deficit);
-        _plant_stock = _plant_stock_1;
-        _plant_deficit_1 = std::min(0., qty + _plant_deficit);
-        _plant_deficit = _plant_deficit_1;
+            _plant_stock_1 = std::max(0., qty + _plant_deficit);
+            _plant_stock = _plant_stock_1;
+            _plant_deficit_1 = std::min(0., qty + _plant_deficit);
+            _plant_deficit = _plant_deficit_1;
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM_INTERMEDIATE", t, utils::COMPUTE)
+            << "Intermediaire = " << _intermediate
+            << " ; Stock[-1] = " << _plant_stock_1
+            << " ; Deficit[-1] = " << _plant_deficit_1
+            << " ; Stock[0] = " << _plant_stock
+            << " ; Deficit[0] = " << _plant_deficit
+            << " ==> REALLOC";
+        utils::Trace::trace().flush();
+#endif
+        }
     }
-}
 
 private:
 // parameters

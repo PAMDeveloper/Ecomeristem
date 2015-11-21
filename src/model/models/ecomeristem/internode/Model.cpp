@@ -29,6 +29,7 @@ namespace ecomeristem { namespace internode {
 Model::Model(int index, bool is_on_mainstem) :
     _index(index),
     _is_first_internode(_index == 1), _is_on_mainstem(is_on_mainstem),
+    biomass_model(index),
     exp_time_model(index),
     len_model(index),
     predim_model(index),

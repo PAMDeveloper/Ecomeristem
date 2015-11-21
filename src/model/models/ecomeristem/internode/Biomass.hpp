@@ -36,7 +36,7 @@ public:
     enum internals { BIOMASS };
     enum externals { VOLUME };
 
-    Biomass()
+    Biomass(int index) : _index(index)
     {
         internal(BIOMASS, &Biomass::_biomass);
 
@@ -54,6 +54,7 @@ public:
         utils::Trace::trace()
             << utils::TraceElement("INTERNODE_BIOMASS", t, utils::COMPUTE)
             << "Biomass = " << _biomass
+            << " ; index = " << _index
             << " ; volume = " << _volume;
         utils::Trace::trace().flush();
 #endif
@@ -73,6 +74,7 @@ private:
 
 // internal variable
     double _biomass;
+    int _index;
 
 // external variables
     double _volume;

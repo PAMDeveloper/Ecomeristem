@@ -57,6 +57,8 @@ public:
             _phase_ = leaf::INITIAL;
         } else if (_phase_ == leaf::INITIAL and _len >= _predim) {
             _phase_ = leaf::LIG;
+        } else if (_phase_ == leaf::LIG and _len < _predim) {
+            _phase_ = leaf::INITIAL;
         } else if (_phase_ == leaf::INITIAL and
                    (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
                     or _phase == plant::NOGROWTH4)) {

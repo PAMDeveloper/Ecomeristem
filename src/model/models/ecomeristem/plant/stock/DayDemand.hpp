@@ -65,7 +65,9 @@ public:
         if (_phase == ecomeristem::plant::NOGROWTH or
             _phase == ecomeristem::plant::NOGROWTH4 or _stop) {
             _day_demand = 0;
-            _stop = _phase == ecomeristem::plant::NOGROWTH4;
+            if (not _stop) {
+                _stop = _phase == ecomeristem::plant::NOGROWTH4;
+            }
         } else {
             _day_demand = _demand_sum + _leaf_last_demand_sum +
                 _internode_last_demand_sum;
@@ -76,6 +78,8 @@ public:
             << utils::TraceElement("DAY_DEMAND", t, utils::COMPUTE)
             << "dayDemand = " << _day_demand
             << " ; phase = " << _phase
+            << " ; stop = " << _stop
+            << " ; update = " << update
             << " ; DemandSum = " << _demand_sum
             << " ; LeafLastdemand = " << _leaf_last_demand_sum
             << " ; InternodeLastdemand = " << _internode_last_demand_sum;

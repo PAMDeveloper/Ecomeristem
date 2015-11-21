@@ -64,6 +64,12 @@ public:
             _old_biomass = 0;
         } else {
             _lig = _lig_1;
+            if (not _lig) {
+                _biomass = _biomass_1;
+                _corrected_biomass = _corrected_biomass_1;
+                _realloc_biomass = _realloc_biomass_1;
+                _old_biomass = _old_biomass_1;
+            }
         }
         if (_first_day == t) {
             _biomass = (1. / _G_L) * _blade_area / _sla;
@@ -75,6 +81,10 @@ public:
             if (_phase != leaf::NOGROWTH and not _stop) {
                 if (not update) {
                     _lig_1 = _lig;
+                    _biomass_1 = _biomass;
+                    _corrected_biomass_1 = _corrected_biomass;
+                    _realloc_biomass_1 = _realloc_biomass;
+                    _old_biomass_1 = _old_biomass;
                 }
                 if (not _lig) {
                     _lig = _phase == leaf::LIG;
@@ -133,7 +143,9 @@ public:
         _lig = false;
         _lig_1 = false;
         _biomass = 0;
+        _biomass_1 = 0;
         _corrected_biomass = 0;
+        _corrected_biomass_1 = 0;
     }
 
 private:
@@ -143,15 +155,19 @@ private:
 
 // internal variable
     double _biomass;
+    double _biomass_1;
     double _corrected_biomass;
+    double _corrected_biomass_1;
     double _realloc_biomass;
+    double _realloc_biomass_1;
+    double _old_biomass;
+    double _old_biomass_1;
     double _senesc_dw;
     double _first_day;
     bool _lig;
     bool _lig_1;
     int _index;
     bool _stop;
-    double _old_biomass;
 
 // external variables
     double _blade_area;

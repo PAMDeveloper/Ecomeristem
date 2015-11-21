@@ -324,6 +324,7 @@ void Model::compute(double t, bool /* update */)
         << " ; deficit = " << _plant_deficit
         << " ; lig = " << _lig
         << " ; leaf biomass sum = " << _leaf_biomass_sum
+        << " ; leaf blade area sum = " << _leaf_blade_area_sum
         << " ; internode biomass sum = " << _internode_biomass_sum
         << " ; leaf number = "
         << (_deleted_leaf_number + phytomer_models.size())

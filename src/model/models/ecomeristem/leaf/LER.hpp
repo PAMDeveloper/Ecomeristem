@@ -76,6 +76,8 @@ public:
         _plasto = parameters.get < double >("plasto_init");
         _ligulo = _plasto * _coef_ligulo;
         _ler = 0;
+        // need for stability
+        _predim = 0;
     }
 
 private:

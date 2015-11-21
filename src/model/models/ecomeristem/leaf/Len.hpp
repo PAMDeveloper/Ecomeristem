@@ -81,6 +81,7 @@ public:
             << " ; index = " << _index
             << " ; len[-1] = " << _len_1
             << " ; phase = " << _phase
+            << " ; phase[-1] = " << _phase_1
             << " ; DeltaT = " << _delta_t
             << " ; ExpTime = " << _exp_time
             << " ; LER = " << _ler
@@ -99,6 +100,17 @@ public:
         _len_1 = 0;
         _first_day = t;
         _stop = false;
+        _phase = plant::INITIAL;
+        _phase_1 = plant::INITIAL;
+    }
+
+    void put(double t, unsigned int index, double value)
+    {
+        if (index == PHASE and !is_ready(t, PHASE)) {
+            _phase_1 = _phase;
+        }
+
+        AbstractAtomicModel < Len >::put(t, index, value);
     }
 
 private:
@@ -116,6 +128,7 @@ private:
     double _delta_t;
     double _grow;
     double _phase;
+    double _phase_1;
     double _ler;
     double _exp_time;
     double _predim;

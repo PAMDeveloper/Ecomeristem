@@ -46,14 +46,9 @@ public:
     virtual ~PhenoStage()
     { }
 
-    void compute(double t, bool update)
+    void compute(double t, bool /* update */)
     {
-        bool no_stock = false;
-
-        if (not update and t > _begin) {
-            no_stock = (_phase_1 == NOGROWTH3);
-        }
-        if (_phase == ThermalTimeManager::STOCK_AVAILABLE and not no_stock) {
+        if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             if (_boolCrossedPlasto >= 0) {
                 _PhenoStage = _PhenoStage + 1;
             }
@@ -65,7 +60,6 @@ public:
             << "phenoStage = " << _PhenoStage
             << " ; phase = " << _phase
             << " ; phase[-1] = " << _phase_1
-            << " ; no_stock = " << no_stock
             << " ; boolCrossedPlasto = " << _boolCrossedPlasto;
         utils::Trace::trace().flush();
 #endif
