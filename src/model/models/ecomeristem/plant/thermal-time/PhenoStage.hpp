@@ -50,12 +50,11 @@ public:
     {
         if (update) {
             _PhenoStage = _PhenoStage_1;
+        } else {
+            _PhenoStage_1 = _PhenoStage;
         }
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             if (_boolCrossedPlasto >= 0) {
-                if (not update) {
-                    _PhenoStage_1 = _PhenoStage;
-                }
                 _PhenoStage = _PhenoStage + 1;
             }
         }
