@@ -35,8 +35,8 @@ class DayDemand : public AbstractAtomicModel < DayDemand >
 {
 public:
     enum internals { DAY_DEMAND };
-    enum externals { DEMAND_SUM, LEAF_LAST_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
-                     GROW, PHASE };
+    enum externals { DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
+                     INTERNODE_LAST_DEMAND_SUM, GROW, PHASE };
 
     DayDemand()
     {

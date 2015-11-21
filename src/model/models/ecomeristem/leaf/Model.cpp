@@ -38,7 +38,8 @@ Model::Model(int index, bool is_on_mainstem) :
     ler_model(index),
     leaf_demand_model(index),
     manager_model(index),
-    life_span_model(index)
+    life_span_model(index),
+    thermal_time_since_ligulation_model(index)
 {
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
     internal(BLADE_AREA, &blade_area_model, BladeArea::BLADE_AREA);

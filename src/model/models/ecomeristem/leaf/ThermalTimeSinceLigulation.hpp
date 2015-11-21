@@ -38,7 +38,7 @@ public:
     enum internals { THERMAL_TIME_SINCE_LIGULATION };
     enum externals { DELTA_T, PHASE };
 
-    ThermalTimeSinceLigulation()
+    ThermalTimeSinceLigulation(int index) : _index(index)
     {
         internal(THERMAL_TIME_SINCE_LIGULATION,
                  &ThermalTimeSinceLigulation::_TT);
@@ -54,8 +54,15 @@ public:
     bool check(double t) const
     { return is_ready(t, DELTA_T) and is_ready(t, PHASE); }
 
-    void compute(double t , bool /* update */)
+    void compute(double t , bool update)
     {
+        if (update) {
+            _lig = _lig_1;
+            _TT_1 = _TT;
+        } else {
+            _lig_1 = _lig;
+            _TT_1 = _TT;
+        }
         if (not _lig) {
             _lig = _phase == leaf::LIG;
         } else {
@@ -67,7 +74,8 @@ public:
             << utils::TraceElement("THERMAL_TIME_SINCE_LIGUALTION", t,
                                    utils::COMPUTE)
             << "TT = " << _TT
-            << " ; delta_t = " << _delta_t;
+            << " ; delta_t = " << _delta_t
+            << " ; index = " << _index;
         utils::Trace::trace().flush();
 #endif
 
@@ -77,14 +85,19 @@ public:
               const model::models::ModelParameters& /* parameters */)
     {
         _TT = 0;
+        _TT_1 = 0;
         _phase = leaf::INITIAL;
         _lig = false;
+        _lig_1 = false;
     }
 
 private:
 // internal variable
     double _TT;
+    double _TT_1;
     double _lig;
+    double _lig_1;
+    int _index;
 
 // external variables
     double _delta_t;

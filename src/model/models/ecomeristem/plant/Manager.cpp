@@ -33,36 +33,6 @@ bool Manager::check(double t) const
     return true;
 }
 
-// INIT ---------------------------------------------------------> INITIAL
-// INITIAL ------------------ c1/output4 ----------> PHYTOMER_MORPHO_GENESIS
-// INITIAL ------------------ c2 --------------------------------> NOGROWTH
-
-// PHYTOMER_MORPHO_GENESIS -- c6/output3 ------------------------> DEAD
-
-// PHYTOMER_MORPHO_GENESIS -- c3 --------------------------------> NOGROWTH2
-// NOGROWTH2 ---------------- output5 ---------------------------> NOGROWTH3
-// NOGROWTH3 ---------------- after(1)/dec_leaf_number/output2 --> NOGROWTH4
-// NOGROWTH4 ---------------- c6/output3 ------------------------> DEAD
-// NOGROWTH4 ---------------- stock/action1 ---------------------> NOGROWTH5
-// NOGROWTH5 ---------------- c5 --------------------------------> NOGROWTH
-// NOGROWTH5 ---------------- c3 --------------------------------> NOGROWTH2
-// NOGROWTH ----------------- c5/output4 ----------> PHYTOMER_MORPHO_GENESIS
-// NOGROWTH ----------------- c6/output3 ------------------------> DEAD
-
-// PHYTOMER_MORPHO_GENESIS -- c4/inc_leaf_number/output1 -----> NEW_PHYTOMER
-// NEW_PHYTOMER ------------- phenoStage/action2 ------------> NEW_PHYTOMER2
-// NEW_PHYTOMER2 ------------ c8/output6 ------------------------> ELONG
-// NEW_PHYTOMER2 ------------ c9 ----------------------------> NEW_PHYTOMER3
-// NEW_PHYTOMER3 ------------ c7/output4 ----------> PHYTOMER_MORPHO_GENESIS
-// NEW_PHYTOMER3 ------------ c3 -------------------> NEW_PHYTOMER_NOGROWTH2
-// NEW_PHYTOMER_NOGROWTH2 --- output5 --------------> NEW_PHYTOMER_NOGROWTH3
-// NEW_PHYTOMER_NOGROWTH3 --- after(1)/dec_leaf_number/output2
-//                                               ---> NEW_PHYTOMER_NOGROWTH3
-// NEW_PHYTOMER_NOGROWTH4 --- c7/output4 ----------> PHYTOMER_MORPHO_GENESIS
-// NEW_PHYTOMER_NOGROWTH4 --- c3 -------------------> NEW_PHYTOMER_NOGROWTH2
-// NEW_PHYTOMER_NOGROWTH ---- stock/action1 --------> NEW_PHYTOMER_NOGROWTH4
-// NEW_PHYTOMER_NOGROWTH ---- c6/output3 ------------------------> DEAD
-
 void Manager::compute(double t, bool update)
 {
     phase_t old_phase;
@@ -128,7 +98,7 @@ void Manager::compute(double t, bool update)
             if (_boolCrossedPlasto <= 0) {
                 _phase = GROWTH;
             }
-            if (_stock_1 <= 0) {
+            if (_stock_1 <= 0 or (not is_ready(t, STOCK) and _stock <=0)) {
                 _phase = NOGROWTH2;
             }
             break;
