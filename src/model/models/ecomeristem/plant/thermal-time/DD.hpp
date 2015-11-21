@@ -63,27 +63,29 @@ public:
             _DD_1 = _DD;
             _EDD_1 = _EDD;
         }
-        if (_stop or (_phase == ThermalTimeManager::NO_STOCK and
-             _phase_1 == ThermalTimeManager::STOCK_AVAILABLE) or
-            _phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
-            double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
+        if (not _stop) {
+            if (/*(_phase == ThermalTimeManager::NO_STOCK and
+                  _phase_1 == ThermalTimeManager::STOCK_AVAILABLE) or */
+                _phase == ThermalTimeManager::STOCK_AVAILABLE or _grow) {
+                double tempDD = _DD_1 + _DeltaT + _PlastoDelay_1;
 
-            _BoolCrossedPlasto = tempDD - _plasto;
-            if (_BoolCrossedPlasto >= 0) {
-                _DD = tempDD - _plasto;
+                _BoolCrossedPlasto = tempDD - _plasto;
+                if (_BoolCrossedPlasto >= 0) {
+                    _DD = tempDD - _plasto;
+                } else {
+                    _DD = tempDD;
+                }
+                if (_BoolCrossedPlasto <= 0) {
+                    _EDD = _DeltaT + _PlastoDelay_1;
+                } else {
+                    _EDD = _plasto - _DD_1;
+                }
+                // _stop = _phase_1 == ThermalTimeManager::NO_STOCK and
+                //     _phase == ThermalTimeManager::STOCK_AVAILABLE;
             } else {
-                _DD = tempDD;
+                _DD = _DD_1;
+                _EDD = _EDD_1;
             }
-            if (_BoolCrossedPlasto <= 0) {
-                _EDD = _DeltaT + _PlastoDelay_1;
-            } else {
-                _EDD = _plasto - _DD_1;
-            }
-            _stop = _phase_1 == ThermalTimeManager::NO_STOCK and
-                _phase == ThermalTimeManager::STOCK_AVAILABLE;
-        } else {
-            _DD = _DD_1;
-            _EDD = _EDD_1;
         }
 
 #ifdef WITH_TRACE

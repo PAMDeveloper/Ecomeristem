@@ -68,14 +68,16 @@ public:
                     or _phase == plant::NOGROWTH4)) {
             _phase_ = internode::REALIZATION_NOGROWTH;
         } else if (_phase_ == internode::REALIZATION_NOGROWTH and
-                   _phase == plant::GROWTH) {
+                   (_phase == plant::GROWTH or
+                    _phase == plant::NEW_PHYTOMER3)) {
             _phase_ = internode::REALIZATION;
         } else if (_phase_ == internode::MATURITY and
                    (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3
                     or _phase == plant::NOGROWTH4)) {
             _phase_ = internode::MATURITY_NOGROWTH;
         } else if (_phase_ == internode::MATURITY_NOGROWTH and
-                   _phase == plant::GROWTH) {
+                   (_phase == plant::GROWTH or
+                    _phase == plant::NEW_PHYTOMER3)) {
             _phase_ = internode::MATURITY;
         }
 

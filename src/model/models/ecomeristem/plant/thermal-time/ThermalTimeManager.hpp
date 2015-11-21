@@ -66,13 +66,16 @@ public:
                 break;
             }
             case STOCK_AVAILABLE: {
-                if (_stock <= 0){
+                // if (_stock <= 0){
+                if (_phase == plant::NOGROWTH or _phase == plant::NOGROWTH3 or
+                    _phase == plant::NOGROWTH4) {
                     _state = NO_STOCK;
                 }
                 break;
             }
             case NO_STOCK: {
-                if (_stock > 0){
+                // if (_stock > 0){
+                if (_phase == plant::GROWTH or _phase == plant::NEW_PHYTOMER3){
                     _state = STOCK_AVAILABLE;
                 }
                 // TODO: => dead

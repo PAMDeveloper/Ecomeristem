@@ -78,14 +78,14 @@ public:
             _sla_cste = _sla;
             _old_biomass = _biomass;
         } else {
+            if (not update) {
+                _lig_1 = _lig;
+                _biomass_1 = _biomass;
+                _corrected_biomass_1 = _corrected_biomass;
+                _realloc_biomass_1 = _realloc_biomass;
+                _old_biomass_1 = _old_biomass;
+            }
             if (_phase != leaf::NOGROWTH and not _stop) {
-                if (not update) {
-                    _lig_1 = _lig;
-                    _biomass_1 = _biomass;
-                    _corrected_biomass_1 = _corrected_biomass;
-                    _realloc_biomass_1 = _realloc_biomass;
-                    _old_biomass_1 = _old_biomass;
-                }
                 if (not _lig) {
                     _lig = _phase == leaf::LIG;
                     _biomass = (1. / _G_L) * _blade_area / _sla_cste;
@@ -107,6 +107,8 @@ public:
                         (1 - _realocationCoeff);
                 }
                 _stop = _phase == leaf::NOGROWTH;
+            } else {
+                _biomass = _biomass_1;
             }
         }
 
@@ -146,6 +148,7 @@ public:
         _biomass_1 = 0;
         _corrected_biomass = 0;
         _corrected_biomass_1 = 0;
+        _senesc_dw = 0;
     }
 
 private:

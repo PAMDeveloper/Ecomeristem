@@ -46,10 +46,16 @@ public:
     virtual ~PhenoStage()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
+        if (update) {
+            _PhenoStage = _PhenoStage_1;
+        }
         if (_phase == ThermalTimeManager::STOCK_AVAILABLE) {
             if (_boolCrossedPlasto >= 0) {
+                if (not update) {
+                    _PhenoStage_1 = _PhenoStage;
+                }
                 _PhenoStage = _PhenoStage + 1;
             }
         }

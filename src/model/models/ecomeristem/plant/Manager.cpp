@@ -98,7 +98,7 @@ void Manager::compute(double t, bool update)
             if (_boolCrossedPlasto <= 0) {
                 _phase = GROWTH;
             }
-            if (_stock_1 <= 0 or (not is_ready(t, STOCK) and _stock <=0)) {
+            if (_stock_1 <= 0 or (not is_ready(t, STOCK) and _stock <= 0)) {
                 _phase = NOGROWTH2;
             }
             break;
