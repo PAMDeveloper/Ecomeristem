@@ -63,14 +63,21 @@ public:
             _stop = false;
         }
         if (_phase == ecomeristem::plant::NOGROWTH or
+            _phase == ecomeristem::plant::NOGROWTH3 or
             _phase == ecomeristem::plant::NOGROWTH4 or _stop) {
             _day_demand = 0;
             if (not _stop) {
-                _stop = _phase == ecomeristem::plant::NOGROWTH4;
+                _stop = _phase == ecomeristem::plant::NOGROWTH3 or
+                    _phase == ecomeristem::plant::NOGROWTH4;
             }
         } else {
-            _day_demand = _demand_sum + _leaf_last_demand_sum +
-                _internode_last_demand_sum;
+            if (_demand_sum == 0) {
+                _day_demand = _leaf_last_demand_sum +
+                    _internode_last_demand_sum;
+            } else {
+                _day_demand = _demand_sum;
+            }
+
         }
 
 #ifdef WITH_TRACE

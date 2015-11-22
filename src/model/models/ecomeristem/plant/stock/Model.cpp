@@ -90,7 +90,7 @@ void Model::compute(double t, bool update)
             supply_model.put(t, Supply::ASSIM, _assim);
             supply_model(t);
 
-            if (not update or (update and not _stop)) {
+            // if (not update or (update and not _stop)) {
                 index_competition_model.put(t, IndexCompetition::DAY_DEMAND,
                                             day_demand_model.get(
                                                 t, DayDemand::DAY_DEMAND));
@@ -102,7 +102,7 @@ void Model::compute(double t, bool update)
                     supply_model.get(t, Supply::SUPPLY));
                 index_competition_model(t);
                 _stop = _phase == plant::NOGROWTH4;
-            }
+            // }
 
             reservoir_dispo_model.put(t, ReservoirDispo::LEAF_BIOMASS_SUM,
                                       _leaf_biomass_sum);

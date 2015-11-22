@@ -55,7 +55,7 @@ public:
 
     void compute(double t, bool update)
     {
-        if (not update) {
+        // if (not update) {
             if (not _is_first_day) {
                 double resDiv, mean;
                 double total = 0.;
@@ -109,7 +109,7 @@ public:
             } else {
                 _is_first_day = false;
             }
-        }
+        // }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
@@ -146,6 +146,15 @@ public:
 
     void put(double t, unsigned int index, double value)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("IC", t, utils::PUT)
+            << "index = " << index
+            << " ; value = " << value;
+        utils::Trace::trace().flush();
+#endif
+
         if (index == SUPPLY and !is_ready(t, SUPPLY)) {
             _supply_[2] = _supply_[1];
             _supply_[1] = _supply_[0];
@@ -161,6 +170,7 @@ public:
             _day_demand_[1] = _day_demand_[0];
             _day_demand_[0] = _day_demand;
         }
+
         AbstractAtomicModel < IndexCompetition >::put(t, index, value);
     }
 
