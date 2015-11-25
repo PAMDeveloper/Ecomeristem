@@ -30,6 +30,17 @@ namespace ecomeristem { namespace plant {
 
 Model::Model()
 {
+    // submodels
+    submodel(ASSIMILATION, &assimilation_model);
+    submodel(ROOT, & root_model);
+    submodel(STOCK, &stock_model);
+    submodel(THERMAL_TIME, &thermal_time_model);
+    submodel(WATER_BALANCE, &water_balance_model);
+    submodel(MANAGER, &manager_model);
+    submodel(TILLER_MANAGER, &tiller_manager_model);
+    submodel(SLA, &sla_model);
+
+    // internals
     internal(LAI, &assimilation_model, plant::assimilation::Model::LAI);
     internal(DELTA_T, &thermal_time_model,
              plant::thermal_time::Model::DELTA_T);
@@ -54,7 +65,7 @@ Model::Model()
     internal(ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF);
     internal(ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND);
     internal(ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS);
-    internal(STOCK, &stock_model, stock::Model::STOCK);
+    // internal(STOCK, &stock_model, stock::Model::STOCK);
     internal(GROW, &stock_model, stock::Model::GROW);
     internal(SUPPLY, &stock_model, stock::Model::SUPPLY);
     internal(DEFICIT, &stock_model, stock::Model::DEFICIT);
@@ -65,6 +76,7 @@ Model::Model()
     internal(RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO);
     internal(SEED_RES, &stock_model, stock::Model::SEED_RES);
 
+    // externals
     external(ETP, &Model::_etp);
     external(P, &Model::_p);
     external(RADIATION, &Model::_radiation);
@@ -108,7 +120,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _begin = t;
 }
 
-        void Model::compute(double t, bool /* update */)
+void Model::compute(double t, bool /* update */)
 {
     bool create = false;
     bool stable = true;
@@ -649,6 +661,7 @@ void Model::create_culm(double t, int n)
 
         culm->init(t, *_parameters);
         culm_models.push_back(culm);
+        setsubmodel(CULMS, culm);
 
 #ifdef WITH_TRACE
         utils::Trace::trace()

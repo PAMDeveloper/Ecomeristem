@@ -40,10 +40,12 @@ namespace ecomeristem { namespace plant {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { ASSIMILATION, ROOT, STOCK, THERMAL_TIME, WATER_BALANCE,
+                     MANAGER, TILLER_MANAGER, SLA, CULMS };
     enum internals { LAI, DELTA_T, DD, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO,
                      ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
-                     ROOT_BIOMASS, STOCK, GROW, SUPPLY, DEFICIT, IC,
+                     ROOT_BIOMASS, /*STOCK,*/ GROW, SUPPLY, DEFICIT, IC,
                      SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
                      SEED_RES };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };

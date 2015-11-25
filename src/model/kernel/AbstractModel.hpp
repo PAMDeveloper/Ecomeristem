@@ -65,6 +65,13 @@ public:
 
     virtual bool is_computed(double t, unsigned int index) const = 0;
 
+    virtual const AbstractModel* submodel(unsigned int /* index */) const
+    { assert(false); }
+
+    virtual const AbstractModel* submodel(unsigned int /*index */,
+                                          unsigned int /* rank */) const
+    { assert(false); }
+
 protected:
     double last_time;
     std::vector < double > externalDates;

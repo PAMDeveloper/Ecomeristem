@@ -53,7 +53,7 @@ public:
     { return is_ready(t, DAY_DEMAND) and is_ready(t, SEED_RES)
             and is_ready(t, SUPPLY); }
 
-    void compute(double t, bool update)
+    void compute(double t, bool /* update */)
     {
         // if (not update) {
             if (not _is_first_day) {

@@ -81,12 +81,6 @@ IF (COMMAND CMAKE_POLICY)
 ENDIF (COMMAND CMAKE_POLICY)
 
 #
- # Find XML2
-#
-
-#INCLUDE(FindLibXml2)
-
-#
  # Test the libboost header and libboost-text library.
 #
 
@@ -98,7 +92,7 @@ SET(Boost_DETAILED_FAILURE_MSG FALSE)
 SET(Boost_DEBUG FALSE)
 
 FIND_PACKAGE(Boost COMPONENTS
-        date_time filesystem graph program_options system REQUIRED)
+        date_time filesystem program_options system REQUIRED)
 IF (Boost_MINOR_VERSION AND ${Boost_MINOR_VERSION} LESS "35")
   SET(Boost_SYSTEM_LIBRARY "")
 ENDIF (Boost_MINOR_VERSION AND ${Boost_MINOR_VERSION} LESS "35")

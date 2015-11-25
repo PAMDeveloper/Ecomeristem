@@ -30,6 +30,7 @@ namespace ecomeristem {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { PLANT };
     enum internals { LAI, DELTA_T, DD, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO,
                      ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
@@ -40,6 +41,8 @@ public:
 
     Model()
     {
+        submodel(PLANT, &plant_model);
+
         internal(LAI, &plant_model, plant::Model::LAI);
         internal(DELTA_T, &plant_model, plant::Model::DELTA_T);
         internal(BOOL_CROSSED_PLASTO, &plant_model,

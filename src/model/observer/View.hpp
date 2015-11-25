@@ -31,22 +31,29 @@ namespace model { namespace observer {
 
 class View
 {
-public:
-    View() : model(0)
-    { }
+    typedef std::vector < unsigned int > Selector;
 
-    virtual ~View()
-    { }
+public:
+    View();
+    virtual ~View();
 
     void attachModel(const model::kernel::Model* m)
-    { model = m; }
+    { _model = m; }
 
-    virtual double get(double t, const std::string& name) const = 0;
+    double get(double t, const std::string& name) const;
 
-    virtual void observe(double time) = 0;
+    virtual void observe(double time);
 
-protected:
-    const model::kernel::Model* model;
+    void selector(const std::string& name, const Selector& chain);
+
+private:
+    typedef std::map < std::string, Selector > Selectors;
+    typedef std::vector < std::pair < double, double > > Value;
+    typedef std::map < std::string, Value > Values;
+
+    Selectors                   _selectors;
+    Values                      _values;
+    const model::kernel::Model* _model;
 };
 
 } }

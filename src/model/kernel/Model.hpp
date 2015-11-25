@@ -34,6 +34,7 @@ namespace model { namespace kernel {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { ECOMERISTEM, CLIMATE };
     enum internals { LAI, DELTA_T, DD, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO,
                      ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
@@ -43,6 +44,9 @@ public:
 
     Model()
     {
+        submodel(ECOMERISTEM, &ecomeristem_model);
+        submodel(CLIMATE, &meteo_model);
+
         internal(LAI, &ecomeristem_model, ecomeristem::Model::LAI);
         internal(DELTA_T, &ecomeristem_model, ecomeristem::Model::DELTA_T);
         internal(DD, &ecomeristem_model, ecomeristem::Model::DD);

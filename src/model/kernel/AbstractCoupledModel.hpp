@@ -48,9 +48,9 @@ public:
     {
         std::map < int, std::pair < AbstractModel*,
                                     int > >::const_iterator it =
-            sub_model_internals.find(index);
+            submodel_internals.find(index);
 
-        if (it == sub_model_internals.end()) {
+        if (it == submodel_internals.end()) {
             return static_cast < const T* >(this)->*(
                 internals.find(index)->second);
         } else {
@@ -65,9 +65,9 @@ public:
     {
         std::map < int, std::pair < AbstractModel*,
                                     int > >::const_iterator it =
-            sub_model_internals.find(index);
+            submodel_internals.find(index);
 
-        if (it == sub_model_internals.end()) {
+        if (it == submodel_internals.end()) {
             return false;
         } else {
             return it->second.first->is_computed(t, it->second.second);
@@ -82,10 +82,10 @@ public:
         std::map < int,
                    std::pair < AbstractModel*,
                                int > >::const_iterator it =
-            sub_model_internals.begin();
+            submodel_internals.begin();
         bool stable = true;
 
-        while (it != sub_model_internals.end() and stable) {
+        while (it != submodel_internals.end() and stable) {
             stable = it->second.first->is_stable(t);
             ++it;
         }
@@ -106,6 +106,29 @@ public:
         }
     }
 
+    virtual const AbstractModel* submodel(unsigned int index) const
+    {
+        Submodels::const_iterator it = submodels.find(index);
+
+        if (it != submodels.end()) {
+            return it->second;
+        } else {
+            return 0;
+        }
+    }
+
+    virtual const AbstractModel* submodel(unsigned int index,
+                                          unsigned int rank) const
+    {
+        Setsubmodels::const_iterator it = setsubmodels.find(index);
+
+        if (it != setsubmodels.end() and it->second.size() > rank) {
+            return it->second.at(rank);
+        } else {
+            return 0;
+        }
+    }
+
 protected:
     void external(unsigned int index, double T::* var)
     {
@@ -119,7 +142,7 @@ protected:
 
     void internal(unsigned int index, AbstractModel* model, int sub_index)
     {
-        sub_model_internals[index] =
+        submodel_internals[index] =
             std::pair < AbstractModel*, int >(model, sub_index);
     }
 
@@ -128,11 +151,27 @@ protected:
         internals[index] = var;
     }
 
+    void submodel(unsigned int index, AbstractModel* model)
+    { submodels[index] = model; }
+
+    void setsubmodel(unsigned int index, AbstractModel* model)
+    {
+        if (setsubmodels.find(index) == setsubmodels.end()) {
+            setsubmodels[index] = std::vector < AbstractModel* >();
+        }
+        setsubmodels[index].push_back(model);
+    }
+
 private:
+    typedef std::map < int, AbstractModel* > Submodels;
+    typedef std::map < int, std::vector < AbstractModel* > > Setsubmodels;
+
     std::map < int, std::pair < AbstractModel*,
-                                int > > sub_model_internals;
+                                int > > submodel_internals;
     std::map < int, double T::* > internals;
     std::vector < double T::* > externals;
+    Submodels submodels;
+    Setsubmodels setsubmodels;
 };
 
 }
