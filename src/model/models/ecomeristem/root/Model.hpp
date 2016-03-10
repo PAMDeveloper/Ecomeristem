@@ -32,6 +32,7 @@ namespace ecomeristem { namespace root {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { ROOT_DEMAND_COEF_MODEL, ROOT_DEMAND_MODEL};
     enum internals { ROOT_DEMAND_COEF, ROOT_DEMAND, ROOT_DEMAND_1, ROOT_BIOMASS,
                      SURPLUS };
     enum externals { LEAF_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
@@ -40,6 +41,11 @@ public:
 
     Model()
     {
+        // submodels
+        submodel(ROOT_DEMAND_COEF_MODEL, &root_demand_coef_model);
+        submodel(ROOT_DEMAND_MODEL, &root_demand_model);
+
+        // internals
         internal(ROOT_DEMAND_COEF, &root_demand_coef_model,
                  RootDemandCoef::ROOT_DEMAND_COEF);
         internal(ROOT_DEMAND, &root_demand_model, RootDemand::ROOT_DEMAND);
@@ -47,6 +53,7 @@ public:
         internal(ROOT_BIOMASS, &root_demand_model, RootDemand::ROOT_BIOMASS);
         internal(SURPLUS, &root_demand_model, RootDemand::SURPLUS);
 
+        // externals
         external(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
         external(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
         external(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);

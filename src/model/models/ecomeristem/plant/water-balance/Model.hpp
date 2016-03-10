@@ -34,23 +34,29 @@ namespace ecomeristem { namespace plant { namespace water_balance {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    static const int ETP = 0;
-    static const int INTERC = 1;
-    static const int WATER_SUPPLY = 2;
-
-    static const int CSTR = 0;
-    static const int FCSTR = 1;
-    static const int FTSW = 2;
+    enum submodels { CSTR_MODEL, FCSTR_MODEL, FTSW_MODEL, SWC_MODEL,
+                     TRANSPIRATION_MODEL };
+    enum internals { CSTR, FCSTR, FTSW };
+    enum externals { ETP, INTERC, WATER_SUPPLY };
 
     Model()
     {
-        external(ETP, &Model::_etp);
-        external(INTERC, &Model::_interc);
-        external(WATER_SUPPLY, &Model::_water_supply);
+        // submodels
+        submodel(CSTR_MODEL, &cstr_model);
+        submodel(FCSTR_MODEL, &fcstr_model);
+        submodel(FTSW_MODEL, &FTSW_model);
+        submodel(SWC_MODEL, &SWC_model);
+        submodel(TRANSPIRATION_MODEL, &transpiration_model);
 
+        // internals
         internal(CSTR, &cstr_model, cstr::CSTR);
         internal(FCSTR, &fcstr_model, Fcstr::FCSTR);
         internal(FTSW, &FTSW_model, Ftsw::FTSW);
+
+        // externals
+        external(ETP, &Model::_etp);
+        external(INTERC, &Model::_interc);
+        external(WATER_SUPPLY, &Model::_water_supply);
     }
 
     virtual ~Model()

@@ -39,24 +39,27 @@ namespace ecomeristem { namespace plant { namespace assimilation {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    static const int ASSIM = 0;
-    static const int LAI = 1;
-    static const int INTERC = 2;
-
-    static const int FCSTR = 0;
-    static const int INTERNODE_BIOMASS = 1;
-    static const int LEAF_BIOMASS = 2;
-    static const int PAI = 3;
-    static const int RADIATION = 4;
-    static const int TA = 5;
-    static const int CSTR = 6;
+    enum submodels { ASSIM_MODEL, ASSIM_POT_MODEL, INTERC_MODEL,
+                     LAI_MODEL, RESP_MAINT_MODEL };
+    enum internals { ASSIM, LAI, INTERC };
+    enum externals { FCSTR, INTERNODE_BIOMASS, LEAF_BIOMASS, PAI, RADIATION,
+                     TA, CSTR };
 
     Model()
     {
+        //submodels
+        submodel(ASSIM_MODEL, &assim_model);
+        submodel(ASSIM_POT_MODEL, &assimPot_model);
+        submodel(INTERC_MODEL, &interc_model);
+        submodel(LAI_MODEL, &lai_model);
+        submodel(RESP_MAINT_MODEL, &respMaint_model);
+
+        // internals
         internal(ASSIM, &assim_model, Assim::ASSIM);
         internal(LAI, &assim_model, Lai::LAI);
         internal(INTERC, &interc_model, Interc::INTERC);
 
+        // externals
         external(FCSTR, &Model::_fcstr);
         external(INTERNODE_BIOMASS, &Model::_internodeBiomass);
         external(LEAF_BIOMASS, &Model::_leafBiomass);

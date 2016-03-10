@@ -240,10 +240,10 @@ void Model::compute(double t, bool /* update */)
             _internode_biomass_sum);
         max_reservoir_dispo_model(t);
 
-        supply_model.put(t, culm::Supply::PLANT_BLADE_AREA,
-                         _plant_blade_area_sum);
-        supply_model.put(t, culm::Supply::BLADE_AREA_SUM,
-                         _leaf_blade_area_sum);
+        supply_model.put(t, culm::Supply::PLANT_BIOMASS_SUM,
+                         _plant_biomass_sum);
+        supply_model.put(t, culm::Supply::LEAF_BIOMASS_SUM,
+                         _leaf_biomass_sum);
         supply_model.put(t, culm::Supply::ASSIM, _assim);
         supply_model(t);
         intermediate_model.put(t, culm::Intermediate::SUPPLY,

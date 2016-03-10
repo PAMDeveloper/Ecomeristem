@@ -48,7 +48,7 @@ Model::Model(int index, bool is_on_mainstem) :
     external(P, &Model::_p);
     external(PHASE, &Model::_phase);
     external(STATE, &Model::_state);
-    external(PREDIM_PREVIOUS_LEAF, &Model::_predim_previous_leaf);
+    external(PREDIM_LEAF, &Model::_predim_leaf);
     external(LIG, &Model::_lig);
 }
 
@@ -71,7 +71,7 @@ void Model::init(double t,
 
 void Model::compute(double t, bool /* update */)
 {
-    predim_model.put(t, Predim::PREDIM_PREVIOUS_LEAF, _predim_previous_leaf);
+    predim_model.put(t, Predim::PREDIM_PREVIOUS_LEAF, _predim_leaf);
     predim_model(t);
 
     reduction_iner_model.put(t, ReductionINER::FTSW, _ftsw);

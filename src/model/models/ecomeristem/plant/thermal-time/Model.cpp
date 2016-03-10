@@ -28,6 +28,16 @@ namespace ecomeristem { namespace plant { namespace thermal_time {
 
 Model::Model()
 {
+    // submodels
+    submodel(DD_MODEL, &DD_model);
+    submodel(IH_MODEL, &IH_model);
+    submodel(LIGULO_VISU_MODEL, &LiguloVisu_model);
+    submodel(PHENO_STAGE_MODEL, &PhenoStage_model);
+    submodel(PLASTO_VISU_MODEL, &PlastoVisu_model);
+    submodel(TT_MODEL, &TT_model);
+    submodel(TT_LIG_MODEL, &TT_lig_model);
+
+     // internals
     internal(DD, &DD_model, Dd::DD);
     internal(DELTA_T, &DeltaT_model, DeltaT::DELTA_T);
     internal(EDD, &DD_model, Dd::EDD);
@@ -39,6 +49,7 @@ Model::Model()
     internal(TT_LIG, &TT_lig_model, TT_lig::TT_LIG);
     internal(BOOL_CROSSED_PLASTO, &DD_model, Dd::BOOL_CROSSED_PLASTO);
 
+     // externals
     external(STOCK, &Model::_stock);
     external(PHASE, &Model::_phase);
     external(TA, &Model::_Ta);

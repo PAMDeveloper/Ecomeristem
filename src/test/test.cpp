@@ -120,33 +120,33 @@ TEST_CASE("Thermal_time_tests", "variables")
 
     check_values("DD_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "DD");
+                 "plant", "Plant:DD");
     check_values("EDD_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "EDD");
+                 "plant", "Plant:EDD");
     check_values("IH_out.txt", utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "IH");
+                 "plant", "Plant:IH");
     check_values("ligulo_visu_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "LIGULO_VISU");
+                 "plant", "Plant:LIGULO_VISU");
     check_values("n_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "PHENO_STAGE");
+                 "plant", "Plant:PHENO_STAGE");
     check_values("plasto_visu_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "PLASTO_VISU");
+                 "plant", "Plant:PLASTO_VISU");
     check_values("TT_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "TT");
+                 "plant", "Plant:TT");
     check_values("TT_lig_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "TT_LIG");
+                 "plant", "Plant:TT_LIG");
 }
 
 TEST_CASE("Water_balance_tests", "variables")
@@ -168,7 +168,7 @@ TEST_CASE("Water_balance_tests", "variables")
     check_values("cstr_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "CSTR");
+                 "plant", "Plant:CSTR");
 }
 
 TEST_CASE("Assimilation_tests", "variables")
@@ -190,7 +190,7 @@ TEST_CASE("Assimilation_tests", "variables")
     check_values("assim_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "ASSIM");
+                 "plant", "Plant:ASSIM");
 }
 
 TEST_CASE("Root_tests", "variables")
@@ -212,11 +212,11 @@ TEST_CASE("Root_tests", "variables")
     check_values("R_d_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "ROOT_DEMAND_COEF");
+                 "plant", "Plant:ROOT_DEMAND_COEF");
     check_values("biomRoot_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "ROOT_BIOMASS");
+                 "plant", "Plant:ROOT_BIOMASS");
 }
 
 TEST_CASE("Stock_tests", "variables")
@@ -238,35 +238,35 @@ TEST_CASE("Stock_tests", "variables")
     check_values("supply_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "SUPPLY");
+                 "plant", "Plant:SUPPLY");
     check_values("Ic_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "IC");
+                 "plant", "Plant:IC");
     check_values("stock_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "STOCK");
+                 "plant", "Plant:STOCK");
     check_values("surplus_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "SURPLUS");
+                 "plant", "Plant:SURPLUS");
     check_values("deficit_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "DEFICIT");
+                 "plant", "Plant:DEFICIT");
     check_values("reservoirDispo_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "RESERVOIR_DISPO");
+                 "plant", "Plant:RESERVOIR_DISPO");
     check_values("dayDemand_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "DAY_DEMAND");
+                 "plant", "Plant:DAY_DEMAND");
     check_values("seedres_out.txt",
                  utils::DateTime::toJulianDayNumber(begin),
                  utils::DateTime::toJulianDayNumber(end), simulator,
-                 "plant", "SEED_RES");
+                 "plant", "Plant:SEED_RES");
 }
 
 TEST_CASE("Plant_tests", "variables")

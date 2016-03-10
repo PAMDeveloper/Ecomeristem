@@ -34,15 +34,15 @@ class Supply : public AbstractAtomicModel < Supply >
 {
 public:
     enum internals { SUPPLY };
-    enum externals { ASSIM, BLADE_AREA_SUM, PLANT_BLADE_AREA };
+    enum externals { ASSIM, LEAF_BIOMASS_SUM, PLANT_BIOMASS_SUM };
 
     Supply()
     {
         internal(SUPPLY, &Supply::_supply);
 
         external(ASSIM, &Supply::_assim);
-        external(BLADE_AREA_SUM, &Supply::_blade_area_sum);
-        external(PLANT_BLADE_AREA, &Supply::_plant_blade_area);
+        external(LEAF_BIOMASS_SUM, &Supply::_leaf_biomass_sum);
+        external(PLANT_BIOMASS_SUM, &Supply::_plant_biomass_sum);
     }
 
     virtual ~Supply()
@@ -50,15 +50,15 @@ public:
 
     void compute(double t, bool /* update */)
     {
-        _supply = _assim * _blade_area_sum / _plant_blade_area;
+        _supply = _assim * _leaf_biomass_sum / _plant_biomass_sum;
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM_SUPPLY", t, utils::COMPUTE)
             << "Supply = " << _supply
             << " ; Assim = " << _assim
-            << " ; BladeAreaSum = " << _blade_area_sum
-            << " ; PlantBladeArea = " << _plant_blade_area;
+            << " ; LeafBiomassSum = " << _leaf_biomass_sum
+            << " ; PlantBiomassSum = " << _plant_biomass_sum;
         utils::Trace::trace().flush();
 #endif
 
@@ -67,7 +67,7 @@ public:
     void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
-        _supply = _assim * _blade_area_sum / _plant_blade_area;
+        _supply = _assim * _leaf_biomass_sum / _plant_biomass_sum;
     }
 
 private:
@@ -76,8 +76,8 @@ private:
 
 // external variables
     double _assim;
-    double _blade_area_sum;
-    double _plant_blade_area;
+    double _leaf_biomass_sum;
+    double _plant_biomass_sum;
 };
 
 } } // namespace ecomeristem culm

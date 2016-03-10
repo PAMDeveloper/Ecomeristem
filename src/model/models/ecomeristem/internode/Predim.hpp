@@ -55,7 +55,7 @@ public:
             _LL_BL = _LL_BL_init + _slope_LL_BL_at_PI * (_index - 1 -
                                                          _nb_leaf_param2);
         }
-        _predim = std::max(1e-4, _slope_length_IN * (1. / _LL_BL) *
+        _predim = std::max(1e-4, _slope_length_IN *
                            _leaf_predim - _leaf_length_to_IN_length);
 
 #ifdef WITH_TRACE

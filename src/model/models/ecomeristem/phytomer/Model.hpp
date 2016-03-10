@@ -138,8 +138,10 @@ public:
         internode_model.put(t, internode::Model::PHASE, _phase);
         internode_model.put(t, internode::Model::STATE, _state);
         internode_model.put(t, internode::Model::LIG, _lig);
-        internode_model.put(t, internode::Model::PREDIM_PREVIOUS_LEAF,
-            _predim_previous_leaf);
+        if (leaf_model.is_computed(t, leaf::Model::PREDIM)) {
+            internode_model.put(t, internode::Model::PREDIM_LEAF,
+                                leaf_model.get(t, leaf::Model::PREDIM));
+        }
         internode_model(t);
     }
 

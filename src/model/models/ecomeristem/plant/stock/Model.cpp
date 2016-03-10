@@ -28,6 +28,16 @@ namespace ecomeristem { namespace plant { namespace stock {
 
 Model::Model()
 {
+    // submodels
+    submodel(DAY_DEMAND_MODEL, &day_demand_model);
+    submodel(IC_MODEL, &index_competition_model);
+    submodel(RESERVOIR_DISPO_MODEL, &reservoir_dispo_model);
+    submodel(SEED_RES_MODEL, &seed_res_model);
+    submodel(STOCK_MODEL, &stock_model);
+    submodel(SUPPLY_MODEL, &supply_model);
+    submodel(SURPLUS_MODEL, &surplus_model);
+
+    // internals
     internal(STOCK, &stock_model, stock::Stock::STOCK);
     internal(GROW, &stock_model, stock::Stock::GROW);
     internal(DEFICIT, &stock_model, stock::Stock::DEFICIT);
@@ -41,6 +51,7 @@ Model::Model()
              stock::ReservoirDispo::RESERVOIR_DISPO);
     internal(SEED_RES, &seed_res_model, stock::SeedRes::SEED_RES);
 
+    // externals
     external(ASSIM, &Model::_assim);
     external(DEMAND_SUM, &Model::_demand_sum);
     external(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);

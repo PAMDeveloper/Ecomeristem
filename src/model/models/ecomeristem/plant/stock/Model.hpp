@@ -36,6 +36,8 @@ namespace ecomeristem { namespace plant { namespace stock {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { DAY_DEMAND_MODEL, IC_MODEL, RESERVOIR_DISPO_MODEL,
+                     SEED_RES_MODEL, STOCK_MODEL, SUPPLY_MODEL, SURPLUS_MODEL };
     enum internals { STOCK, GROW, SUPPLY, DEFICIT, IC, SURPLUS, TEST_IC,
                      DAY_DEMAND, RESERVOIR_DISPO, SEED_RES };
     enum externals { ASSIM, DEMAND_SUM, LEAF_BIOMASS_SUM,
