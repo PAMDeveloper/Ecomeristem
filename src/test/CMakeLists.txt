@@ -12,3 +12,11 @@ TARGET_LINK_LIBRARIES(ecomeristem-tests ecomeristem-kernel
   ecomeristem-utils ${Boost_LIBRARIES} pqxx)
 
 INSTALL(TARGETS ecomeristem-tests DESTINATION bin)
+
+ADD_EXECUTABLE(ecomeristem-bilan-tests test-bilan.cpp)
+
+TARGET_LINK_LIBRARIES(ecomeristem-bilan-tests ecomeristem-kernel
+  ecomeristem-models-meteo ecomeristem-observer ecomeristem-plant
+  ecomeristem-utils ${Boost_LIBRARIES} pqxx)
+
+INSTALL(TARGETS ecomeristem-bilan-tests DESTINATION bin)

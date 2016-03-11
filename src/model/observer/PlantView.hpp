@@ -150,6 +150,17 @@ public:
                     ecomeristem::Model::PLANT,
                     ecomeristem::plant::Model::SLA,
                     ecomeristem::plant::Sla::SLA });
+
+        selector("Plant:LEAF_BIOMASS_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::LEAF_BIOMASS_SUM });
+        selector("Plant:INTERNODE_BIOMASS_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::INTERNODE_BIOMASS_SUM });
+        selector("Plant:SENESC_DW_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::SENESC_DW_SUM });
+
     }
 
     virtual ~PlantView()

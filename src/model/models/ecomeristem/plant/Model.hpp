@@ -47,7 +47,8 @@ public:
                      ASSIM, CSTR, ROOT_DEMAND_COEF, ROOT_DEMAND,
                      ROOT_BIOMASS, /*STOCK,*/ GROW, SUPPLY, DEFICIT, IC,
                      SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
-                     SEED_RES };
+                     SEED_RES, LEAF_BIOMASS_SUM, INTERNODE_BIOMASS_SUM,
+                     SENESC_DW_SUM };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
     Model();

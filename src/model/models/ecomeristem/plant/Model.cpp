@@ -76,6 +76,10 @@ Model::Model()
     internal(RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO);
     internal(SEED_RES, &stock_model, stock::Model::SEED_RES);
 
+    internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
+    internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
+    internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
+
     // externals
     external(ETP, &Model::_etp);
     external(P, &Model::_p);
