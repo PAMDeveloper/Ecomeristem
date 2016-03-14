@@ -69,10 +69,21 @@ TEST_CASE("Bilan_tests", "variables")
     double seed_res_1 = parameters.get < double >("gdw");
     double totalBiomass_1 = 0;
     double deficit_1 = 0;
+    double senesc_dw_sum = 0;
     double senesc_dw_sum_1 = 0;
+
+    std::cout << "time\t" << "assim\t" << "totalBiomass\t"
+              << "deficit\t" << "senesc\t" << "surplus\t"
+              << "seed res\t" << "sum1\t" << "sum2\t"
+              << "bilan\t" << "day demand\t" << "last_demand\t"
+              << "leaf_demand_sum\t" << "internode_demand_sum\t"
+              << "root_demand\tpheno_stage\tstock\t"
+              << "rootBiomass\tleafBiomassSum\tinternodeBiomassSum"
+              << std::endl;
 
     for (double t = t0; t <= t1; ++t) {
         const observer::View& view(simulator.observer().view("plant"));
+        double pheno_stage = view.get(t, "Plant:PHENO_STAGE");
         double assim = view.get(t, "Plant:ASSIM");
         double deficit = view.get(t, "Plant:DEFICIT");
         double stock = view.get(t, "Plant:STOCK");
@@ -80,11 +91,21 @@ TEST_CASE("Bilan_tests", "variables")
         double internodeBiomassSum = view.get(t, "Plant:INTERNODE_BIOMASS_SUM");
         double surplus = view.get(t, "Plant:SURPLUS");
         double rootBiomass = view.get(t, "Plant:ROOT_BIOMASS");
-        double senesc_dw_sum = view.get(t, "Plant:SENESC_DW_SUM");
         double seed_res = view.get(t, "Plant:SEED_RES");
+        double day_demand = view.get(t, "Plant:DAY_DEMAND");
+        double root_demand = view.get(t, "Plant:ROOT_DEMAND");
+        double leaf_last_demand_sum = view.get(t, "Plant:LEAF_LAST_DEMAND_SUM");
+        double internode_last_demand_sum =
+            view.get(t, "Plant:INTERNODE_LAST_DEMAND_SUM");
+        double leaf_demand_sum = view.get(t, "Plant:LEAF_DEMAND_SUM");
+        double internode_demand_sum =
+            view.get(t, "Plant:INTERNODE_DEMAND_SUM");
         double totalBiomass = rootBiomass + leafBiomassSum +
             internodeBiomassSum + stock;
         double sum1 = assim + (seed_res_1 - seed_res);
+
+        senesc_dw_sum += view.get(t, "Plant:SENESC_DW_SUM");
+
         double sum2 = totalBiomass + deficit + surplus + senesc_dw_sum -
             (totalBiomass_1 + deficit_1 + senesc_dw_sum_1);
 
@@ -98,6 +119,16 @@ TEST_CASE("Bilan_tests", "variables")
                   << "\t" << sum1
                   << "\t" << sum2
                   << "\t" << (sum1 - sum2)
+                  << "\t" << day_demand
+                  << "\t" << (leaf_last_demand_sum + internode_last_demand_sum)
+                  << "\t" << leaf_demand_sum
+                  << "\t" << internode_demand_sum
+                  << "\t" << root_demand
+                  << "\t" << pheno_stage
+                  << "\t" << stock
+                  << "\t" << rootBiomass
+                  << "\t" << leafBiomassSum
+                  << "\t" << internodeBiomassSum
                   << std::endl;
 
         seed_res_1 = seed_res;

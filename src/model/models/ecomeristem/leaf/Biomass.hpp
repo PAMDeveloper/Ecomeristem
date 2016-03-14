@@ -34,7 +34,8 @@ namespace ecomeristem { namespace leaf {
 class Biomass : public AbstractAtomicModel < Biomass >
 {
 public:
-    enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW, CORRECTED_BIOMASS };
+    enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW, SENESC_DW_SUM,
+                     CORRECTED_BIOMASS };
     enum externals { BLADE_AREA, SLA, GROW, PHASE, TT, LIFE_SPAN,
                      CORRECTED_BLADE_AREA };
 
@@ -43,6 +44,7 @@ public:
         internal(BIOMASS, &Biomass::_biomass);
         internal(REALLOC_BIOMASS, &Biomass::_realloc_biomass);
         internal(SENESC_DW, &Biomass::_senesc_dw);
+        internal(SENESC_DW_SUM, &Biomass::_senesc_dw_sum);
         internal(CORRECTED_BIOMASS, &Biomass::_corrected_biomass);
 
         external(BLADE_AREA, &Biomass::_blade_area);
@@ -84,6 +86,7 @@ public:
                 _corrected_biomass_1 = _corrected_biomass;
                 _realloc_biomass_1 = _realloc_biomass;
                 _old_biomass_1 = _old_biomass;
+                _senesc_dw_sum_1 = _senesc_dw_sum;
             }
             if (_phase != leaf::NOGROWTH and not _stop) {
                 if (not _lig) {
@@ -105,6 +108,7 @@ public:
                         _realocationCoeff;
                     _senesc_dw = (_old_biomass - _corrected_biomass) *
                         (1 - _realocationCoeff);
+                    _senesc_dw_sum = _senesc_dw_sum_1 + _senesc_dw;
                 }
                 _stop = _phase == leaf::NOGROWTH;
             } else {
@@ -127,6 +131,7 @@ public:
             << " ; old_biomass = " << _old_biomass
             << " ; realloc_biomass = " << _realloc_biomass
             << " ; senesc_dw = " << _senesc_dw
+            << " ; senesc_dw_sum = " << _senesc_dw_sum
             << " ; lig = " << _lig
             << " ; lig[-1] = " << _lig_1
             << " ; update = " << update
@@ -149,6 +154,8 @@ public:
         _corrected_biomass = 0;
         _corrected_biomass_1 = 0;
         _senesc_dw = 0;
+        _senesc_dw_sum = 0;
+        _senesc_dw_sum_1 = 0;
     }
 
 private:
@@ -166,6 +173,8 @@ private:
     double _old_biomass;
     double _old_biomass_1;
     double _senesc_dw;
+    double _senesc_dw_sum;
+    double _senesc_dw_sum_1;
     double _first_day;
     bool _lig;
     bool _lig_1;

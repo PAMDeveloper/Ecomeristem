@@ -130,6 +130,12 @@ public:
     }
 
 protected:
+    void change_internal(unsigned int index, double T::* var)
+    {
+        submodel_internals.erase(index);
+        internals[index] = var;
+    }
+
     void external(unsigned int index, double T::* var)
     {
         if (externals.size() <= index) {

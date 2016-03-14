@@ -106,20 +106,21 @@ public:
                         _last_value = 0;
                     }
                     _root_demand = std::min(_culm_surplus_sum, _root_demand);
-                    _surplus = _culm_surplus_sum - _root_demand;
+                      _surplus = _culm_surplus_sum - _root_demand;
+
                 } else {
-                    if (_leaf_demand_sum_1 +
-                        _internode_demand_sum_1 == 0) {
+                    if (_leaf_demand_sum +
+                        _leaf_last_demand_sum == 0) {
                         _root_demand = _last_value * _root_demand_coef;
                     } else {
-                        _root_demand = (_leaf_demand_sum_1 +
-                                        _internode_demand_sum_1) *
+                        _root_demand = (_leaf_demand_sum +
+                                        _leaf_last_demand_sum) *
                             _root_demand_coef;
                     }
-                    if (_leaf_demand_sum_1 +
-                        _internode_demand_sum_1 != 0) {
-                        _last_value = _leaf_demand_sum_1 +
-                            _internode_demand_sum_1;
+                    if (_leaf_demand_sum +
+                        _internode_demand_sum != 0) {
+                        _last_value = _leaf_demand_sum +
+                            _internode_demand_sum;
                     } else {
                         _last_value = 0;
                     }

@@ -34,16 +34,17 @@ class Surplus : public AbstractAtomicModel < Surplus >
 {
 public:
     enum internals { SURPLUS };
-    enum externals { PLANT_STOCK, STOCK, SUPPLY, MAX_RESERVOIR_DISPO,
-                     INTERNODE_DEMAND_SUM, LEAF_DEMAND_SUM,
-                     INTERNODE_LAST_DEMAND_SUM, LEAF_LAST_DEMAND_SUM,
-                     REALLOC_BIOMASS_SUM };
+    enum externals { PLANT_STOCK, PLANT_STATE, STOCK, SUPPLY,
+                     MAX_RESERVOIR_DISPO, INTERNODE_DEMAND_SUM,
+                     LEAF_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
+                     LEAF_LAST_DEMAND_SUM, REALLOC_BIOMASS_SUM };
 
     Surplus()
     {
         internal(SURPLUS, &Surplus::_surplus);
 
         external(PLANT_STOCK, &Surplus::_plant_stock);
+        external(PLANT_STATE, &Surplus::_plant_state);
         external(STOCK, &Surplus::_stock);
         external(SUPPLY, &Surplus::_supply);
         external(MAX_RESERVOIR_DISPO, &Surplus::_max_reversoir_dispo);
@@ -58,25 +59,36 @@ public:
     virtual ~Surplus()
     { }
 
-    void compute(double t, bool /* update */)
+    void compute(double t, bool update)
     {
-        if (t == _first_day) {
-            _surplus = std::max(0., _plant_stock_1 - _internode_demand_sum -
-                                _leaf_demand_sum - _leaf_last_demand_sum -
-                                _internode_last_demand_sum + _supply -
-                                _max_reversoir_dispo + _realloc_biomass_sum);
+        if (_plant_state == plant::ELONG) {
+            if (_first_day < 0 or (update and _first_day == t)) {
+                _surplus = std::max(0., _plant_stock_1 - _internode_demand_sum -
+                                    _leaf_demand_sum - _leaf_last_demand_sum -
+                                    _internode_last_demand_sum + _supply -
+                                    _max_reversoir_dispo +
+                                    _realloc_biomass_sum);
+                _first_day = t;
+            } else {
+                _surplus = std::max(0., _stock_1 - _internode_demand_sum -
+                                    _leaf_demand_sum - _leaf_last_demand_sum -
+                                    _internode_last_demand_sum + _supply -
+                                    _max_reversoir_dispo +
+                                    _realloc_biomass_sum);
+            }
         } else {
-            _surplus = std::max(0., _stock_1 - _internode_demand_sum -
-                                _leaf_demand_sum - _leaf_last_demand_sum -
-                                _internode_last_demand_sum + _supply -
-                                _max_reversoir_dispo + _realloc_biomass_sum);
+            _surplus = 0;
         }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM_SURPLUS", t, utils::COMPUTE)
             << "Surplus = " << _surplus
+            << " ; Plant state = " << _plant_state
+            << " ; Plant stock = " << _plant_stock
+            << " ; Plant stock_1 = " << _plant_stock_1
             << " ; Stock = " << _stock
+            << " ; Stock_1 = " << _stock_1
             << " ; Supply = " << _supply
             << " ; MaxReservoirDispo = " << _max_reversoir_dispo
             << " ; LeafDemandSum = " << _leaf_demand_sum
@@ -89,10 +101,10 @@ public:
 
     }
 
-    void init(double t,
+    void init(double /* t */,
               const model::models::ModelParameters& /* parameters */)
     {
-        _first_day = t;
+        _first_day = -1;
         _plant_stock_1 = _plant_stock = 0;
         _stock_1 = _stock = 0;
         _surplus = 0;
@@ -118,6 +130,7 @@ private:
     double _plant_stock_1;
     double _stock_1;
     double _plant_stock;
+    double _plant_state;
     double _stock;
     double _supply;
     double _max_reversoir_dispo;

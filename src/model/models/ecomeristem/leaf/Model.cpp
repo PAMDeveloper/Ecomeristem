@@ -49,6 +49,7 @@ Model::Model(int index, bool is_on_mainstem) :
     internal(PLASTO_DELAY, &plasto_delay_model, PlastoDelay::PLASTO_DELAY);
     internal(REALLOC_BIOMASS, &biomass_model, Biomass::REALLOC_BIOMASS);
     internal(SENESC_DW, &biomass_model, Biomass::SENESC_DW);
+    internal(SENESC_DW_SUM, &biomass_model, Biomass::SENESC_DW_SUM);
     internal(CORRECTED_BIOMASS, &biomass_model, Biomass::CORRECTED_BIOMASS);
     internal(CORRECTED_BLADE_AREA, &blade_area_model,
              BladeArea::CORRECTED_BLADE_AREA);

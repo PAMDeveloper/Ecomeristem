@@ -75,7 +75,8 @@ public:
                 _day_demand = _leaf_last_demand_sum +
                     _internode_last_demand_sum;
             } else {
-                _day_demand = _demand_sum;
+                _day_demand = _demand_sum + _leaf_last_demand_sum +
+                    _internode_last_demand_sum;
             }
 
         }

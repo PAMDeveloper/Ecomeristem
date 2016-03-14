@@ -48,7 +48,8 @@ public:
     enum externals { DD, DELTA_T, FTSW, FCSTR, P, PHENO_STAGE,
                      PREDIM_LEAF_ON_MAINSTEM, SLA, GROW, PHASE, STATE,
                      STOP, TEST_IC, PLANT_STOCK, PLANT_DEFICIT,
-                     PLANT_BIOMASS_SUM, PLANT_BLADE_AREA_SUM, ASSIM };
+                     PLANT_LEAF_BIOMASS_SUM, PLANT_BIOMASS_SUM,
+                     PLANT_BLADE_AREA_SUM, ASSIM };
 
     Model(int index);
 
@@ -66,7 +67,7 @@ public:
     bool is_stable(double t) const;
     void compute(double t, bool update);
     void create_phytomer(double t);
-    void delete_leaf(int index);
+    void delete_leaf(double t, int index);
     double get_leaf_biomass(double t, int index) const;
     double get_leaf_blade_area(double t, int index) const;
 
@@ -108,6 +109,8 @@ private:
     double _senesc_dw_sum;
     double _lig;
     double _deleted_leaf_number;
+    double _deleted_senesc_dw;
+    bool _deleted_senesc_dw_computed;
 
 // external variables
     double _dd;
@@ -126,6 +129,7 @@ private:
     double _plant_stock;
     double _plant_deficit;
     double _plant_biomass_sum;
+    double _plant_leaf_biomass_sum;
     double _plant_blade_area_sum;
     double _assim;
 };

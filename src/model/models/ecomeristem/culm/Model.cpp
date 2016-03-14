@@ -59,6 +59,7 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     external(PLANT_STOCK, &Model::_plant_stock);
     external(PLANT_DEFICIT, &Model::_plant_deficit);
     external(PLANT_BIOMASS_SUM, &Model::_plant_biomass_sum);
+    external(PLANT_LEAF_BIOMASS_SUM, &Model::_plant_leaf_biomass_sum);
     external(PLANT_BLADE_AREA_SUM, &Model::_plant_blade_area_sum);
     external(ASSIM, &Model::_assim);
 }
@@ -92,6 +93,8 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _grow = 0;
     _lig = 0;
     _deleted_leaf_number = 0;
+    _deleted_senesc_dw = 0;
+    _deleted_senesc_dw_computed = false;
 }
 
 bool Model::is_stable(double t) const
@@ -107,7 +110,7 @@ bool Model::is_stable(double t) const
     return stable;
 }
 
-void Model::compute(double t, bool /* update */)
+void Model::compute(double t, bool update)
 {
     std::deque < phytomer::Model* >::iterator it =
         phytomer_models.begin();
@@ -115,6 +118,10 @@ void Model::compute(double t, bool /* update */)
     int i = 0;
     double old_lig = _lig;
     bool ok = true;
+
+    if (not update and not _deleted_senesc_dw_computed) {
+        _deleted_senesc_dw = 0;
+    }
 
     _leaf_biomass_sum = 0;
     _leaf_last_demand_sum = 0;
@@ -240,8 +247,8 @@ void Model::compute(double t, bool /* update */)
             _internode_biomass_sum);
         max_reservoir_dispo_model(t);
 
-        supply_model.put(t, culm::Supply::PLANT_BIOMASS_SUM,
-                         _plant_biomass_sum);
+        supply_model.put(t, culm::Supply::PLANT_LEAF_BIOMASS_SUM,
+                         _plant_leaf_biomass_sum);
         supply_model.put(t, culm::Supply::LEAF_BIOMASS_SUM,
                          _leaf_biomass_sum);
         supply_model.put(t, culm::Supply::ASSIM, _assim);
@@ -274,6 +281,7 @@ void Model::compute(double t, bool /* update */)
                 t, culm::Intermediate::INTERMEDIATE));
         deficit_model(t);
 
+        surplus_model.put(t, culm::Surplus::PLANT_STATE, _state);
         surplus_model.put(t, culm::Surplus::SUPPLY,
                           supply_model.get(t, culm::Supply::SUPPLY));
         surplus_model.put(t, culm::Surplus::PLANT_STOCK,
@@ -308,11 +316,17 @@ void Model::compute(double t, bool /* update */)
 
         surplus_model.put(t, culm::Surplus::STOCK,
                           stock_model.get(t, culm::Stock::STOCK));
+    } else {
+        surplus_model.put(t, culm::Surplus::PLANT_STOCK,
+                               _plant_stock);
     }
 
     if (not ok) {
         _lig = old_lig;
     }
+
+    _senesc_dw_sum += _deleted_senesc_dw;
+    _deleted_senesc_dw_computed = false;
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
@@ -361,10 +375,28 @@ void Model::create_phytomer(double t)
     }
 }
 
-void Model::delete_leaf(int index)
+void Model::delete_leaf(double t, int index)
 {
-    delete phytomer_models[index];
-    phytomer_models.erase(phytomer_models.begin() + index);
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << "DELETE LEAF: " << _index
+            << " ; index = " << index;
+        utils::Trace::trace().flush();
+#endif
+
+
+    _deleted_senesc_dw =
+        (1 - _parameters->get < double > ("realocationCoeff")) *
+        get_leaf_biomass(t - 1, index);
+    _deleted_senesc_dw_computed = true;
+
+//    delete phytomer_models[index];
+//    phytomer_models.erase(phytomer_models.begin() + index);
+
+    phytomer_models[index]->delete_leaf();
+
     ++_deleted_leaf_number;
 }
 

@@ -48,7 +48,9 @@ public:
                      ROOT_BIOMASS, /*STOCK,*/ GROW, SUPPLY, DEFICIT, IC,
                      SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
                      SEED_RES, LEAF_BIOMASS_SUM, INTERNODE_BIOMASS_SUM,
-                     SENESC_DW_SUM };
+                     SENESC_DW_SUM, LEAF_LAST_DEMAND_SUM,
+                     INTERNODE_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
+                     INTERNODE_DEMAND_SUM };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
     Model();

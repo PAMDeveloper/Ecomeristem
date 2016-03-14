@@ -145,6 +145,11 @@ public:
                     ecomeristem::plant::Model::ROOT,
                     ecomeristem::root::Model::ROOT_DEMAND_MODEL,
                     ecomeristem::root::RootDemand::ROOT_BIOMASS });
+        selector("Plant:ROOT_DEMAND", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::ROOT,
+                    ecomeristem::root::Model::ROOT_DEMAND_MODEL,
+                    ecomeristem::root::RootDemand::ROOT_DEMAND });
 
         selector("Plant:SLA", { kernel::Model::ECOMERISTEM,
                     ecomeristem::Model::PLANT,
@@ -160,6 +165,21 @@ public:
         selector("Plant:SENESC_DW_SUM", { kernel::Model::ECOMERISTEM,
                     ecomeristem::Model::PLANT,
                     ecomeristem::plant::Model::SENESC_DW_SUM });
+        selector("Plant:LEAF_LAST_DEMAND_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::LEAF_LAST_DEMAND_SUM });
+        selector("Plant:INTERNODE_LAST_DEMAND_SUM",
+                 { kernel::Model::ECOMERISTEM,
+                         ecomeristem::Model::PLANT,
+                         ecomeristem::plant::Model::INTERNODE_LAST_DEMAND_SUM
+                         });
+        selector("Plant:LEAF_DEMAND_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::LEAF_DEMAND_SUM });
+        selector("Plant:INTERNODE_DEMAND_SUM", { kernel::Model::ECOMERISTEM,
+                    ecomeristem::Model::PLANT,
+                    ecomeristem::plant::Model::INTERNODE_DEMAND_SUM
+                    });
 
     }
 

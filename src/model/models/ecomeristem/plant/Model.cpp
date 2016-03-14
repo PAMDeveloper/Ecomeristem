@@ -22,7 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <model/models/ecomeristem/plant/Manager.hpp>
 #include <model/models/ecomeristem/plant/Model.hpp>
+
 #include <utils/DateTime.hpp>
 #include <utils/Trace.hpp>
 
@@ -78,6 +80,10 @@ Model::Model()
 
     internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
     internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
+    internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
+    internal(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
+    internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
+    internal(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
     internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
 
     // externals
@@ -137,13 +143,12 @@ void Model::compute(double t, bool /* update */)
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("PLANT", t, utils::COMPUTE)
-            << "DELETE LEAF: "
-            << " ; culm index = " << _culm_index
+            << "DELETE LEAF: culm index = " << _culm_index
             << " ; leaf index = " << _leaf_index;
         utils::Trace::trace().flush();
 #endif
 
-        culm_models[_culm_index]->delete_leaf(_leaf_index);
+        culm_models[_culm_index]->delete_leaf(t, _leaf_index);
 
         std::vector < culm::Model* >::const_iterator it =
             culm_models.begin();
@@ -367,6 +372,7 @@ void Model::compute_culms(double t)
     while (it != culm_models.end()) {
         (*it)->put(t, culm::Model::PLANT_BIOMASS_SUM, _leaf_biomass_sum +
             _internode_biomass_sum);
+        (*it)->put(t, culm::Model::PLANT_LEAF_BIOMASS_SUM, _leaf_biomass_sum);
         (*it)->put(t, culm::Model::PLANT_BLADE_AREA_SUM, _leaf_blade_area_sum);
         if (assimilation_model.is_computed(t, assimilation::Model::ASSIM)) {
             (*it)->put(t, culm::Model::ASSIM,
