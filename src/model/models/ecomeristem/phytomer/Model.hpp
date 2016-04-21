@@ -162,8 +162,16 @@ public:
         (*internode_model)(t);
     }
 
-    void delete_leaf()
+    void delete_leaf(double t)
     {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << "ADD LIG ; DELETE index = " << _index;
+        utils::Trace::trace().flush();
+#endif
+
         delete leaf_model;
         leaf_model = 0;
 
@@ -192,6 +200,9 @@ public:
 
     int get_index() const
     { return _index; }
+
+    bool is_leaf_dead() const
+    { return leaf_model == 0; }
 
 private:
 // parameters

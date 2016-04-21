@@ -106,8 +106,9 @@ TEST_CASE("Bilan_tests", "variables")
 
         senesc_dw_sum += view.get(t, "Plant:SENESC_DW_SUM");
 
-        double sum2 = totalBiomass + deficit + surplus + senesc_dw_sum -
-            (totalBiomass_1 + deficit_1 + senesc_dw_sum_1);
+        double sum2 = totalBiomass == 0 ? 0 : totalBiomass + deficit +
+            surplus + senesc_dw_sum - (totalBiomass_1 + deficit_1 +
+                                       senesc_dw_sum_1);
 
         std::cout << utils::DateTime::toJulianDay(t)
                   << "\t" << assim

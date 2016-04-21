@@ -68,6 +68,9 @@ public:
     void compute(double t, bool /* update */);
     void init(double t, const model::models::ModelParameters& parameters);
 
+    bool is_dead() const
+    { return not culm_models.empty() and culm_models[0]->is_dead(); }
+
 private:
     void compute_assimilation(double t);
     void compute_culms(double t);

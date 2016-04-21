@@ -207,23 +207,35 @@ void Model::compute(double t, bool update)
         _senesc_dw_sum +=
             (*it)->get(t, phytomer::Model::SENESC_DW);
 
-        if ((*it)->is_computed(t, phytomer::Model::PREDIM)) {
-            // if leaf state = lig
-            if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
-                (*it)->get(t, phytomer::Model::PREDIM)) {
-                ++_lig;
-            }
-            if (i == 0) {
-                _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
-            } else {
+        if (not (*it)->is_leaf_dead()) {
+            if ((*it)->is_computed(t, phytomer::Model::PREDIM)) {
                 // if leaf state = lig
                 if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
                     (*it)->get(t, phytomer::Model::PREDIM)) {
-                    _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                    ++_lig;
+
+#ifdef WITH_TRACE
+    utils::Trace::trace()
+        << utils::TraceElement("CULM", t, utils::COMPUTE)
+        << "ADD LIG ; index = " << (*it)->get_index()
+        << " ; lig = " << _lig
+        << " ; deleted leaf number = " << _deleted_leaf_number;
+    utils::Trace::trace().flush();
+#endif
+
                 }
+                if (i == 0) {
+                    _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                } else {
+                    // if leaf state = lig
+                    if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
+                        (*it)->get(t, phytomer::Model::PREDIM)) {
+                        _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                    }
+                }
+            } else {
+                ok = false;
             }
-        } else {
-            ok = false;
         }
         previous_it = it;
         ++it;
@@ -238,7 +250,6 @@ void Model::compute(double t, bool update)
     // }
     if (_state == plant::ELONG and is_ready(t, PLANT_BIOMASS_SUM) and
         is_ready(t, ASSIM)) {
-
         max_reservoir_dispo_model.put(
             t, culm::MaxReservoirDispo::LEAF_BIOMASS_SUM,
             _leaf_biomass_sum);
@@ -377,16 +388,6 @@ void Model::create_phytomer(double t)
 
 void Model::delete_leaf(double t, int index)
 {
-
-#ifdef WITH_TRACE
-        utils::Trace::trace()
-            << utils::TraceElement("CULM", t, utils::COMPUTE)
-            << "DELETE LEAF: " << _index
-            << " ; index = " << index;
-        utils::Trace::trace().flush();
-#endif
-
-
     _deleted_senesc_dw =
         (1 - _parameters->get < double > ("realocationCoeff")) *
         get_leaf_biomass(t - 1, index);
@@ -395,9 +396,19 @@ void Model::delete_leaf(double t, int index)
 //    delete phytomer_models[index];
 //    phytomer_models.erase(phytomer_models.begin() + index);
 
-    phytomer_models[index]->delete_leaf();
+    phytomer_models[index]->delete_leaf(t);
 
     ++_deleted_leaf_number;
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << "DELETE LEAF: " << _index
+            << " ; index = " << index
+            << " ; nb = " << _deleted_leaf_number;
+        utils::Trace::trace().flush();
+#endif
+
 }
 
 double Model::get_leaf_biomass(double t, int index) const
@@ -436,9 +447,12 @@ int Model::get_first_ligulated_leaf_index(double t) const
         phytomer_models.begin();
     int i = 0;
 
-    while (it != phytomer_models.end() and
-           (*it)->get(t, phytomer::Model::LEAF_LEN) !=
-           (*it)->get(t, phytomer::Model::PREDIM)) {
+    while (it != phytomer_models.end()) {
+        if (not (*it)->is_leaf_dead() and
+            (*it)->get(t, phytomer::Model::LEAF_LEN) ==
+            (*it)->get(t, phytomer::Model::PREDIM)) {
+            break;
+        }
         ++it;
         ++i;
     }

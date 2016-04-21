@@ -76,6 +76,9 @@ public:
 
     int get_first_ligulated_leaf_index(double t) const;
 
+    bool is_dead() const
+    { return _deleted_leaf_number > 0 and _lig == _deleted_leaf_number; }
+
     void realloc_biomass(double t, double value)
     { intermediate_model.realloc_biomass(t, value); }
 

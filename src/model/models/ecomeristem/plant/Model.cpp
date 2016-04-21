@@ -162,88 +162,88 @@ void Model::compute(double t, bool /* update */)
     } else {
         stock_model.realloc_biomass(t, 0);
     }
-
-    compute_lig(t);
-//    lig_model(t);
-    do {
-        if (not stable) {
-            stable = true;
-        }
-        compute_assimilation(t);
-        compute_water_balance(t);
-        compute_thermal_time(t);
-        compute_sla(t);
-        compute_manager(t);
-        compute_tiller(t);
-        compute_culms(t);
+    if (not is_dead()) {
         compute_lig(t);
-
-        //TODO: c'est genant !
-        compute_assimilation(t);
-        compute_thermal_time(t);
-        compute_culms(t);
-        //TODO: fin du genant !
-
-        if (not create and
-            (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
-             manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
-            create = true;
-            stable = false;
-            create_phytomer(t);
-        }
-
-        compute_root(t);
-        compute_stock(t);
-        compute_manager(t);
-
-        //TODO: refactor
-        if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
-            compute_culms(t);
-        }
-    } while (not stable or not assimilation_model.is_stable(t) or
-             not water_balance_model.is_stable(t) or
-             not thermal_time_model.is_stable(t) or
-             not sla_model.is_stable(t) or not manager_model.is_stable(t) or
-             not tiller_manager_model.is_stable(t) or not culms_is_stable(t) or
-             not root_model.is_stable(t) or not stock_model.is_stable(t));
-
-    _culm_index = -1;
-    _leaf_index = -1;
-    _deleted_leaf_biomass = 0;
-    _deleted_leaf_blade_area = 0;
-    if (stock_model.get(t, stock::Model::STOCK) == 0) {
-        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-        int i = 0;
-
-        while (it != culm_models.end() and (*it)->get_phytomer_number() == 0) {
-            ++it;
-            ++i;
-        }
-        if (it != culm_models.end()) {
-            _culm_index = i;
-            _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
-            if (_leaf_index != -1) {
-                _deleted_leaf_biomass =
-                    culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
-                _deleted_leaf_blade_area =
-                    culm_models[_culm_index]->get_leaf_blade_area(t,
-                                                                  _leaf_index);
+//    lig_model(t);
+        do {
+            if (not stable) {
+                stable = true;
             }
-        }
+            compute_assimilation(t);
+            compute_water_balance(t);
+            compute_thermal_time(t);
+            compute_sla(t);
+            compute_manager(t);
+            compute_tiller(t);
+            compute_culms(t);
+            compute_lig(t);
+
+            //TODO: c'est genant !
+            compute_assimilation(t);
+            compute_thermal_time(t);
+            compute_culms(t);
+            //TODO: fin du genant !
+
+            if (not create and
+                (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
+                 manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
+                create = true;
+                stable = false;
+                create_phytomer(t);
+            }
+
+            compute_root(t);
+            compute_stock(t);
+            compute_manager(t);
+
+            //TODO: refactor
+            if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
+                compute_culms(t);
+            }
+        } while (not stable or not assimilation_model.is_stable(t) or
+                 not water_balance_model.is_stable(t) or
+                 not thermal_time_model.is_stable(t) or
+                 not sla_model.is_stable(t) or not manager_model.is_stable(t) or
+                 not tiller_manager_model.is_stable(t) or not culms_is_stable(t) or
+                 not root_model.is_stable(t) or not stock_model.is_stable(t));
+
+        _culm_index = -1;
+        _leaf_index = -1;
+        _deleted_leaf_biomass = 0;
+        _deleted_leaf_blade_area = 0;
+        if (stock_model.get(t, stock::Model::STOCK) == 0) {
+            std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+            int i = 0;
+
+            while (it != culm_models.end() and (*it)->get_phytomer_number() == 0) {
+                ++it;
+                ++i;
+            }
+            if (it != culm_models.end()) {
+                _culm_index = i;
+                _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
+                if (_leaf_index != -1) {
+                    _deleted_leaf_biomass =
+                        culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+                    _deleted_leaf_blade_area =
+                        culm_models[_culm_index]->get_leaf_blade_area(t,
+                                                                      _leaf_index);
+                }
+            }
 
 #ifdef WITH_TRACE
-        utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
-            << "DELETE LEAF: "
-            << " ; culm index = " << _culm_index
-            << " ; leaf index = " << _leaf_index
-            << " ; leaf biomass = " << _deleted_leaf_biomass
-            << " ; culm number = " << culm_models.size();
-        utils::Trace::trace().flush();
+            utils::Trace::trace()
+                << utils::TraceElement("PLANT", t, utils::COMPUTE)
+                << "DELETE LEAF: "
+                << " ; culm index = " << _culm_index
+                << " ; leaf index = " << _leaf_index
+                << " ; leaf biomass = " << _deleted_leaf_biomass
+                << " ; culm number = " << culm_models.size();
+            utils::Trace::trace().flush();
 #endif
 
+        }
     }
-
 }
 
 void Model::compute_assimilation(double t)
