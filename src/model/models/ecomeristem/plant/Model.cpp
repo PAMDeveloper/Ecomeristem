@@ -122,6 +122,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _nbleaf_enabling_tillering =
         parameters.get < double >("nb_leaf_enabling_tillering");
     _realocationCoeff = parameters.get < double >("realocationCoeff");
+    _LL_BL = parameters.get < double >("LL_BL_init");
 
     _parameters = &parameters;
 
@@ -215,7 +216,8 @@ void Model::compute(double t, bool /* update */)
             std::vector < culm::Model* >::const_iterator it = culm_models.begin();
             int i = 0;
 
-            while (it != culm_models.end() and (*it)->get_phytomer_number() == 0) {
+            while (it != culm_models.end() and
+                   (*it)->get_phytomer_number() == 0) {
                 ++it;
                 ++i;
             }
@@ -243,6 +245,9 @@ void Model::compute(double t, bool /* update */)
 #endif
 
         }
+        compute_height(t);
+    } else {
+        _height = 0;
     }
 }
 
@@ -396,6 +401,34 @@ void Model::compute_culms(double t)
         << " ; ReallocBiomassSum = " << _realloc_biomass_sum
         << " ; SenescDWSum = " << _senesc_dw_sum
         << " ; culm number = " << culm_models.size();
+    utils::Trace::trace().flush();
+#endif
+
+}
+
+void Model::compute_height(double t)
+{
+    int index;
+
+    _height = 0;
+    if (not culm_models.empty()) {
+        _height += culm_models[0]->get(t, culm::Model::INTERNODE_LEN_SUM);
+        index = culm_models[0]->get_last_ligulated_leaf_index(t);
+        if (index != -1) {
+            _height += (1 - 1 / _LL_BL) * culm_models[0]->get_leaf_len(t,
+                                                                       index);
+        } else {
+            index = culm_models[0]->get_first_alive_leaf_index(t);
+            _height += (1 - 1 / _LL_BL) * culm_models[0]->get_leaf_len(t,
+                                                                       index);
+        }
+    }
+
+#ifdef WITH_TRACE
+    utils::Trace::trace()
+        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << "COMPUTE HEIGHT "
+        << " ; Height = " << _height;
     utils::Trace::trace().flush();
 #endif
 

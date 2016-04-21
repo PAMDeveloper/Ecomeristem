@@ -34,7 +34,7 @@ class Model : public AbstractCoupledModel < Model >
 public:
     enum internals { LEAF_BIOMASS, LEAF_BLADE_AREA, LEAF_DEMAND,
                      INTERNODE_DEMAND, INTERNODE_LAST_DEMAND, INTERNODE_BIOMASS,
-                     LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY,
+                     INTERNODE_LEN, LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY,
                      REALLOC_BIOMASS, SENESC_DW, SENESC_DW_SUM,
                      LEAF_CORRECTED_BIOMASS, LEAF_CORRECTED_BLADE_AREA,
                      LEAF_LEN };
@@ -68,6 +68,8 @@ public:
         internal(INTERNODE_DEMAND, internode_model, internode::Model::DEMAND);
         internal(INTERNODE_BIOMASS, internode_model,
                  internode::Model::BIOMASS);
+        internal(INTERNODE_LEN, internode_model,
+                 internode::Model::LEN);
 
         external(DD, &Model::_dd);
         external(DELTA_T, &Model::_delta_t);

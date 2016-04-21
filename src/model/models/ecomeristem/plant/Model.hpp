@@ -74,6 +74,7 @@ public:
 private:
     void compute_assimilation(double t);
     void compute_culms(double t);
+    void compute_height(double t);
     void compute_lig(double t);
     void compute_manager(double t);
     void compute_root(double t);
@@ -89,6 +90,7 @@ private:
 // parameters
     double _nbleaf_enabling_tillering;
     double _realocationCoeff;
+    double _LL_BL;
 
     const model::models::ModelParameters* _parameters;
 
@@ -107,6 +109,7 @@ private:
     double _lig;
     double _deleted_leaf_biomass;
     double _deleted_leaf_blade_area;
+    double _height;
 
 // external variables
     double _etp;

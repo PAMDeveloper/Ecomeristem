@@ -41,7 +41,7 @@ class Model : public AbstractCoupledModel < Model >
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
                      INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
-                     INTERNODE_BIOMASS_SUM,
+                     INTERNODE_BIOMASS_SUM, INTERNODE_LEN_SUM,
                      LEAF_BLADE_AREA_SUM, LEAF_PREDIM,
                      REALLOC_BIOMASS_SUM, SENESC_DW_SUM, LIG, CULM_STOCK,
                      CULM_DEFICIT, CULM_SURPLUS_SUM };
@@ -70,11 +70,14 @@ public:
     void delete_leaf(double t, int index);
     double get_leaf_biomass(double t, int index) const;
     double get_leaf_blade_area(double t, int index) const;
+    double get_leaf_len(double t, int index) const;
 
     int get_phytomer_number() const
     { return phytomer_models.size(); }
 
     int get_first_ligulated_leaf_index(double t) const;
+    int get_last_ligulated_leaf_index(double t) const;
+    int get_first_alive_leaf_index(double t) const;
 
     bool is_dead() const
     { return _deleted_leaf_number > 0 and _lig == _deleted_leaf_number; }
@@ -106,6 +109,7 @@ private:
     double _internode_last_demand_sum;
     double _internode_demand_sum;
     double _internode_biomass_sum;
+    double _internode_len_sum;
     double _leaf_blade_area_sum;
     double _leaf_predim;
     double _realloc_biomass_sum;

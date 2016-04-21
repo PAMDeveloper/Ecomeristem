@@ -41,6 +41,7 @@ Model::Model(int index, bool is_on_mainstem) :
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
     internal(DEMAND, &internode_demand_model, InternodeDemand::DEMAND);
     internal(LAST_DEMAND, &last_demand_model, LastDemand::LAST_DEMAND);
+    internal(LEN, &len_model, Len::LEN);
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);

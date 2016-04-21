@@ -34,6 +34,7 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
     internal(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
     internal(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
     internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
+    internal(INTERNODE_LEN_SUM, &Model::_internode_len_sum);
     internal(LEAF_BLADE_AREA_SUM, &Model::_leaf_blade_area_sum);
     internal(LEAF_PREDIM, &Model::_leaf_predim);
     internal(REALLOC_BIOMASS_SUM, &Model::_realloc_biomass_sum);
@@ -88,6 +89,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
     _internode_last_demand_sum = 0;
     _internode_demand_sum = 0;
     _internode_biomass_sum = 0;
+    _internode_len_sum = 0;
     _leaf_blade_area_sum = 0;
 
     _grow = 0;
@@ -129,6 +131,7 @@ void Model::compute(double t, bool update)
     _internode_last_demand_sum = 0;
     _internode_demand_sum = 0;
     _internode_biomass_sum = 0;
+    _internode_len_sum = 0;
     _leaf_blade_area_sum = 0;
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
@@ -192,6 +195,8 @@ void Model::compute(double t, bool update)
             t, phytomer::Model::INTERNODE_DEMAND);
         _internode_biomass_sum += (*it)->get(
             t, phytomer::Model::INTERNODE_BIOMASS);
+        _internode_len_sum += (*it)->get(
+            t, phytomer::Model::INTERNODE_LEN);
 
         if ((*it)->get(t
                        , phytomer::Model::LEAF_CORRECTED_BLADE_AREA) == 0) {
@@ -441,6 +446,11 @@ double Model::get_leaf_blade_area(double t, int index) const
     }
 }
 
+double Model::get_leaf_len(double t, int index) const
+{
+    return phytomer_models[index]->get(t, phytomer::Model::LEAF_LEN);
+}
+
 int Model::get_first_ligulated_leaf_index(double t) const
 {
     std::deque < phytomer::Model* >::const_iterator it =
@@ -461,6 +471,43 @@ int Model::get_first_ligulated_leaf_index(double t) const
     } else {
         return -1;
     }
+}
+
+int Model::get_last_ligulated_leaf_index(double t) const
+{
+    std::deque < phytomer::Model* >::const_iterator it =
+        phytomer_models.begin();
+    int i = 0;
+    int index = -1;
+
+    while (it != phytomer_models.end()) {
+        if (not (*it)->is_leaf_dead() and
+            (*it)->get(t, phytomer::Model::LEAF_LEN) ==
+            (*it)->get(t, phytomer::Model::PREDIM)) {
+            index = i;
+        }
+        ++it;
+        ++i;
+    }
+    return index;
+}
+
+int Model::get_first_alive_leaf_index(double /* t */) const
+{
+    std::deque < phytomer::Model* >::const_iterator it =
+        phytomer_models.begin();
+    int i = 0;
+    int index = -1;
+
+    while (it != phytomer_models.end()) {
+        if (not (*it)->is_leaf_dead()) {
+            index = i;
+            break;
+        }
+        ++it;
+        ++i;
+    }
+    return index;
 }
 
 } } // namespace ecomeristem culm

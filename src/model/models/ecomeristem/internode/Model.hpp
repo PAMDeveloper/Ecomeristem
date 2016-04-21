@@ -42,7 +42,7 @@ namespace ecomeristem { namespace internode {
 class Model : public AbstractCoupledModel < Model >
 {
 public:
-    enum internals { BIOMASS, DEMAND, LAST_DEMAND };
+    enum internals { BIOMASS, DEMAND, LAST_DEMAND, LEN };
     enum externals { DD, DELTA_T, FTSW, P, PHASE, STATE, PREDIM_LEAF,
                      LIG };
 
