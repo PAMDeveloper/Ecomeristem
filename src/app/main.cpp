@@ -57,8 +57,9 @@ static void format_dates(const model::models::ModelParameters& parameters,
 
 static void run(const std::string& simulation, int /* verbose */)
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;

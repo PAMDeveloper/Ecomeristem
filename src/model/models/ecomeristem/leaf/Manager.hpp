@@ -33,7 +33,7 @@ namespace ecomeristem { namespace leaf {
 
 enum Phase { INIT, INITIAL, LIG, NOGROWTH };
 
-class Manager : public AbstractAtomicModel < Manager >
+class Manager : public ecomeristem::AbstractAtomicModel < Manager >
 {
 public:
     enum internals { LEAF_PHASE };
@@ -96,7 +96,7 @@ public:
             _predim_init = true;
         }
 
-        AbstractAtomicModel < Manager >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Manager >::put(t, index, value);
         if (_phase_ == leaf::INIT or (is_ready(t, LEN) and _predim_init)) {
             (*this)(t);
         }

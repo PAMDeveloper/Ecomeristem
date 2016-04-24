@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class LeafDemand : public AbstractAtomicModel < LeafDemand >
+class LeafDemand : public ecomeristem::AbstractAtomicModel < LeafDemand >
 {
 public:
     enum internals { DEMAND };
@@ -106,7 +106,7 @@ public:
         if (index == BIOMASS and !is_ready(t, BIOMASS)) {
             _biomass_1 = _biomass;
         }
-        AbstractAtomicModel < LeafDemand >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < LeafDemand >::put(t, index, value);
     }
 
 private:

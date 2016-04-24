@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class SeedRes : public AbstractAtomicModel < SeedRes >
+class SeedRes : public ecomeristem::AbstractAtomicModel < SeedRes >
 {
 public:
     enum internals { SEED_RES };

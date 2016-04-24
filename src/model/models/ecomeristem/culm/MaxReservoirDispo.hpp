@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace culm {
 
-class MaxReservoirDispo : public AbstractAtomicModel < MaxReservoirDispo >
+class MaxReservoirDispo : public ecomeristem::AbstractAtomicModel < MaxReservoirDispo >
 {
 public:
     enum internals { MAX_RESERVOIR_DISPO };

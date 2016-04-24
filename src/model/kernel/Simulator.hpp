@@ -25,36 +25,18 @@
 #ifndef MODEL_KERNEL_SIMULATOR_HPP
 #define MODEL_KERNEL_SIMULATOR_HPP
 
+#include <model/kernel/Model.hpp>
+#include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ModelParameters.hpp>
-#include <model/observer/Observer.hpp>
+
+#include <artis/kernel/Simulator.hpp>
 
 namespace model { namespace kernel {
 
-class Simulator
-{
-public:
-    Simulator(model::kernel::Model* model)
-        : _model(model), _observer(model)
-    { }
-
-    virtual ~Simulator()
-    { delete _model; }
-
-    void init(double t, const model::models::ModelParameters& parameters)
-    {
-        _model->init(t, parameters);
-        _observer.init();
-    }
-
-    const observer::Observer& observer() const
-    { return _observer; }
-
-    void run(double begin, double end);
-
-private:
-    model::kernel::Model* _model;
-    observer::Observer _observer;
-};
+typedef artis::kernel::Simulator < model::kernel::Model,
+                                   artis::utils::DoubleTime,
+                                   model::models::ModelParameters,
+                                   ecomeristem::GlobalParameters > Simulator;
 
 } } // namespace model kernel
 

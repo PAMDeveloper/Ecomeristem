@@ -33,7 +33,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { DAY_DEMAND_MODEL, IC_MODEL, RESERVOIR_DISPO_MODEL,

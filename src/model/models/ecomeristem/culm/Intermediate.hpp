@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace culm {
 
-class Intermediate : public AbstractAtomicModel < Intermediate >
+class Intermediate : public ecomeristem::AbstractAtomicModel < Intermediate >
 {
 public:
     enum internals { INTERMEDIATE };
@@ -128,7 +128,7 @@ public:
         utils::Trace::trace().flush();
 #endif
 
-        AbstractAtomicModel < Intermediate >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Intermediate >::put(t, index, value);
     }
 
     void realloc_biomass(double t, double value)

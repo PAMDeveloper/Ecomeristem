@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class Lai : public AbstractAtomicModel < Lai >
+class Lai : public ecomeristem::AbstractAtomicModel < Lai >
 {
 public:
     static const unsigned int LAI = 0;

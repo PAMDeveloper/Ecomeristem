@@ -25,36 +25,14 @@
 #ifndef MODEL_OBSERVER_VIEW_HPP
 #define MODEL_OBSERVER_VIEW_HPP
 
-#include <model/kernel/Model.hpp>
+#include <artis/observer/View.hpp>
+#include <artis/utils/DoubleTime.hpp>
+#include <model/models/ModelParameters.hpp>
 
 namespace model { namespace observer {
 
-class View
-{
-    typedef std::vector < unsigned int > Selector;
-
-public:
-    View();
-    virtual ~View();
-
-    void attachModel(const model::kernel::Model* m)
-    { _model = m; }
-
-    double get(double t, const std::string& name) const;
-
-    virtual void observe(double time);
-
-    void selector(const std::string& name, const Selector& chain);
-
-private:
-    typedef std::map < std::string, Selector > Selectors;
-    typedef std::vector < std::pair < double, double > > Value;
-    typedef std::map < std::string, Value > Values;
-
-    Selectors                   _selectors;
-    Values                      _values;
-    const model::kernel::Model* _model;
-};
+typedef artis::observer::View < artis::utils::DoubleTime,
+                                model::models::ModelParameters > View;
 
 } }
 

@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class TimeFromApp : public AbstractAtomicModel < TimeFromApp >
+class TimeFromApp : public ecomeristem::AbstractAtomicModel < TimeFromApp >
 {
 public:
     enum internals { TIME_FROM_APP };

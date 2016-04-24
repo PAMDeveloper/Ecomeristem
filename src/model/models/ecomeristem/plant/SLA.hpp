@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant {
 
-class Sla : public AbstractAtomicModel < Sla >
+class Sla : public ecomeristem::AbstractAtomicModel < Sla >
 {
 public:
     enum internals { SLA };

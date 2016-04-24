@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Ler : public AbstractAtomicModel < Ler >
+class Ler : public ecomeristem::AbstractAtomicModel < Ler >
 {
 public:
     enum internals { LER };

@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class ReductionINER : public AbstractAtomicModel < ReductionINER >
+class ReductionINER : public ecomeristem::AbstractAtomicModel < ReductionINER >
 {
 public:
     enum internals { REDUCTION_INER };

@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class Surplus : public AbstractAtomicModel < Surplus >
+class Surplus : public ecomeristem::AbstractAtomicModel < Surplus >
 {
 public:
     enum internals { SURPLUS };
@@ -106,7 +106,7 @@ public:
         if (index == SEED_RES and !is_ready(t, SEED_RES)) {
             _seed_res_1 = _seed_res;
         }
-        AbstractAtomicModel < Surplus >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Surplus >::put(t, index, value);
     }
 
 private:

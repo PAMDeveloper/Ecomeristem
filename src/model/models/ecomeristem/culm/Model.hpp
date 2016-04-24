@@ -36,7 +36,7 @@
 
 namespace ecomeristem { namespace culm {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,

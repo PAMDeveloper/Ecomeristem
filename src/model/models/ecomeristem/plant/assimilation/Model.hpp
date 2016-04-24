@@ -36,7 +36,7 @@
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { ASSIM_MODEL, ASSIM_POT_MODEL, INTERC_MODEL,

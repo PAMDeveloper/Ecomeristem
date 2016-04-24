@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace plant {
 
-class Lig : public AbstractAtomicModel < Lig >
+class Lig : public ecomeristem::AbstractAtomicModel < Lig >
 {
 public:
     static const unsigned int LIG = 0;

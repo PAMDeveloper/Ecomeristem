@@ -330,7 +330,9 @@ void Model::compute_culms(double t)
         }
         (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM,
                    _predim_leaf_on_mainstem);
-        (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
+        if ( sla_model.is_computed(t, Sla::SLA)) {
+            (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
+        }
         if (stock_model.is_computed(t, stock::Model::GROW)) {
             (*it)->put(t, culm::Model::GROW,
                        stock_model.get(t, stock::Model::GROW));
@@ -342,7 +344,7 @@ void Model::compute_culms(double t)
                        manager_model.get(t, Manager::STATE));
         }
         //TODO
-        (*it)->put(t, culm::Model::STOP, 0);
+        (*it)->put(t, culm::Model::STOP, 0.);
         if (stock_model.is_computed(t, stock::Model::TEST_IC)) {
             (*it)->put(t, culm::Model::TEST_IC,
                        stock_model.get(t, stock::Model::TEST_IC));
@@ -602,7 +604,7 @@ void Model::compute_stock(double t)
         stock_model.put(t, stock::Model::REALLOC_BIOMASS_SUM,
                         _realloc_biomass_sum);
         //TODO
-        stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0);
+        stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0.);
         stock_model.put(t, stock::Model::STATE,
                         manager_model.get(t, Manager::STATE));
         stock_model(t);
@@ -636,7 +638,7 @@ void Model::compute_thermal_time(double t)
     thermal_time_model.put(t, thermal_time::Model::TA, _ta);
     thermal_time_model.put(t, thermal_time::Model::LIG, _lig);
     // TODO
-    thermal_time_model.put(t, thermal_time::Model::PLASTO_DELAY, 0);
+    thermal_time_model.put(t, thermal_time::Model::PLASTO_DELAY, 0.);
     thermal_time_model(t);
 }
 
@@ -649,7 +651,7 @@ void Model::compute_tiller(double t)
             thermal_time_model.get(
                 t, thermal_time::Model::BOOL_CROSSED_PLASTO));
     }
-    if (thermal_time_model.get(
+    if (thermal_time_model.is_computed(
             t, thermal_time::Model::PHENO_STAGE)) {
         tiller_manager_model.put(
             t, TillerManager::PHENO_STAGE,
@@ -670,7 +672,7 @@ void Model::compute_tiller(double t)
                 ++n;
             }
         }
-        tiller_manager_model.put(t, TillerManager::TAE, n);
+        tiller_manager_model.put(t, TillerManager::TAE, (double)n);
     }
 
     tiller_manager_model(t);

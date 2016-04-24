@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class LastDemand : public AbstractAtomicModel < LastDemand >
+class LastDemand : public ecomeristem::AbstractAtomicModel < LastDemand >
 {
 public:
     enum internals { LAST_DEMAND };
@@ -104,7 +104,7 @@ public:
             _biomass_2 = _biomass_1;
             _biomass_1 = _biomass;
         }
-        AbstractAtomicModel < LastDemand >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < LastDemand >::put(t, index, value);
     }
 
 private:

@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class Supply : public AbstractAtomicModel < Supply >
+class Supply : public ecomeristem::AbstractAtomicModel < Supply >
 {
 public:
     static const unsigned int SUPPLY = 0;

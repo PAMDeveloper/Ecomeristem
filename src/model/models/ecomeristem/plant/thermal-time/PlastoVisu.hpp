@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class PlastoVisu : public AbstractAtomicModel < PlastoVisu >
+class PlastoVisu : public ecomeristem::AbstractAtomicModel < PlastoVisu >
 {
 public:
     static const unsigned int PLASTO_VISU = 0;

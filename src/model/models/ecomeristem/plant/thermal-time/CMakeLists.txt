@@ -1,7 +1,7 @@
 INCLUDE_DIRECTORIES(
-  ${CMAKE_SOURCE_DIR}/src)
+  ${CMAKE_SOURCE_DIR}/src ${ARTIS_INCLUDE_DIRS})
 
-LINK_DIRECTORIES()
+LINK_DIRECTORIES(${ARTIS_LIBRARY_DIRS})
 
 SET(ECOMERISTEM_PLANT_THERMAL_TIME_HPP DD.hpp DeltaT.hpp IH.hpp LiguloVisu.hpp
   Model.hpp PhenoStage.hpp PlastoVisu.hpp ThermalTimeManager.hpp TT.hpp

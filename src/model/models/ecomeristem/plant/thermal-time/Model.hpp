@@ -35,7 +35,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { DD_MODEL, IH_MODEL, LIGULO_VISU_MODEL, PHENO_STAGE_MODEL,

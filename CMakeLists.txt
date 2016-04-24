@@ -74,6 +74,8 @@ INCLUDE(CMakeDetermineCCompiler)
 #
 
 FIND_PACKAGE(PkgConfig REQUIRED)
+PKG_CHECK_MODULES(ARTIS artis-1.0)
+
 
 # FIXME use old-style link directories for now
 IF (COMMAND CMAKE_POLICY)

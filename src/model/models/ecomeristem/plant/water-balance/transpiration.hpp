@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
-class Transpiration : public AbstractAtomicModel < Transpiration >
+class Transpiration : public ecomeristem::AbstractAtomicModel < Transpiration >
 {
 public:
     enum internals { TRANSPIRATION };
@@ -83,7 +83,8 @@ public:
         if (index == SWC and !is_ready(t, SWC)) {
             _swc_1 = _swc;
         }
-        AbstractAtomicModel < Transpiration >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Transpiration >::put(t, index,
+                                                                value);
     }
 
 private:

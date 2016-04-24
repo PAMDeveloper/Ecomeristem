@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
-class Swc : public AbstractAtomicModel < Swc >
+class Swc : public ecomeristem::AbstractAtomicModel < Swc >
 {
 public:
     enum internals { SWC };

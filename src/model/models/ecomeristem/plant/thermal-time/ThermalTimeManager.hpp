@@ -31,7 +31,8 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class ThermalTimeManager : public AbstractAtomicModel < ThermalTimeManager >
+class ThermalTimeManager :
+        public ecomeristem::AbstractAtomicModel < ThermalTimeManager >
 {
 public:
     enum state_t { INIT, DEAD, STOCK_AVAILABLE, NO_STOCK };
@@ -111,7 +112,8 @@ public:
             _phase_1 = _phase;
         }
 
-        AbstractAtomicModel < ThermalTimeManager >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < ThermalTimeManager >::put(t, index,
+                                                                     value);
         (*this)(t);
     }
 

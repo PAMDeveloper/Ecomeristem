@@ -51,7 +51,7 @@ enum phase_t { INIT = 0,
 enum state_t { VEGETATIVE, PRE_ELONG, ELONG, PRE_PI, PI, PRE_FLO, FLO,
                END_FILLING, MATURITY, DEAD };
 
-class Manager : public AbstractAtomicModel < Manager >
+class Manager : public ecomeristem::AbstractAtomicModel < Manager >
 {
 public:
     enum internals { PHASE, STATE };

@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class DayDemand : public AbstractAtomicModel < DayDemand >
+class DayDemand : public ecomeristem::AbstractAtomicModel < DayDemand >
 {
 public:
     enum internals { DAY_DEMAND };

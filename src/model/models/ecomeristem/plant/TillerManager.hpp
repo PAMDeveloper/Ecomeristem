@@ -26,7 +26,7 @@
 
 namespace ecomeristem { namespace plant {
 
-class TillerManager : public AbstractAtomicModel < TillerManager >
+class TillerManager : public ecomeristem::AbstractAtomicModel < TillerManager >
 {
 public:
     enum internals { NB_TILLERS, CREATE };

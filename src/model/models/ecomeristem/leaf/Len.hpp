@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Len : public AbstractAtomicModel < Len >
+class Len : public ecomeristem::AbstractAtomicModel < Len >
 {
 public:
     enum internals { LEN };
@@ -110,7 +110,7 @@ public:
             _phase_1 = _phase;
         }
 
-        AbstractAtomicModel < Len >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Len >::put(t, index, value);
     }
 
 private:

@@ -25,11 +25,15 @@
 #ifndef MODEL_OBSERVER_PLANT_VIEW_HPP
 #define MODEL_OBSERVER_PLANT_VIEW_HPP
 
-#include <model/observer/View.hpp>
+#include <artis/observer/View.hpp>
+#include <artis/utils/DateTime.hpp>
+
+#include <model/models/ModelParameters.hpp>
 
 namespace model { namespace observer {
 
-class PlantView : public View
+class PlantView : public artis::observer::View <
+    artis::utils::DoubleTime, model::models::ModelParameters >
 {
 public:
     PlantView()

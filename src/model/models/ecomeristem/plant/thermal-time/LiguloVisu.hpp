@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class LiguloVisu : public AbstractAtomicModel < LiguloVisu >
+class LiguloVisu : public ecomeristem::AbstractAtomicModel < LiguloVisu >
 {
 public:
     static const unsigned int LIGULO_VISU = 0;

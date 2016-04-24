@@ -133,7 +133,7 @@ void Manager::put(double t, unsigned int index, double value)
         _stock_1 = _stock;
     }
 
-    AbstractAtomicModel < Manager >::put(t, index, value);
+    ecomeristem::AbstractAtomicModel < Manager >::put(t, index, value);
     (*this)(t);
 }
 

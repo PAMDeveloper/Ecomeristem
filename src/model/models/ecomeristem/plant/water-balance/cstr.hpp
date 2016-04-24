@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
-class cstr : public AbstractAtomicModel < cstr >
+class cstr : public ecomeristem::AbstractAtomicModel < cstr >
 {
 public:
     enum internals { CSTR };

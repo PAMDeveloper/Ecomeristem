@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class RespMaint : public AbstractAtomicModel < RespMaint >
+class RespMaint : public ecomeristem::AbstractAtomicModel < RespMaint >
 {
 public:
     enum internals { RESP_MAINT };

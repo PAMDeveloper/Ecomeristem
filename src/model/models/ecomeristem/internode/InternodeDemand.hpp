@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class InternodeDemand : public AbstractAtomicModel < InternodeDemand >
+class InternodeDemand : public ecomeristem::AbstractAtomicModel < InternodeDemand >
 {
 public:
     enum internals { DEMAND };
@@ -94,7 +94,8 @@ public:
         if (index == BIOMASS and !is_ready(t, BIOMASS)) {
             _biomass_1 = _biomass;
         }
-        AbstractAtomicModel < InternodeDemand >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < InternodeDemand >::put(t, index,
+                                                                  value);
     }
 
 private:

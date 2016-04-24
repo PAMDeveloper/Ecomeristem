@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class BladeArea : public AbstractAtomicModel < BladeArea >
+class BladeArea : public ecomeristem::AbstractAtomicModel < BladeArea >
 {
 public:
     enum internals { BLADE_AREA, CORRECTED_BLADE_AREA };

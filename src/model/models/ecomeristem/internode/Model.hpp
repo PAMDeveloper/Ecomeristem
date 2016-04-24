@@ -39,7 +39,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum internals { BIOMASS, DEMAND, LAST_DEMAND, LEN };

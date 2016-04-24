@@ -37,7 +37,7 @@
 
 namespace ecomeristem { namespace plant {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { ASSIMILATION, ROOT, STOCK, THERMAL_TIME, WATER_BALANCE,

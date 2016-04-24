@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class TT_lig : public AbstractAtomicModel < TT_lig >
+class TT_lig : public ecomeristem::AbstractAtomicModel < TT_lig >
 {
 public:
     static const unsigned int TT_LIG = 0;
@@ -103,7 +103,7 @@ public:
         if (index == LIG and !is_ready(t, LIG)) {
             _lig_1 = _lig;
         }
-        AbstractAtomicModel < TT_lig >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < TT_lig >::put(t, index, value);
     }
 
 private:

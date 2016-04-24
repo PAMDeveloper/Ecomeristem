@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Ih : public AbstractAtomicModel < Ih >
+class Ih : public ecomeristem::AbstractAtomicModel < Ih >
 {
 public:
     static const unsigned int IH = 0;

@@ -1,7 +1,7 @@
 INCLUDE_DIRECTORIES(
-  ${CMAKE_SOURCE_DIR}/src)
+  ${CMAKE_SOURCE_DIR}/src ${ARTIS_INCLUDE_DIRS})
 
-LINK_DIRECTORIES()
+LINK_DIRECTORIES(${ARTIS_LIBRARY_DIRS})
 
 SET(ECOMERISTEM_KERNEL_HPP AbstractAtomicModel.hpp AbstractCoupledModel.hpp
   AbstractModel.hpp Simulator.hpp Model.hpp)

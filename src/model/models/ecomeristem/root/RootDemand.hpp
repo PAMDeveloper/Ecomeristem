@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace root {
 
-class RootDemand : public AbstractAtomicModel < RootDemand >
+class RootDemand : public ecomeristem::AbstractAtomicModel < RootDemand >
 {
 public:
     enum internals { ROOT_DEMAND, ROOT_DEMAND_1, ROOT_BIOMASS, SURPLUS };
@@ -196,7 +196,7 @@ public:
             not is_ready(t, INTERNODE_LAST_DEMAND_SUM)) {
             _internode_last_demand_sum_1 = _internode_last_demand_sum;
         }
-        AbstractAtomicModel < RootDemand >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < RootDemand >::put(t, index, value);
     }
 
 private:

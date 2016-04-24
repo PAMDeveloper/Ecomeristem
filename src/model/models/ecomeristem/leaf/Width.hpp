@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Width : public AbstractAtomicModel < Width >
+class Width : public ecomeristem::AbstractAtomicModel < Width >
 {
 public:
     enum internals { WIDTH };

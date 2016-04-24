@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace phytomer {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum internals { LEAF_BIOMASS, LEAF_BLADE_AREA, LEAF_DEMAND,

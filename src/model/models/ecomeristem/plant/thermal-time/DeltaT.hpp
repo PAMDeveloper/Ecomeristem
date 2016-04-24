@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class DeltaT : public AbstractAtomicModel < DeltaT >
+class DeltaT : public ecomeristem::AbstractAtomicModel < DeltaT >
 {
 public:
     static const unsigned int DELTA_T = 0;

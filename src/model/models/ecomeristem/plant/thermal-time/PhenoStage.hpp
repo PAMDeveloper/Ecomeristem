@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class PhenoStage : public AbstractAtomicModel < PhenoStage >
+class PhenoStage : public ecomeristem::AbstractAtomicModel < PhenoStage >
 {
 public:
     static const unsigned int PHENO_STAGE = 0;
@@ -84,7 +84,7 @@ public:
             _phase_1 = _phase;
         }
 
-        AbstractAtomicModel < PhenoStage >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < PhenoStage >::put(t, index, value);
     }
 
 private:

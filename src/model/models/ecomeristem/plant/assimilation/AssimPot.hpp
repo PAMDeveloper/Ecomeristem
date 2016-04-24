@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace assimilation {
 
-class AssimPot : public AbstractAtomicModel < AssimPot >
+class AssimPot : public ecomeristem::AbstractAtomicModel < AssimPot >
 {
 public:
     enum internals { ASSIM_POT };

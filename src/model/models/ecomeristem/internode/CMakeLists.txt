@@ -1,7 +1,7 @@
 INCLUDE_DIRECTORIES(
-  ${CMAKE_SOURCE_DIR}/src)
+  ${CMAKE_SOURCE_DIR}/src ${ARTIS_INCLUDE_DIRS})
 
-LINK_DIRECTORIES()
+LINK_DIRECTORIES(${ARTIS_LIBRARY_DIRS})
 
 SET(ECOMERISTEM_INTERNODE_HPP Biomass.hpp DiameterPredim.hpp INER.hpp
   LastDemand.hpp Manager.hpp Model.hpp TimeFromApp.hpp

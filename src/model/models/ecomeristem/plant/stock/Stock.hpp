@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class Stock : public AbstractAtomicModel < Stock >
+class Stock : public ecomeristem::AbstractAtomicModel < Stock >
 {
 public:
     enum internals { STOCK, GROW, DEFICIT };
@@ -152,7 +152,7 @@ public:
         if (index == SEED_RES and !is_ready(t, SEED_RES)) {
             _seed_res_1 = _seed_res;
         }
-        AbstractAtomicModel < Stock >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Stock >::put(t, index, value);
     }
 
     void realloc_biomass(double t, double value)

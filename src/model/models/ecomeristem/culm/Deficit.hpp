@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace culm {
 
-class Deficit : public AbstractAtomicModel < Deficit >
+class Deficit : public ecomeristem::AbstractAtomicModel < Deficit >
 {
 public:
     enum internals { DEFICIT };

@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 
-class Dd : public AbstractAtomicModel < Dd >
+class Dd : public ecomeristem::AbstractAtomicModel < Dd >
 {
 public:
     enum internals { DD, EDD, BOOL_CROSSED_PLASTO };
@@ -131,7 +131,7 @@ public:
         if (index == PHASE and !is_ready(t, PHASE)) {
             _phase_1 = _phase;
         }
-        AbstractAtomicModel < Dd >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Dd >::put(t, index, value);
     }
 
 private:

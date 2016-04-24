@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace root {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { ROOT_DEMAND_COEF_MODEL, ROOT_DEMAND_MODEL};

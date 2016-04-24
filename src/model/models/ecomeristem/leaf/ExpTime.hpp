@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class ExpTime : public AbstractAtomicModel < ExpTime >
+class ExpTime : public ecomeristem::AbstractAtomicModel < ExpTime >
 {
 public:
     enum internals { EXP_TIME };
@@ -101,7 +101,7 @@ public:
         if (index == LEN and !is_ready(t, LEN)) {
             _len_1 = _len;
         }
-        AbstractAtomicModel < ExpTime >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < ExpTime >::put(t, index, value);
     }
 
 private:

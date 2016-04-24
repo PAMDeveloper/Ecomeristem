@@ -34,7 +34,7 @@ namespace ecomeristem { namespace internode {
 enum Phase { INIT, VEGETATIVE, REALIZATION, REALIZATION_NOGROWTH, MATURITY,
              MATURITY_NOGROWTH };
 
-class Manager : public AbstractAtomicModel < Manager >
+class Manager : public ecomeristem::AbstractAtomicModel < Manager >
 {
 public:
     enum internals { INTERNODE_PHASE };
@@ -108,7 +108,7 @@ public:
             _predim_init = true;
         }
 
-        AbstractAtomicModel < Manager >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Manager >::put(t, index, value);
 
         //TODO: remove _phase_ == internode::REALIZATION !!!!
         if (_phase_ == internode::INIT or _phase_ == internode::REALIZATION
@@ -130,8 +130,6 @@ private:
     double _len;
     double _predim;
     double _lig;
-};
-
-} } // namespace ecomeristem internode
+};} } // namespace ecomeristem internode
 
 #endif

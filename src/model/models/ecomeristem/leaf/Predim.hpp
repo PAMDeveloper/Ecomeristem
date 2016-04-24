@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Predim : public AbstractAtomicModel < Predim >
+class Predim : public ecomeristem::AbstractAtomicModel < Predim >
 {
 public:
     enum internals { PREDIM };

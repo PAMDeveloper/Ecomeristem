@@ -42,7 +42,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum internals { BIOMASS, BLADE_AREA, DEMAND, LAST_DEMAND, PREDIM,

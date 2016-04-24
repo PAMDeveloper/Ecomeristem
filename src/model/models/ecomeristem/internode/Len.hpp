@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class Len : public AbstractAtomicModel < Len >
+class Len : public ecomeristem::AbstractAtomicModel < Len >
 {
 public:
     enum internals { LEN };
@@ -135,7 +135,7 @@ public:
         if (index == PHASE and not is_ready(t, PHASE)) {
             _phase_1 = _phase;
         }
-        AbstractAtomicModel < Len >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Len >::put(t, index, value);
     }
 
 private:

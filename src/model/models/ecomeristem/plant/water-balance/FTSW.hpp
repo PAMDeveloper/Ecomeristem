@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
-class Ftsw : public AbstractAtomicModel < Ftsw >
+class Ftsw : public ecomeristem::AbstractAtomicModel < Ftsw >
 {
 public:
     enum internals { FTSW };
@@ -74,7 +74,7 @@ public:
         if (index == SWC and !is_ready(t, SWC)) {
             _swc_1 = _swc;
         }
-        AbstractAtomicModel < Ftsw >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < Ftsw >::put(t, index, value);
     }
 
 private:

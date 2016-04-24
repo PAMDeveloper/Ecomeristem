@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class ExpTime : public AbstractAtomicModel < ExpTime >
+class ExpTime : public ecomeristem::AbstractAtomicModel < ExpTime >
 {
 public:
     enum internals { EXP_TIME };
@@ -108,7 +108,7 @@ public:
         if (index == PHASE and !is_ready(t, PHASE)) {
             _phase_1 = _phase;
         }
-        AbstractAtomicModel < ExpTime >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < ExpTime >::put(t, index, value);
     }
 
 private:

@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class LifeSpan : public AbstractAtomicModel < LifeSpan >
+class LifeSpan : public ecomeristem::AbstractAtomicModel < LifeSpan >
 {
 public:
     enum internals { LIFE_SPAN };

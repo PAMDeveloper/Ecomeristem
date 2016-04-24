@@ -28,6 +28,7 @@
 #include <model/kernel/Model.hpp>
 #include <model/kernel/Simulator.hpp>
 #include <model/observer/View.hpp>
+#include <model/observer/PlantView.hpp>
 
 #include <model/models/ModelParameters.hpp>
 
@@ -104,12 +105,15 @@ static void format_dates(const model::models::ModelParameters& parameters,
 
 TEST_CASE("Thermal_time_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -151,12 +155,15 @@ TEST_CASE("Thermal_time_tests", "variables")
 
 TEST_CASE("Water_balance_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -173,12 +180,15 @@ TEST_CASE("Water_balance_tests", "variables")
 
 TEST_CASE("Assimilation_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -195,12 +205,15 @@ TEST_CASE("Assimilation_tests", "variables")
 
 TEST_CASE("Root_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -221,12 +234,15 @@ TEST_CASE("Root_tests", "variables")
 
 TEST_CASE("Stock_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -271,12 +287,15 @@ TEST_CASE("Stock_tests", "variables")
 
 TEST_CASE("Plant_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);

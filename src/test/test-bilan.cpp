@@ -28,6 +28,7 @@
 #include <model/kernel/Model.hpp>
 #include <model/kernel/Simulator.hpp>
 #include <model/observer/View.hpp>
+#include <model/observer/PlantView.hpp>
 
 #include <model/models/ModelParameters.hpp>
 
@@ -49,12 +50,15 @@ static void format_dates(const model::models::ModelParameters& parameters,
 
 TEST_CASE("Bilan_tests", "variables")
 {
+    ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
-    kernel::Simulator simulator(model);
+    kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
+
+    simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
     reader.load(SIMULATION_NAME, parameters);
@@ -82,7 +86,7 @@ TEST_CASE("Bilan_tests", "variables")
               << std::endl;
 
     for (double t = t0; t <= t1; ++t) {
-        const observer::View& view(simulator.observer().view("plant"));
+        const model::observer::View & view(simulator.observer().view("plant"));
         double pheno_stage = view.get(t, "Plant:PHENO_STAGE");
         double assim = view.get(t, "Plant:ASSIM");
         double deficit = view.get(t, "Plant:DEFICIT");

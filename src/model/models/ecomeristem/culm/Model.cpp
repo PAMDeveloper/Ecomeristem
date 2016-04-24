@@ -145,7 +145,7 @@ void Model::compute(double t, bool update)
         (*it)->put(t, phytomer::Model::PHENO_STAGE, _pheno_stage);
         if (_is_first_culm) {
             if (i == 0) {
-                (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM, 0);
+                (*it)->put(t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM, 0.);
             } else {
                 if ((*previous_it)->is_stable(t)) {
                     (*it)->put(
@@ -158,14 +158,14 @@ void Model::compute(double t, bool update)
                        _predim_leaf_on_mainstem);
         }
         if (i == 0) {
-            (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
+            (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0.);
         } else {
             if ((*previous_it)->is_stable(t)) {
                 (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
                            (*previous_it)->get(t, phytomer::Model::PREDIM));
             }
             // else {
-            //     (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0);
+            //     (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0.);
             // }
         }
         (*it)->put(t, phytomer::Model::SLA, _sla);

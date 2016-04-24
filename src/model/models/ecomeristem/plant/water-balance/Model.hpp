@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace plant { namespace water_balance {
 
-class Model : public AbstractCoupledModel < Model >
+class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
     enum submodels { CSTR_MODEL, FCSTR_MODEL, FTSW_MODEL, SWC_MODEL,

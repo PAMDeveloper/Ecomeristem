@@ -31,7 +31,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class Biomass : public AbstractAtomicModel < Biomass >
+class Biomass : public ecomeristem::AbstractAtomicModel < Biomass >
 {
 public:
     enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW, SENESC_DW_SUM,

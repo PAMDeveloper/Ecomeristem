@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class IndexCompetition : public AbstractAtomicModel < IndexCompetition >
+class IndexCompetition : public ecomeristem::AbstractAtomicModel < IndexCompetition >
 {
 public:
     enum internals { IC, TEST_IC };
@@ -171,7 +171,8 @@ public:
             _day_demand_[0] = _day_demand;
         }
 
-        AbstractAtomicModel < IndexCompetition >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < IndexCompetition >::put(t, index,
+                                                                   value);
     }
 
 private:

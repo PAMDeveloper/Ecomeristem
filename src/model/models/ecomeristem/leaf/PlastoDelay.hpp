@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class PlastoDelay : public AbstractAtomicModel < PlastoDelay >
+class PlastoDelay : public ecomeristem::AbstractAtomicModel < PlastoDelay >
 {
 public:
     enum internals { PLASTO_DELAY };

@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace plant { namespace stock {
 
-class ReservoirDispo : public AbstractAtomicModel < ReservoirDispo >
+class ReservoirDispo : public ecomeristem::AbstractAtomicModel < ReservoirDispo >
 {
 public:
     enum internals { RESERVOIR_DISPO };
@@ -92,7 +92,8 @@ public:
         if (index == STOCK and !is_ready(t, STOCK)) {
             _stock_1 = _stock;
         }
-        AbstractAtomicModel < ReservoirDispo >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < ReservoirDispo >::put(t, index,
+                                                                 value);
     }
 
 private:

@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class DiameterPredim : public AbstractAtomicModel < DiameterPredim >
+class DiameterPredim : public ecomeristem::AbstractAtomicModel < DiameterPredim >
 {
 public:
     enum internals { DIAMETER_PREDIM };

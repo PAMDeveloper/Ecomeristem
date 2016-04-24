@@ -32,7 +32,7 @@
 namespace ecomeristem { namespace leaf {
 
 class ThermalTimeSinceLigulation :
-        public AbstractAtomicModel < ThermalTimeSinceLigulation >
+        public ecomeristem::AbstractAtomicModel < ThermalTimeSinceLigulation >
 {
 public:
     enum internals { THERMAL_TIME_SINCE_LIGULATION };

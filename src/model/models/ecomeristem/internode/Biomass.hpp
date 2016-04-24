@@ -30,7 +30,7 @@
 
 namespace ecomeristem { namespace internode {
 
-class Biomass : public AbstractAtomicModel < Biomass >
+class Biomass : public ecomeristem::AbstractAtomicModel < Biomass >
 {
 public:
     enum internals { BIOMASS };

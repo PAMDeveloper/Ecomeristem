@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace root {
 
-class RootDemandCoef : public AbstractAtomicModel < RootDemandCoef >
+class RootDemandCoef : public ecomeristem::AbstractAtomicModel < RootDemandCoef >
 {
 public:
     static const unsigned int ROOT_DEMAND_COEF = 0;

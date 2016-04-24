@@ -29,7 +29,7 @@
 
 namespace ecomeristem { namespace leaf {
 
-class ReductionLER : public AbstractAtomicModel < ReductionLER >
+class ReductionLER : public ecomeristem::AbstractAtomicModel < ReductionLER >
 {
 public:
     enum internals { REDUCTION_LER };
