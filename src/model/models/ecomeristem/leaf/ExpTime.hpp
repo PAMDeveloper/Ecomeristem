@@ -34,14 +34,14 @@ class ExpTime : public ecomeristem::AbstractAtomicModel < ExpTime >
 {
 public:
     enum internals { EXP_TIME };
-    enum externals { DD, LER, LEN, PREDIM };
+    enum externals { /* DD, */ LER, LEN, PREDIM };
 
     ExpTime(bool is_first_leaf, bool is_on_mainstem) :
         _is_first_leaf(is_first_leaf), _is_on_mainstem(is_on_mainstem)
     {
         internal(EXP_TIME, &ExpTime::_exp_time);
 
-        external(DD, &ExpTime::_dd);
+        // external(DD, &ExpTime::_dd);
         external(LER, &ExpTime::_ler);
         external(LEN, &ExpTime::_len);
         external(PREDIM, &ExpTime::_predim);
@@ -50,9 +50,8 @@ public:
     virtual ~ExpTime()
     { }
 
-    // TODO: bug !!!!
-    virtual bool check(double /* t */) const
-    { return true; }
+    virtual bool check(double t) const
+    { return is_ready(t, LER) and is_ready(t, PREDIM); }
 
     void compute(double t, bool /* update */)
     {
@@ -83,7 +82,7 @@ public:
             << " ; len[-1] = " << _len_1
             << " ; Predim = " << _predim
             << " ; LER = " << _ler
-            << " ; DD = " << _dd
+            // << " ; DD = " << _dd
             << " ; is_first_leaf = " << _is_first_leaf
             << " ; is_on_mainstem = " << _is_on_mainstem;
         utils::Trace::trace().flush();
@@ -118,7 +117,7 @@ private:
     double _first_day;
 
 // external variables
-    double _dd;
+    // double _dd;
     double _ler;
     double _len;
     double _len_1;

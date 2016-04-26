@@ -100,9 +100,10 @@ void Model::compute(double t, bool /* update */)
                      _predim_leaf_on_mainstem);
     predim_model.put(t, Predim::PREDIM_PREVIOUS_LEAF,
                      _predim_previous_leaf);
-    if (is_ready(t, TEST_IC)) {
+    // TODO: genant !
+    // if (is_ready(t, TEST_IC)) {
         predim_model.put(t, Predim::TEST_IC, _test_ic);
-    }
+    // }
     predim_model(t);
 
     reduction_ler_model.put(t, ReductionLER::FTSW, _ftsw);
@@ -112,107 +113,128 @@ void Model::compute(double t, bool /* update */)
     if (predim_model.is_computed(t, Predim::PREDIM)) {
         ler_model.put(t, Ler::PREDIM,
                       predim_model.get(t, Predim::PREDIM));
+        ler_model.put(t, Ler::REDUCTION_LER,
+                      reduction_ler_model.get(t, ReductionLER::REDUCTION_LER));
+        ler_model(t);
     }
-    ler_model.put(t, Ler::REDUCTION_LER,
-                  reduction_ler_model.get(t, ReductionLER::REDUCTION_LER));
-    ler_model(t);
 
-    exp_time_model.put(t, ExpTime::LER, ler_model.get(t, Ler::LER));
-    exp_time_model.put(t, ExpTime::DD, _dd);
-    if (predim_model.is_computed(t, Predim::PREDIM)) {
+    if (ler_model.is_computed(t, Ler::LER) and
+        predim_model.is_computed(t, Predim::PREDIM)) {
+        exp_time_model.put(t, ExpTime::LER, ler_model.get(t, Ler::LER));
+        // exp_time_model.put(t, ExpTime::DD, _dd);
         exp_time_model.put(t, ExpTime::PREDIM,
                            predim_model.get(t, Predim::PREDIM));
+        exp_time_model(t);
     }
-    exp_time_model(t);
 
-    len_model.put(t, Len::DD, _dd);
-    len_model.put(t, Len::DELTA_T, _delta_t);
-    len_model.put(t, Len::EXP_TIME,
-                  exp_time_model.get(t, ExpTime::EXP_TIME));
-    len_model.put(t, Len::LER, ler_model.get(t, Ler::LER));
-    len_model.put(t, Len::GROW, _grow);
-    len_model.put(t, Len::PHASE, _phase);
-    if (predim_model.is_computed(t, Predim::PREDIM)) {
+    if (exp_time_model.is_computed(t, ExpTime::EXP_TIME) and
+        ler_model.is_computed(t, Ler::LER) and
+        predim_model.is_computed(t, Predim::PREDIM)) {
+        len_model.put(t, Len::DD, _dd);
+        len_model.put(t, Len::DELTA_T, _delta_t);
+        len_model.put(t, Len::EXP_TIME,
+                      exp_time_model.get(t, ExpTime::EXP_TIME));
+        len_model.put(t, Len::LER, ler_model.get(t, Ler::LER));
+        len_model.put(t, Len::GROW, _grow);
+        len_model.put(t, Len::PHASE, _phase);
         len_model.put(t, Len::PREDIM,
                       predim_model.get(t, Predim::PREDIM));
+        len_model(t);
     }
-    len_model(t);
-    exp_time_model.put(t, ExpTime::LEN, len_model.get(t, Len::LEN));
 
-    manager_model.put(t, Manager::LEN, len_model.get(t, Len::LEN));
-    if (predim_model.is_computed(t, Predim::PREDIM)) {
-        manager_model.put(t, Manager::PREDIM,
-                          predim_model.get(t, Predim::PREDIM));
+    if (len_model.is_computed(t, Len::LEN)) {
+        exp_time_model.put(t, ExpTime::LEN, len_model.get(t, Len::LEN));
+        manager_model.put(t, Manager::LEN, len_model.get(t, Len::LEN));
     }
+
+    manager_model.put(t, Manager::PREDIM,
+                      predim_model.get(t, Predim::PREDIM));
     manager_model.put(t, Manager::PHASE, _phase);
     manager_model.put(t, Manager::STOP, _stop);
 
-    plasto_delay_model.put(t, PlastoDelay::DELTA_T, _delta_t);
-    plasto_delay_model.put(t, PlastoDelay::REDUCTION_LER,
-                           reduction_ler_model.get(
-                               t, ReductionLER::REDUCTION_LER));
-    plasto_delay_model.put(t, PlastoDelay::EXP_TIME,
-                           exp_time_model.get(t, ExpTime::EXP_TIME));
-    plasto_delay_model(t);
+    if (exp_time_model.is_computed(t, ExpTime::EXP_TIME)) {
+        plasto_delay_model.put(t, PlastoDelay::DELTA_T, _delta_t);
+        plasto_delay_model.put(t, PlastoDelay::REDUCTION_LER,
+                               reduction_ler_model.get(
+                                   t, ReductionLER::REDUCTION_LER));
+        plasto_delay_model.put(t, PlastoDelay::EXP_TIME,
+                               exp_time_model.get(t, ExpTime::EXP_TIME));
+        plasto_delay_model(t);
+    }
 
-    width_model.put(t, Width::LEN, len_model.get(t, Len::LEN));
-    width_model(t);
+    if (len_model.is_computed(t, Len::LEN)) {
+        width_model.put(t, Width::LEN, len_model.get(t, Len::LEN));
+        width_model(t);
+    }
 
-    thermal_time_since_ligulation_model.put(
-        t, ThermalTimeSinceLigulation::DELTA_T, _delta_t);
-    thermal_time_since_ligulation_model.put(
-        t, ThermalTimeSinceLigulation::PHASE,
-        manager_model.get(t, Manager::LEAF_PHASE));
-    thermal_time_since_ligulation_model(t);
+    if (manager_model.is_computed(t, Manager::LEAF_PHASE)) {
+        thermal_time_since_ligulation_model.put(
+            t, ThermalTimeSinceLigulation::DELTA_T, _delta_t);
+        thermal_time_since_ligulation_model.put(
+            t, ThermalTimeSinceLigulation::PHASE,
+            manager_model.get(t, Manager::LEAF_PHASE));
+        thermal_time_since_ligulation_model(t);
+    }
 
-    blade_area_model.put(t, BladeArea::LEN, len_model.get(t, Len::LEN));
-    blade_area_model.put(t, BladeArea::WIDTH,
-                         width_model.get(t, Width::WIDTH));
-    blade_area_model.put(
-        t, BladeArea::PHASE,
-        manager_model.get(t, Manager::LEAF_PHASE));
-    blade_area_model.put(
-        t, BladeArea::TT,
-        thermal_time_since_ligulation_model.get(
-            t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
-    blade_area_model.put(t, BladeArea::LIFE_SPAN,
-                         life_span_model.get(t, LifeSpan::LIFE_SPAN));
-    blade_area_model(t);
+    if (len_model.is_computed(t, Len::LEN)) {
+        blade_area_model.put(t, BladeArea::LEN, len_model.get(t, Len::LEN));
+        blade_area_model.put(t, BladeArea::WIDTH,
+                             width_model.get(t, Width::WIDTH));
+        blade_area_model.put(
+            t, BladeArea::PHASE,
+            manager_model.get(t, Manager::LEAF_PHASE));
+        blade_area_model.put(
+            t, BladeArea::TT,
+            thermal_time_since_ligulation_model.get(
+                t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
+        blade_area_model.put(t, BladeArea::LIFE_SPAN,
+                             life_span_model.get(t, LifeSpan::LIFE_SPAN));
+        blade_area_model(t);
+    }
 
-    biomass_model.put(t, Biomass::GROW, _grow);
-    biomass_model.put(t, Biomass::SLA, _sla);
-    biomass_model.put(t, Biomass::PHASE,
-                      manager_model.get(t, Manager::LEAF_PHASE));
-    biomass_model.put(t, Biomass::BLADE_AREA,
-                      blade_area_model.get(t, BladeArea::BLADE_AREA));
-    biomass_model.put(t, Biomass::CORRECTED_BLADE_AREA,
-                      blade_area_model.get(t, BladeArea::CORRECTED_BLADE_AREA));
-    biomass_model.put(
-        t, Biomass::TT,
-        thermal_time_since_ligulation_model.get(
-            t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
-    biomass_model.put(t, Biomass::LIFE_SPAN,
-                         life_span_model.get(t, LifeSpan::LIFE_SPAN));
-    biomass_model(t);
-
-    leaf_demand_model.put(t, LeafDemand::GROW, _grow);
-    leaf_demand_model.put(t, LeafDemand::PHASE,
+    if (blade_area_model.is_computed(t, BladeArea::BLADE_AREA)) {
+        biomass_model.put(t, Biomass::GROW, _grow);
+        biomass_model.put(t, Biomass::SLA, _sla);
+        biomass_model.put(t, Biomass::PHASE,
                           manager_model.get(t, Manager::LEAF_PHASE));
-    leaf_demand_model.put(t, LeafDemand::BIOMASS,
-                          biomass_model.get(t, Biomass::BIOMASS));
-    leaf_demand_model(t);
+        biomass_model.put(t, Biomass::BLADE_AREA,
+                          blade_area_model.get(t, BladeArea::BLADE_AREA));
+        biomass_model.put(t, Biomass::CORRECTED_BLADE_AREA,
+                          blade_area_model.get(
+                              t, BladeArea::CORRECTED_BLADE_AREA));
+        biomass_model.put(
+            t, Biomass::TT,
+            thermal_time_since_ligulation_model.get(
+                t, ThermalTimeSinceLigulation::THERMAL_TIME_SINCE_LIGULATION));
+        biomass_model.put(t, Biomass::LIFE_SPAN,
+                          life_span_model.get(t, LifeSpan::LIFE_SPAN));
+        biomass_model(t);
+    }
 
-    last_demand_model.put(t, LastDemand::PHASE,
-                          manager_model.get(t, Manager::LEAF_PHASE));
-    last_demand_model.put(t, LastDemand::BIOMASS,
-                          biomass_model.get(t, Biomass::BIOMASS));
-    last_demand_model(t);
+    if (biomass_model.is_computed(t, Biomass::BIOMASS)) {
+        leaf_demand_model.put(t, LeafDemand::GROW, _grow);
+        leaf_demand_model.put(t, LeafDemand::PHASE,
+                              manager_model.get(t, Manager::LEAF_PHASE));
+        leaf_demand_model.put(t, LeafDemand::BIOMASS,
+                              biomass_model.get(t, Biomass::BIOMASS));
+        leaf_demand_model(t);
+    }
 
-    time_from_app_model.put(t, TimeFromApp::PHASE,
-                            manager_model.get(t, Manager::LEAF_PHASE));
-    time_from_app_model.put(t, TimeFromApp::DD, _dd);
-    time_from_app_model.put(t, TimeFromApp::DELTA_T, _delta_t);
-    time_from_app_model(t);
+    if (biomass_model.is_computed(t, Biomass::BIOMASS)) {
+        last_demand_model.put(t, LastDemand::PHASE,
+                              manager_model.get(t, Manager::LEAF_PHASE));
+        last_demand_model.put(t, LastDemand::BIOMASS,
+                              biomass_model.get(t, Biomass::BIOMASS));
+        last_demand_model(t);
+    }
+
+    if (manager_model.is_computed(t, Manager::LEAF_PHASE)) {
+        time_from_app_model.put(t, TimeFromApp::PHASE,
+                                manager_model.get(t, Manager::LEAF_PHASE));
+        time_from_app_model.put(t, TimeFromApp::DD, _dd);
+        time_from_app_model.put(t, TimeFromApp::DELTA_T, _delta_t);
+        time_from_app_model(t);
+    }
 
 #ifdef WITH_TRACE
         utils::Trace::trace()

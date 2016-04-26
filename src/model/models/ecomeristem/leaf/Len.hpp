@@ -53,8 +53,8 @@ public:
     { }
 
     // TODO: bug !!!!
-    virtual bool check(double /* t */) const
-    { return true; }
+    // virtual bool check(double /* t */) const
+    // { return true; }
 
     void compute(double t, bool update)
     {
