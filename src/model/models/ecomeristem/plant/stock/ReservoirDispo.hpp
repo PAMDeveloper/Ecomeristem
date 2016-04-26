@@ -48,8 +48,8 @@ public:
     virtual ~ReservoirDispo()
     { }
 
-    virtual bool check(double /* t */) const
-    { return true; }
+    virtual bool check(double t) const
+    { return is_ready(t, LEAF_BIOMASS_SUM); }
 
     void compute(double t, bool /* update */)
     {
