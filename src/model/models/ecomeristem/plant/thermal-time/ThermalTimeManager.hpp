@@ -51,6 +51,9 @@ public:
     virtual ~ThermalTimeManager()
     { }
 
+    virtual bool check(double /* t */) const
+    { return true; }
+
     void compute(double t, bool /* update */)
     {
         state_t old_state;

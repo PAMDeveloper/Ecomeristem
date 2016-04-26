@@ -35,18 +35,12 @@ enum phase_t { INIT = 0,
                GROWTH = 2,
                NOGROWTH = 3,
                NEW_PHYTOMER = 5,
-               NEW_PHYTOMER_NOGROWTH = 14,
-               NEW_PHYTOMER_NOGROWTH2 = 15,
-               NEW_PHYTOMER_NOGROWTH3 = 16,
-               NEW_PHYTOMER_NOGROWTH4 = 17,
                NOGROWTH2 = 18,
                NOGROWTH3 = 19,
                NOGROWTH4 = 20,
-               NOGROWTH5 = 21,
-               NEW_PHYTOMER2 = 22,
                NEW_PHYTOMER3 = 23,
-               LIG = 24
-};
+               LIG = 24,
+               KILL = 25 };
 
 enum state_t { VEGETATIVE, PRE_ELONG, ELONG, PRE_PI, PI, PRE_FLO, FLO,
                END_FILLING, MATURITY, DEAD };

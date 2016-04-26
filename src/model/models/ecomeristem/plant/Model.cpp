@@ -139,30 +139,7 @@ void Model::compute(double t, bool /* update */)
     _culm_is_computed = false;
 
     compute_manager(t);
-    if (_culm_index != -1 and _leaf_index != -1) {
-
-#ifdef WITH_TRACE
-        utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
-            << "DELETE LEAF: culm index = " << _culm_index
-            << " ; leaf index = " << _leaf_index;
-        utils::Trace::trace().flush();
-#endif
-
-        culm_models[_culm_index]->delete_leaf(t, _leaf_index);
-
-        std::vector < culm::Model* >::const_iterator it =
-            culm_models.begin();
-
-        while (it != culm_models.end()) {
-            (*it)->realloc_biomass(t, _deleted_leaf_biomass);
-            ++it;
-        }
-        stock_model.realloc_biomass(t, _deleted_leaf_biomass);
-        _leaf_blade_area_sum -= _deleted_leaf_blade_area;
-    } else {
-        stock_model.realloc_biomass(t, 0);
-    }
+    delete_leaf(t);
     if (not is_dead()) {
         compute_lig(t);
 //    lig_model(t);
@@ -186,8 +163,8 @@ void Model::compute(double t, bool /* update */)
             //TODO: fin du genant !
 
             if (not create and
-                (manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER or
-                 manager_model.get(t, Manager::PHASE) == NEW_PHYTOMER3)) {
+                (get_phase(t) == NEW_PHYTOMER or
+                 get_phase(t) == NEW_PHYTOMER3)) {
                 create = true;
                 stable = false;
                 create_phytomer(t);
@@ -198,14 +175,15 @@ void Model::compute(double t, bool /* update */)
             compute_manager(t);
 
             //TODO: refactor
-            if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
+            if (get_state(t) == plant::ELONG) {
                 compute_culms(t);
             }
         } while (not stable or not assimilation_model.is_stable(t) or
                  not water_balance_model.is_stable(t) or
                  not thermal_time_model.is_stable(t) or
                  not sla_model.is_stable(t) or not manager_model.is_stable(t) or
-                 not tiller_manager_model.is_stable(t) or not culms_is_stable(t) or
+                 not tiller_manager_model.is_stable(t) or
+                 not culms_is_stable(t) or
                  not root_model.is_stable(t) or not stock_model.is_stable(t));
 
         _culm_index = -1;
@@ -511,13 +489,12 @@ void Model::compute_root(double t)
     root_model(t);
 
     // TODO: est-ce un bug dans la version Delphi ?
-    if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
-        _demand_sum = _leaf_demand_sum + _internode_demand_sum +
-            root_model.get(t, root::Model::ROOT_DEMAND_1);
-    } else {
-        _demand_sum = _leaf_demand_sum + _internode_demand_sum +
-            root_model.get(t, root::Model::ROOT_DEMAND);
-    }
+    // if (get_state(t) == plant::ELONG) {
+    // _demand_sum = _leaf_demand_sum + _internode_demand_sum +
+    //     root_model.get(t, root::Model::ROOT_DEMAND_1);
+    // } else {
+    _demand_sum = _leaf_demand_sum + _internode_demand_sum + get_root_demand(t);
+    // }
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
@@ -539,7 +516,7 @@ void Model::compute_sla(double t)
 
 void Model::compute_stock(double t)
 {
-    if (manager_model.get(t, Manager::STATE) == plant::ELONG) {
+    if (get_state(t) == plant::ELONG) {
         double _culm_stock_sum = 0;
         double _culm_deficit_sum = 0;
 
@@ -605,18 +582,15 @@ void Model::compute_stock(double t)
                         _realloc_biomass_sum);
         //TODO
         stock_model.put(t, stock::Model::DELETED_LEAF_BIOMASS, 0.);
-        stock_model.put(t, stock::Model::STATE,
-                        manager_model.get(t, Manager::STATE));
+        stock_model.put(t, stock::Model::STATE, get_state(t));
         stock_model(t);
     }
 
     std::vector < culm::Model* >::const_iterator it = culm_models.begin();
 
     while (it != culm_models.end()) {
-        (*it)->put(t, culm::Model::PLANT_STOCK,
-                   stock_model.get(t, stock::Model::STOCK));
-        (*it)->put(t, culm::Model::PLANT_DEFICIT,
-                   stock_model.get(t, stock::Model::DEFICIT));
+        (*it)->put(t, culm::Model::PLANT_STOCK, get_stock(t));
+        (*it)->put(t, culm::Model::PLANT_DEFICIT, get_deficit(t));
         ++it;
     }
 }
@@ -739,6 +713,71 @@ bool Model::culms_is_stable(double t)
         ++it;
     }
     return stable;
+}
+
+void Model::delete_leaf(double t)
+{
+    if (_culm_index != -1 and _leaf_index != -1) {
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << "DELETE LEAF: culm index = " << _culm_index
+            << " ; leaf index = " << _leaf_index;
+        utils::Trace::trace().flush();
+#endif
+
+        culm_models[_culm_index]->delete_leaf(t, _leaf_index);
+
+        std::vector < culm::Model* >::const_iterator it =
+            culm_models.begin();
+
+        while (it != culm_models.end()) {
+            (*it)->realloc_biomass(t, _deleted_leaf_biomass);
+            ++it;
+        }
+        stock_model.realloc_biomass(t, _deleted_leaf_biomass);
+        _leaf_blade_area_sum -= _deleted_leaf_blade_area;
+    } else {
+        stock_model.realloc_biomass(t, 0);
+    }
+}
+
+double Model::get_phase(double t) const
+{
+    return manager_model.is_computed(t, Manager::PHASE) ?
+        manager_model.get(t, Manager::PHASE) :
+        (t == _begin ? (double)INITIAL : manager_model.get(t - 1,
+                                                           Manager::PHASE));
+}
+
+double Model::get_state(double t) const
+{
+    return manager_model.is_computed(t, Manager::STATE) ?
+        manager_model.get(t, Manager::STATE) :
+        (t == _begin ? (double)VEGETATIVE : manager_model.get(t - 1,
+                                                              Manager::STATE));
+}
+
+double Model::get_deficit(double t) const
+{
+    return stock_model.is_computed(t, stock::Model::DEFICIT) ?
+        stock_model.get(t, stock::Model::DEFICIT) :
+        (t == _begin ? 0. : stock_model.get(t - 1, stock::Model::DEFICIT));
+}
+
+double Model::get_root_demand(double t) const
+{
+    return root_model.is_computed(t, root::Model::ROOT_DEMAND) ?
+        root_model.get(t, root::Model::ROOT_DEMAND) :
+        (t == _begin ? 0. : root_model.get(t, root::Model::ROOT_DEMAND));
+}
+
+double Model::get_stock(double t) const
+{
+    return stock_model.is_computed(t, stock::Model::STOCK) ?
+        stock_model.get(t, stock::Model::STOCK) :
+        (t == _begin ? 0. : stock_model.get(t - 1, stock::Model::STOCK));
 }
 
 } } // namespace ecomeristem plant

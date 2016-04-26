@@ -4,7 +4,7 @@ INCLUDE_DIRECTORIES(
 LINK_DIRECTORIES(${ARTIS_LIBRARY_DIRS})
 
 SET(ECOMERISTEM_KERNEL_HPP AbstractAtomicModel.hpp AbstractCoupledModel.hpp
-  AbstractModel.hpp Simulator.hpp Model.hpp)
+  Simulator.hpp Model.hpp)
 
 SET(ECOMERISTEM_KERNEL_CPP Simulator.cpp Model.cpp)
 

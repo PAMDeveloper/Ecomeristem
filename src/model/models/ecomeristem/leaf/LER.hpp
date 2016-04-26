@@ -46,9 +46,9 @@ public:
     virtual ~Ler()
     { }
 
-    // si activé alors pb !
-    // virtual bool check(double t) const
-    // { return is_ready(t, PREDIM); }
+    // TODO: bug !!!!
+    virtual bool check(double /* t */) const
+    { return true; }
 
     void compute(double t, bool /* update */)
     {

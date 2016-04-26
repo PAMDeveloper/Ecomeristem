@@ -54,6 +54,9 @@ public:
     virtual ~Manager()
     { }
 
+    virtual bool check(double /* t */) const
+    { return true; }
+
     void compute(double t, bool /* update */)
     {
         if (_phase_ == internode::INIT) {

@@ -86,6 +86,12 @@ private:
     void create_culm(double t, int n);
     void create_phytomer(double t);
     bool culms_is_stable(double t);
+    void delete_leaf(double t);
+    double get_deficit(double t) const;
+    double get_phase(double t) const;
+    double get_root_demand(double t) const;
+    double get_state(double t) const;
+    double get_stock(double t) const;
 
 // parameters
     double _nbleaf_enabling_tillering;

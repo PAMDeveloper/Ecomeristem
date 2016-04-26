@@ -27,13 +27,13 @@
 
 namespace ecomeristem { namespace plant {
 
-bool Manager::check(double t) const
+bool Manager::check(double /* t */) const
 {
     // TODO
     return true;
 }
 
-void Manager::compute(double t, bool update)
+void Manager::compute(double t, bool /* update */)
 {
     phase_t old_phase;
 
@@ -50,7 +50,7 @@ void Manager::compute(double t, bool update)
             if (_stock_1 > 0 and _phenoStage < nbleaf_pi) {
                 _phase = GROWTH;
             } else {
-                _phase = DEAD;
+                _phase = KILL;
             }
             break;
         }
@@ -69,7 +69,7 @@ void Manager::compute(double t, bool update)
             }
             break;
         }
-        case DEAD: break;
+        case KILL: break;
         case NEW_PHYTOMER: {
             if (_phenoStage == nbleaf_culm_elong) {
                 _state = ELONG;

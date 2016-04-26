@@ -28,12 +28,51 @@
 #include <model/models/ModelParameters.hpp>
 
 #include <artis/kernel/AbstractAtomicModel.hpp>
+#include <artis/utils/DateTime.hpp>
+
+#include <typeinfo>
 
 namespace ecomeristem {
 
 template < typename T >
-using AbstractAtomicModel = artis::kernel::AbstractAtomicModel <
-    T, artis::utils::DoubleTime, model::models::ModelParameters >;
+class AbstractAtomicModel : public artis::kernel::AbstractAtomicModel <
+    T, artis::utils::DoubleTime, model::models::ModelParameters >
+{
+public:
+    AbstractAtomicModel()
+    { }
+
+    virtual ~AbstractAtomicModel()
+    { }
+
+    virtual bool check(double t) const
+    {
+        bool OK = true;
+        typename std::vector <
+            std::pair < double,
+                        double T::* > >::const_iterator it =
+            artis::kernel::Externals <
+                T, artis::utils::DoubleTime >::externalsD.begin();
+
+        while (it != artis::kernel::Externals < T,
+               artis::utils::DoubleTime >::externalsD.end() and OK) {
+            OK = it->first == t;
+            ++it;
+        }
+        // if (not OK) {
+        //     std::cout << artis::utils::DateTime::toJulianDay(t)
+        //               << " " << typeid(*this).name() << std::endl;
+        // }
+        return OK;
+    }
+
+    virtual void operator()(double t)
+    {
+        artis::kernel::AbstractAtomicModel <
+            T, artis::utils::DoubleTime,
+            model::models::ModelParameters >::operator()(t);
+    }
+};
 
 }
 

@@ -48,6 +48,9 @@ public:
     virtual ~ReservoirDispo()
     { }
 
+    virtual bool check(double /* t */) const
+    { return true; }
+
     void compute(double t, bool /* update */)
     {
         if (is_ready(t, STOCK)) {

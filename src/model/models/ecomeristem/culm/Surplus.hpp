@@ -59,6 +59,10 @@ public:
     virtual ~Surplus()
     { }
 
+    // TODO: bug !!!!
+    virtual bool check(double /* t */) const
+    { return true; }
+
     void compute(double t, bool update)
     {
         if (_plant_state == plant::ELONG) {
