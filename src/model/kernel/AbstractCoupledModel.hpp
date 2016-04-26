@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_ABSTRACT_COUPLED_MODEL_HPP
 
 #include <functional>
-#include <typeinfo>
+// #include <typeinfo>
 #include <vector>
 
 #include <artis/kernel/AbstractCoupledModel.hpp>
@@ -51,20 +51,21 @@ public:
     virtual ~AbstractCoupledModel()
     { }
 
-    virtual bool check(double t) const
+    virtual bool check(double /* t */) const
     {
-        bool OK = true;
-        typename std::vector <
-            std::pair < double,
-                        double T::* > >::const_iterator it =
-            artis::kernel::Externals <
-            T, artis::utils::DoubleTime >::externalsD.begin();
+        // *** code for debug
+        // bool OK = true;
+        // typename std::vector <
+        //     std::pair < double,
+        //                 double T::* > >::const_iterator it =
+        //     artis::kernel::Externals <
+        //     T, artis::utils::DoubleTime >::externalsD.begin();
 
-        while (it != artis::kernel::Externals < T,
-               artis::utils::DoubleTime >::externalsD.end() and OK) {
-            OK = it->first == t;
-            ++it;
-        }
+        // while (it != artis::kernel::Externals < T,
+        //        artis::utils::DoubleTime >::externalsD.end() and OK) {
+        //     OK = it->first == t;
+        //     ++it;
+        // }
         // if (not OK) {
         //     std::cout << artis::utils::DateTime::toJulianDay(t)
         //               << " " << typeid(*this).name() << std::endl;

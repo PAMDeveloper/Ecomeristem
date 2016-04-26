@@ -57,7 +57,6 @@ public:
     {
 /*        if (_first_day == t) {
             _exp_time = (_predim - _len_1) / _ler;
-            // TODO: why ?
             _is_first_leaf = false;
         } else {
             if (_is_first_leaf and _is_on_mainstem) {

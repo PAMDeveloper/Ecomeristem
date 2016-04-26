@@ -30,7 +30,7 @@
 #include <artis/kernel/AbstractAtomicModel.hpp>
 #include <artis/utils/DateTime.hpp>
 
-#include <typeinfo>
+// #include <typeinfo>
 
 namespace ecomeristem {
 
@@ -45,26 +45,27 @@ public:
     virtual ~AbstractAtomicModel()
     { }
 
-    virtual bool check(double t) const
-    {
-        bool OK = true;
-        typename std::vector <
-            std::pair < double,
-                        double T::* > >::const_iterator it =
-            artis::kernel::Externals <
-                T, artis::utils::DoubleTime >::externalsD.begin();
+    // *** code for debug
+    // virtual bool check(double t) const
+    // {
+        // bool OK = true;
+        // typename std::vector <
+        //     std::pair < double,
+        //                 double T::* > >::const_iterator it =
+        //     artis::kernel::Externals <
+        //         T, artis::utils::DoubleTime >::externalsD.begin();
 
-        while (it != artis::kernel::Externals < T,
-               artis::utils::DoubleTime >::externalsD.end() and OK) {
-            OK = it->first == t;
-            ++it;
-        }
+        // while (it != artis::kernel::Externals < T,
+        //        artis::utils::DoubleTime >::externalsD.end() and OK) {
+        //     OK = it->first == t;
+        //     ++it;
+        // }
         // if (not OK) {
         //     std::cout << artis::utils::DateTime::toJulianDay(t)
         //               << " " << typeid(*this).name() << std::endl;
         // }
-        return OK;
-    }
+    //     return OK;
+    // }
 
     virtual void operator()(double t)
     {

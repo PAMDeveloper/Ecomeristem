@@ -59,9 +59,14 @@ public:
     virtual ~Surplus()
     { }
 
-    // TODO: bug !!!!
-    virtual bool check(double /* t */) const
-    { return true; }
+    virtual bool check(double t) const
+    { return is_ready(t, PLANT_STATE) and is_ready(t, SUPPLY) and
+            is_ready(t, MAX_RESERVOIR_DISPO) and
+            is_ready(t, INTERNODE_DEMAND_SUM) and
+            is_ready(t, LEAF_DEMAND_SUM) and
+            is_ready(t, INTERNODE_LAST_DEMAND_SUM) and
+            is_ready(t, LEAF_LAST_DEMAND_SUM) and
+            is_ready(t, REALLOC_BIOMASS_SUM); }
 
     void compute(double t, bool update)
     {

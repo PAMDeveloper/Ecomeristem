@@ -46,10 +46,6 @@ public:
     virtual ~Ler()
     { }
 
-    // TODO: bug !!!!
-    // virtual bool check(double /* t */) const
-    // { return true; }
-
     void compute(double t, bool /* update */)
     {
         _ler = _predim * _reduction_ler / (_plasto + _index *
