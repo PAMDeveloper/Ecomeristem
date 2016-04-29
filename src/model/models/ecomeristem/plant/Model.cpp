@@ -28,70 +28,68 @@
 #include <utils/DateTime.hpp>
 #include <utils/Trace.hpp>
 
+using namespace artis::kernel;
+
 namespace ecomeristem { namespace plant {
 
 Model::Model()
 {
     // submodels
-    submodel(ASSIMILATION, &assimilation_model);
-    submodel(ROOT, & root_model);
-    submodel(STOCK, &stock_model);
-    submodel(THERMAL_TIME, &thermal_time_model);
-    submodel(WATER_BALANCE, &water_balance_model);
-    submodel(MANAGER, &manager_model);
-    submodel(TILLER_MANAGER, &tiller_manager_model);
-    submodel(SLA, &sla_model);
+    S({ { ASSIMILATION, &assimilation_model },
+        { ROOT, &root_model },
+        { STOCK, &stock_model },
+        { THERMAL_TIME, &thermal_time_model },
+        { WATER_BALANCE, &water_balance_model },
+        { MANAGER, &manager_model },
+        { TILLER_MANAGER, &tiller_manager_model },
+        { SLA, &sla_model } });
 
     // internals
-    internal(LAI, &assimilation_model, plant::assimilation::Model::LAI);
-    internal(DELTA_T, &thermal_time_model,
-             plant::thermal_time::Model::DELTA_T);
-    internal(BOOL_CROSSED_PLASTO, &thermal_time_model,
-             plant::thermal_time::Model::BOOL_CROSSED_PLASTO);
-    internal(DD, &thermal_time_model, plant::thermal_time::Model::DD);
-    internal(EDD, &thermal_time_model, plant::thermal_time::Model::EDD);
-    internal(IH, &thermal_time_model, plant::thermal_time::Model::IH);
-    internal(LIGULO_VISU, &thermal_time_model,
-             plant::thermal_time::Model::LIGULO_VISU);
-    internal(PHENO_STAGE, &thermal_time_model,
-             plant::thermal_time::Model::PHENO_STAGE);
-    internal(PLASTO_VISU, &thermal_time_model,
-             plant::thermal_time::Model::PLASTO_VISU);
-    internal(TT, &thermal_time_model, plant::thermal_time::Model::TT);
-    internal(TT_LIG, &thermal_time_model,
-             plant::thermal_time::Model::TT_LIG);
-    internal(ASSIM, &assimilation_model,
-             plant::assimilation::Model::ASSIM);
-    internal(CSTR, &water_balance_model,
-             plant::water_balance::Model::CSTR);
-    internal(ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF);
-    internal(ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND);
-    internal(ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS);
-    // internal(STOCK, &stock_model, stock::Model::STOCK);
-    internal(GROW, &stock_model, stock::Model::GROW);
-    internal(SUPPLY, &stock_model, stock::Model::SUPPLY);
-    internal(DEFICIT, &stock_model, stock::Model::DEFICIT);
-    internal(IC, &stock_model, stock::Model::IC);
-    internal(SURPLUS, &stock_model, stock::Model::SURPLUS);
-    internal(TEST_IC, &stock_model, stock::Model::TEST_IC);
-    internal(DAY_DEMAND, &stock_model, stock::Model::DAY_DEMAND);
-    internal(RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO);
-    internal(SEED_RES, &stock_model, stock::Model::SEED_RES);
-
-    internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
-    internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
-    internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
-    internal(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
-    internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
-    internal(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
-    internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
+    I({ { LAI, &assimilation_model, plant::assimilation::Model::LAI },
+        { DELTA_T, &thermal_time_model, plant::thermal_time::Model::DELTA_T },
+        { BOOL_CROSSED_PLASTO, &thermal_time_model,
+                plant::thermal_time::Model::BOOL_CROSSED_PLASTO },
+        { DD, &thermal_time_model, plant::thermal_time::Model::DD },
+        { EDD, &thermal_time_model, plant::thermal_time::Model::EDD },
+        { IH, &thermal_time_model, plant::thermal_time::Model::IH },
+        { LIGULO_VISU, &thermal_time_model,
+                plant::thermal_time::Model::LIGULO_VISU },
+        { PHENO_STAGE, &thermal_time_model,
+                plant::thermal_time::Model::PHENO_STAGE },
+        { PLASTO_VISU, &thermal_time_model,
+                plant::thermal_time::Model::PLASTO_VISU },
+        { TT, &thermal_time_model, plant::thermal_time::Model::TT },
+        { TT_LIG, &thermal_time_model,
+                plant::thermal_time::Model::TT_LIG },
+        { ASSIM, &assimilation_model,
+                plant::assimilation::Model::ASSIM },
+        { CSTR, &water_balance_model,
+                plant::water_balance::Model::CSTR },
+        { ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF },
+        { ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND },
+        { ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS },
+            // { STOCK, &stock_model, stock::Model::STOCK },
+        { GROW, &stock_model, stock::Model::GROW },
+        { SUPPLY, &stock_model, stock::Model::SUPPLY },
+        { DEFICIT, &stock_model, stock::Model::DEFICIT },
+        { IC, &stock_model, stock::Model::IC },
+        { SURPLUS, &stock_model, stock::Model::SURPLUS },
+        { TEST_IC, &stock_model, stock::Model::TEST_IC },
+        { DAY_DEMAND, &stock_model, stock::Model::DAY_DEMAND },
+        { RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO },
+        { SEED_RES, &stock_model, stock::Model::SEED_RES } });
+    I({ { LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum },
+        { INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum },
+        { LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum },
+        { INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum },
+        { LEAF_DEMAND_SUM, &Model::_leaf_demand_sum },
+        { INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum },
+        { SENESC_DW_SUM, &Model::_senesc_dw_sum } });
 
     // externals
-    external(ETP, &Model::_etp);
-    external(P, &Model::_p);
-    external(RADIATION, &Model::_radiation);
-    external(TA, &Model::_ta);
-    external(WATER_SUPPLY, &Model::_water_supply);
+    E({ { ETP, &Model::_etp }, { P, &Model::_p },
+        { RADIATION, &Model::_radiation }, { TA, &Model::_ta },
+        { WATER_SUPPLY, &Model::_water_supply } });
 }
 
 void Model::init(double t, const model::models::ModelParameters& parameters)
@@ -186,43 +184,7 @@ void Model::compute(double t, bool /* update */)
                  not culms_is_stable(t) or
                  not root_model.is_stable(t) or not stock_model.is_stable(t));
 
-        _culm_index = -1;
-        _leaf_index = -1;
-        _deleted_leaf_biomass = 0;
-        _deleted_leaf_blade_area = 0;
-        if (stock_model.get(t, stock::Model::STOCK) == 0) {
-            std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-            int i = 0;
-
-            while (it != culm_models.end() and
-                   (*it)->get_phytomer_number() == 0) {
-                ++it;
-                ++i;
-            }
-            if (it != culm_models.end()) {
-                _culm_index = i;
-                _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
-                if (_leaf_index != -1) {
-                    _deleted_leaf_biomass =
-                        culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
-                    _deleted_leaf_blade_area =
-                        culm_models[_culm_index]->get_leaf_blade_area(t,
-                                                                      _leaf_index);
-                }
-            }
-
-#ifdef WITH_TRACE
-            utils::Trace::trace()
-                << utils::TraceElement("PLANT", t, utils::COMPUTE)
-                << "DELETE LEAF: "
-                << " ; culm index = " << _culm_index
-                << " ; leaf index = " << _leaf_index
-                << " ; leaf biomass = " << _deleted_leaf_biomass
-                << " ; culm number = " << culm_models.size();
-            utils::Trace::trace().flush();
-#endif
-
-        }
+        search_deleted_leaf(t);
         compute_height(t);
     } else {
         _height = 0;
@@ -231,28 +193,21 @@ void Model::compute(double t, bool /* update */)
 
 void Model::compute_assimilation(double t)
 {
-    if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
-        assimilation_model.put(t, assimilation::Model::FCSTR,
-                               water_balance_model.get(t,
-                                   water_balance::Model::FCSTR));
-    };
-//TODO
+    OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
+        IN(&assimilation_model, assimilation::Model::FCSTR);
+    OUT(t, &water_balance_model, water_balance::Model::CSTR) >>
+        IN(&assimilation_model, assimilation::Model::CSTR);
     if (_culm_is_computed) {
-        assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
-                               _leaf_biomass_sum);
-        assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS,
-                               _internode_biomass_sum);
-        assimilation_model.put(t, assimilation::Model::PAI,
-                               _leaf_blade_area_sum);
+        OUT(t, _leaf_biomass_sum) >>
+            IN(&assimilation_model, assimilation::Model::LEAF_BIOMASS);
+        OUT(t, _internode_biomass_sum) >>
+            IN(&assimilation_model, assimilation::Model::INTERNODE_BIOMASS);
+        OUT(t, _leaf_blade_area_sum) >>
+            IN(&assimilation_model, assimilation::Model::PAI);
     }
-    assimilation_model.put(t,
-                           assimilation::Model::RADIATION, _radiation);
-    assimilation_model.put(t, assimilation::Model::TA, _ta);
-    if (water_balance_model.is_computed(t, water_balance::Model::CSTR)) {
-        assimilation_model.put(t, assimilation::Model::CSTR,
-                               water_balance_model.get(t,
-                                   water_balance::Model::CSTR));
-    }
+    OUT(t, _radiation) >>
+        IN(&assimilation_model, assimilation::Model::RADIATION);
+    OUT(t, _ta) >> IN(&assimilation_model, assimilation::Model::TA);
     assimilation_model(t);
 
 #ifdef WITH_TRACE
@@ -279,54 +234,30 @@ void Model::compute_culms(double t)
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
     while (it != culm_models.end()) {
-        if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
-            (*it)->put(t, culm::Model::DD,
-                       thermal_time_model.get(
-                           t, thermal_time::Model::DD));
-        }
-        if (thermal_time_model.is_computed(t, thermal_time::Model::DELTA_T)) {
-            (*it)->put(t, culm::Model::DELTA_T,
-                       thermal_time_model.get(
-                           t, thermal_time::Model::DELTA_T));
-        }
-        if (water_balance_model.is_computed(t, water_balance::Model::FTSW)) {
-            (*it)->put(t, culm::Model::FTSW,
-                       water_balance_model.get(
-                           t, water_balance::Model::FTSW));
-        }
-        if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
-            (*it)->put(t, culm::Model::FCSTR,
-                       water_balance_model.get(
-                           t, water_balance::Model::FCSTR));
-        }
-        (*it)->put(t, culm::Model::P, _p);
-        if (thermal_time_model.is_computed(
-                t, thermal_time::Model::PHENO_STAGE)) {
-            (*it)->put(t, culm::Model::PHENO_STAGE,
-                       thermal_time_model.get(
-                           t, thermal_time::Model::PHENO_STAGE));
-        }
-        (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM,
-                   _predim_leaf_on_mainstem);
-        if ( sla_model.is_computed(t, Sla::SLA)) {
-            (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
-        }
-        if (stock_model.is_computed(t, stock::Model::GROW)) {
-            (*it)->put(t, culm::Model::GROW,
-                       stock_model.get(t, stock::Model::GROW));
-        }
-        if (manager_model.is_computed(t, Manager::PHASE)) {
-            (*it)->put(t, culm::Model::PHASE,
-                       manager_model.get(t, Manager::PHASE));
-            (*it)->put(t, culm::Model::STATE,
-                       manager_model.get(t, Manager::STATE));
-        }
+        OUT(t, &thermal_time_model, thermal_time::Model::DD) >>
+            IN(*it, culm::Model::DD);
+        OUT(t, &thermal_time_model, thermal_time::Model::DELTA_T) >>
+            IN(*it, culm::Model::DELTA_T);
+        OUT(t, &water_balance_model, water_balance::Model::FTSW) >>
+            IN(*it, culm::Model::FTSW);
+        OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
+            IN(*it, culm::Model::FCSTR);
+        OUT(t, _p) >> IN(*it, culm::Model::P);
+        OUT(t, &thermal_time_model, thermal_time::Model::PHENO_STAGE) >>
+            IN(*it, culm::Model::PHENO_STAGE);
+        OUT(t, _predim_leaf_on_mainstem) >>
+            IN(*it, culm::Model::PREDIM_LEAF_ON_MAINSTEM);
+        OUT(t, &sla_model, Sla::SLA) >> IN(*it, culm::Model::SLA);
+        OUT(t, &stock_model, stock::Model::GROW) >>
+            IN(*it, culm::Model::GROW);
+        OUT(t, &manager_model, Manager::PHASE) >>
+            IN(*it, culm::Model::PHASE);
+        OUT(t, &manager_model, Manager::STATE) >>
+            IN(*it, culm::Model::STATE);
         //TODO
         (*it)->put(t, culm::Model::STOP, 0.);
-        if (stock_model.is_computed(t, stock::Model::TEST_IC)) {
-            (*it)->put(t, culm::Model::TEST_IC,
-                       stock_model.get(t, stock::Model::TEST_IC));
-        }
+        OUT(t, &stock_model, stock::Model::TEST_IC) >>
+            IN(*it, culm::Model::TEST_IC);
         (**it)(t);
 
         _leaf_biomass_sum += (*it)->get(t, culm::Model::LEAF_BIOMASS_SUM);
@@ -355,14 +286,14 @@ void Model::compute_culms(double t)
     // stock computations
     it = culm_models.begin();
     while (it != culm_models.end()) {
-        (*it)->put(t, culm::Model::PLANT_BIOMASS_SUM, _leaf_biomass_sum +
-            _internode_biomass_sum);
-        (*it)->put(t, culm::Model::PLANT_LEAF_BIOMASS_SUM, _leaf_biomass_sum);
-        (*it)->put(t, culm::Model::PLANT_BLADE_AREA_SUM, _leaf_blade_area_sum);
-        if (assimilation_model.is_computed(t, assimilation::Model::ASSIM)) {
-            (*it)->put(t, culm::Model::ASSIM,
-                       assimilation_model.get(t, assimilation::Model::ASSIM));
-        }
+        OUT(t, _leaf_biomass_sum + _internode_biomass_sum) >>
+            IN(*it, culm::Model::PLANT_BIOMASS_SUM);
+        OUT(t, _leaf_biomass_sum) >>
+            IN(*it, culm::Model::PLANT_LEAF_BIOMASS_SUM);
+        OUT(t, _leaf_blade_area_sum) >>
+            IN(*it, culm::Model::PLANT_BLADE_AREA_SUM);
+        OUT(t, &assimilation_model, assimilation::Model::ASSIM) >>
+            IN(*it, culm::Model::ASSIM);
         (**it)(t);
         ++it;
     }
@@ -778,6 +709,47 @@ double Model::get_stock(double t) const
     return stock_model.is_computed(t, stock::Model::STOCK) ?
         stock_model.get(t, stock::Model::STOCK) :
         (t == _begin ? 0. : stock_model.get(t - 1, stock::Model::STOCK));
+}
+
+void Model::search_deleted_leaf(double t)
+{
+    _culm_index = -1;
+    _leaf_index = -1;
+    _deleted_leaf_biomass = 0;
+    _deleted_leaf_blade_area = 0;
+    if (stock_model.get(t, stock::Model::STOCK) == 0) {
+        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+        int i = 0;
+
+        while (it != culm_models.end() and
+               (*it)->get_phytomer_number() == 0) {
+            ++it;
+            ++i;
+        }
+        if (it != culm_models.end()) {
+            _culm_index = i;
+            _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
+            if (_leaf_index != -1) {
+                _deleted_leaf_biomass =
+                    culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+                _deleted_leaf_blade_area =
+                    culm_models[_culm_index]->get_leaf_blade_area(t,
+                                                                  _leaf_index);
+            }
+        }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << "DELETE LEAF: "
+            << " ; culm index = " << _culm_index
+            << " ; leaf index = " << _leaf_index
+            << " ; leaf biomass = " << _deleted_leaf_biomass
+            << " ; culm number = " << culm_models.size();
+        utils::Trace::trace().flush();
+#endif
+
+    }
 }
 
 } } // namespace ecomeristem plant

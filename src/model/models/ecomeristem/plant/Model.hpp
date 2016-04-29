@@ -92,6 +92,7 @@ private:
     double get_root_demand(double t) const;
     double get_state(double t) const;
     double get_stock(double t) const;
+    void search_deleted_leaf(double t);
 
 // parameters
     double _nbleaf_enabling_tillering;

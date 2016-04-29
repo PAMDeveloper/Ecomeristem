@@ -143,40 +143,23 @@ void Model::compute(double t, bool update)
 void Model::compute_stock(double t)
 {
     if (_state == plant::ELONG) {
-
-        // TODO: refactor
-        stock_model.put(t, Stock::DAY_DEMAND,
-                        day_demand_model.get(t, DayDemand::DAY_DEMAND));
-        stock_model.put(t, Stock::SEED_RES,
-                        seed_res_model.get(t, SeedRes::SEED_RES));
-        stock_model.put(t, Stock::SUPPLY,
-                        supply_model.get(t, Supply::SUPPLY));
-        stock_model.put(t, Stock::RESERVOIR_DISPO,
-                        reservoir_dispo_model.get(
-                            t, ReservoirDispo::RESERVOIR_DISPO));
-        stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
-        stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
         stock_model.put(t, Stock::CULM_STOCK, _culm_stock);
         stock_model.put(t, Stock::CULM_DEFICIT, _culm_deficit);
-        stock_model.put(t, Stock::STATE, _state);
-        stock_model.put(t, Stock::PHASE, _phase);
-        stock_model(t);
-    } else {
-        stock_model.put(t, Stock::DAY_DEMAND,
-                        day_demand_model.get(t, DayDemand::DAY_DEMAND));
-        stock_model.put(t, Stock::SEED_RES,
-                        seed_res_model.get(t, SeedRes::SEED_RES));
-        stock_model.put(t, Stock::SUPPLY,
-                        supply_model.get(t, Supply::SUPPLY));
-        stock_model.put(t, Stock::RESERVOIR_DISPO,
-                        reservoir_dispo_model.get(
-                            t, ReservoirDispo::RESERVOIR_DISPO));
-        stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
-        stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
-        stock_model.put(t, Stock::STATE, _state);
-        stock_model.put(t, Stock::PHASE, _phase);
-        stock_model(t);
     }
+    stock_model.put(t, Stock::DAY_DEMAND,
+                    day_demand_model.get(t, DayDemand::DAY_DEMAND));
+    stock_model.put(t, Stock::SEED_RES,
+                    seed_res_model.get(t, SeedRes::SEED_RES));
+    stock_model.put(t, Stock::SUPPLY,
+                    supply_model.get(t, Supply::SUPPLY));
+    stock_model.put(t, Stock::RESERVOIR_DISPO,
+                    reservoir_dispo_model.get(
+                        t, ReservoirDispo::RESERVOIR_DISPO));
+    stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
+    stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
+    stock_model.put(t, Stock::STATE, _state);
+    stock_model.put(t, Stock::PHASE, _phase);
+    stock_model(t);
 
     if (stock_model.is_computed(t, Stock::GROW)) {
         day_demand_model.put(t, DayDemand::GROW,

@@ -97,7 +97,8 @@ public:
                     assimPot_model(t);
 
                     assim_model.put(t, Assim::RESP_MAINT,
-                                    respMaint_model.get(t, RespMaint::RESP_MAINT));
+                                    respMaint_model.get(t,
+                                                        RespMaint::RESP_MAINT));
                     assim_model.put(t, Assim::ASSIM_POT,
                                     assimPot_model.get(t, AssimPot::ASSIM_POT));
                     assim_model(t);
