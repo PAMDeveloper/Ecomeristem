@@ -194,20 +194,20 @@ void Model::compute(double t, bool /* update */)
 void Model::compute_assimilation(double t)
 {
     OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
-        IN(&assimilation_model, assimilation::Model::FCSTR);
+      IN(t, &assimilation_model, assimilation::Model::FCSTR);
     OUT(t, &water_balance_model, water_balance::Model::CSTR) >>
-        IN(&assimilation_model, assimilation::Model::CSTR);
+      IN(t, &assimilation_model, assimilation::Model::CSTR);
     if (_culm_is_computed) {
         OUT(t, _leaf_biomass_sum) >>
-            IN(&assimilation_model, assimilation::Model::LEAF_BIOMASS);
+	  IN(t, &assimilation_model, assimilation::Model::LEAF_BIOMASS);
         OUT(t, _internode_biomass_sum) >>
-            IN(&assimilation_model, assimilation::Model::INTERNODE_BIOMASS);
+	  IN(t, &assimilation_model, assimilation::Model::INTERNODE_BIOMASS);
         OUT(t, _leaf_blade_area_sum) >>
-            IN(&assimilation_model, assimilation::Model::PAI);
+	  IN(t, &assimilation_model, assimilation::Model::PAI);
     }
     OUT(t, _radiation) >>
-        IN(&assimilation_model, assimilation::Model::RADIATION);
-    OUT(t, _ta) >> IN(&assimilation_model, assimilation::Model::TA);
+      IN(t, &assimilation_model, assimilation::Model::RADIATION);
+    OUT(t, _ta) >> IN(t, &assimilation_model, assimilation::Model::TA);
     assimilation_model(t);
 
 #ifdef WITH_TRACE
@@ -235,29 +235,29 @@ void Model::compute_culms(double t)
     _senesc_dw_sum = 0;
     while (it != culm_models.end()) {
         OUT(t, &thermal_time_model, thermal_time::Model::DD) >>
-            IN(*it, culm::Model::DD);
+	  IN(t, *it, culm::Model::DD);
         OUT(t, &thermal_time_model, thermal_time::Model::DELTA_T) >>
-            IN(*it, culm::Model::DELTA_T);
+	  IN(t, *it, culm::Model::DELTA_T);
         OUT(t, &water_balance_model, water_balance::Model::FTSW) >>
-            IN(*it, culm::Model::FTSW);
+	  IN(t, *it, culm::Model::FTSW);
         OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
-            IN(*it, culm::Model::FCSTR);
-        OUT(t, _p) >> IN(*it, culm::Model::P);
+	  IN(t, *it, culm::Model::FCSTR);
+        OUT(t, _p) >> IN(t, *it, culm::Model::P);
         OUT(t, &thermal_time_model, thermal_time::Model::PHENO_STAGE) >>
-            IN(*it, culm::Model::PHENO_STAGE);
+	  IN(t, *it, culm::Model::PHENO_STAGE);
         OUT(t, _predim_leaf_on_mainstem) >>
-            IN(*it, culm::Model::PREDIM_LEAF_ON_MAINSTEM);
-        OUT(t, &sla_model, Sla::SLA) >> IN(*it, culm::Model::SLA);
+	  IN(t, *it, culm::Model::PREDIM_LEAF_ON_MAINSTEM);
+        OUT(t, &sla_model, Sla::SLA) >> IN(t, *it, culm::Model::SLA);
         OUT(t, &stock_model, stock::Model::GROW) >>
-            IN(*it, culm::Model::GROW);
+	  IN(t, *it, culm::Model::GROW);
         OUT(t, &manager_model, Manager::PHASE) >>
-            IN(*it, culm::Model::PHASE);
+	  IN(t, *it, culm::Model::PHASE);
         OUT(t, &manager_model, Manager::STATE) >>
-            IN(*it, culm::Model::STATE);
+	  IN(t, *it, culm::Model::STATE);
         //TODO
         (*it)->put(t, culm::Model::STOP, 0.);
         OUT(t, &stock_model, stock::Model::TEST_IC) >>
-            IN(*it, culm::Model::TEST_IC);
+	  IN(t, *it, culm::Model::TEST_IC);
         (**it)(t);
 
         _leaf_biomass_sum += (*it)->get(t, culm::Model::LEAF_BIOMASS_SUM);
@@ -287,13 +287,13 @@ void Model::compute_culms(double t)
     it = culm_models.begin();
     while (it != culm_models.end()) {
         OUT(t, _leaf_biomass_sum + _internode_biomass_sum) >>
-            IN(*it, culm::Model::PLANT_BIOMASS_SUM);
+	  IN(t, *it, culm::Model::PLANT_BIOMASS_SUM);
         OUT(t, _leaf_biomass_sum) >>
-            IN(*it, culm::Model::PLANT_LEAF_BIOMASS_SUM);
+	  IN(t, *it, culm::Model::PLANT_LEAF_BIOMASS_SUM);
         OUT(t, _leaf_blade_area_sum) >>
-            IN(*it, culm::Model::PLANT_BLADE_AREA_SUM);
+	  IN(t, *it, culm::Model::PLANT_BLADE_AREA_SUM);
         OUT(t, &assimilation_model, assimilation::Model::ASSIM) >>
-            IN(*it, culm::Model::ASSIM);
+	  IN(t, *it, culm::Model::ASSIM);
         (**it)(t);
         ++it;
     }
