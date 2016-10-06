@@ -59,9 +59,9 @@ public:
         state_t old_state;
 
         do {
-            old_state = (state_t)_state;
+            old_state = (state_t)(int)_state;
 
-            switch ((state_t)_state) {
+            switch ((state_t)(int)_state) {
             case INIT: {
                 _state = STOCK_AVAILABLE;
                 break;

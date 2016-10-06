@@ -27,3 +27,4 @@ scripts/rtnt3/man/*.log
 *.png
 .Rproj.user
 data/*/outputs
+Ecomeristem/

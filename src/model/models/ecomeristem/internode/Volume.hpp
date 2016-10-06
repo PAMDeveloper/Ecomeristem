@@ -28,7 +28,9 @@
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <utils/Trace.hpp>
 
-#include <cmath>
+//#include <cmath>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 namespace ecomeristem { namespace internode {
 

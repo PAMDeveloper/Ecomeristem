@@ -28,68 +28,70 @@
 #include <utils/DateTime.hpp>
 #include <utils/Trace.hpp>
 
-using namespace artis::kernel;
-
 namespace ecomeristem { namespace plant {
 
 Model::Model()
 {
     // submodels
-    S({ { ASSIMILATION, &assimilation_model },
-        { ROOT, &root_model },
-        { STOCK, &stock_model },
-        { THERMAL_TIME, &thermal_time_model },
-        { WATER_BALANCE, &water_balance_model },
-        { MANAGER, &manager_model },
-        { TILLER_MANAGER, &tiller_manager_model },
-        { SLA, &sla_model } });
+    submodel(ASSIMILATION, &assimilation_model);
+    submodel(ROOT, & root_model);
+    submodel(STOCK, &stock_model);
+    submodel(THERMAL_TIME, &thermal_time_model);
+    submodel(WATER_BALANCE, &water_balance_model);
+    submodel(MANAGER, &manager_model);
+    submodel(TILLER_MANAGER, &tiller_manager_model);
+    submodel(SLA, &sla_model);
 
     // internals
-    I({ { LAI, &assimilation_model, plant::assimilation::Model::LAI },
-        { DELTA_T, &thermal_time_model, plant::thermal_time::Model::DELTA_T },
-        { BOOL_CROSSED_PLASTO, &thermal_time_model,
-                plant::thermal_time::Model::BOOL_CROSSED_PLASTO },
-        { DD, &thermal_time_model, plant::thermal_time::Model::DD },
-        { EDD, &thermal_time_model, plant::thermal_time::Model::EDD },
-        { IH, &thermal_time_model, plant::thermal_time::Model::IH },
-        { LIGULO_VISU, &thermal_time_model,
-                plant::thermal_time::Model::LIGULO_VISU },
-        { PHENO_STAGE, &thermal_time_model,
-                plant::thermal_time::Model::PHENO_STAGE },
-        { PLASTO_VISU, &thermal_time_model,
-                plant::thermal_time::Model::PLASTO_VISU },
-        { TT, &thermal_time_model, plant::thermal_time::Model::TT },
-        { TT_LIG, &thermal_time_model,
-                plant::thermal_time::Model::TT_LIG },
-        { ASSIM, &assimilation_model,
-                plant::assimilation::Model::ASSIM },
-        { CSTR, &water_balance_model,
-                plant::water_balance::Model::CSTR },
-        { ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF },
-        { ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND },
-        { ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS },
-            // { STOCK, &stock_model, stock::Model::STOCK },
-        { GROW, &stock_model, stock::Model::GROW },
-        { SUPPLY, &stock_model, stock::Model::SUPPLY },
-        { DEFICIT, &stock_model, stock::Model::DEFICIT },
-        { IC, &stock_model, stock::Model::IC },
-        { SURPLUS, &stock_model, stock::Model::SURPLUS },
-        { TEST_IC, &stock_model, stock::Model::TEST_IC },
-        { DAY_DEMAND, &stock_model, stock::Model::DAY_DEMAND },
-        { RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO },
-        { SEED_RES, &stock_model, stock::Model::SEED_RES } });
-    I({ { LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum },
-        { INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum },
-        { LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum },
-        { INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum },
-        { LEAF_DEMAND_SUM, &Model::_leaf_demand_sum },
-        { INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum },
-        { SENESC_DW_SUM, &Model::_senesc_dw_sum } });
+    internal(LAI, &assimilation_model, plant::assimilation::Model::LAI);
+    internal(DELTA_T, &thermal_time_model,
+             plant::thermal_time::Model::DELTA_T);
+    internal(BOOL_CROSSED_PLASTO, &thermal_time_model,
+             plant::thermal_time::Model::BOOL_CROSSED_PLASTO);
+    internal(DD, &thermal_time_model, plant::thermal_time::Model::DD);
+    internal(EDD, &thermal_time_model, plant::thermal_time::Model::EDD);
+    internal(IH, &thermal_time_model, plant::thermal_time::Model::IH);
+    internal(LIGULO_VISU, &thermal_time_model,
+             plant::thermal_time::Model::LIGULO_VISU);
+    internal(PHENO_STAGE, &thermal_time_model,
+             plant::thermal_time::Model::PHENO_STAGE);
+    internal(PLASTO_VISU, &thermal_time_model,
+             plant::thermal_time::Model::PLASTO_VISU);
+    internal(TT, &thermal_time_model, plant::thermal_time::Model::TT);
+    internal(TT_LIG, &thermal_time_model,
+             plant::thermal_time::Model::TT_LIG);
+    internal(ASSIM, &assimilation_model,
+             plant::assimilation::Model::ASSIM);
+    internal(CSTR, &water_balance_model,
+             plant::water_balance::Model::CSTR);
+    internal(ROOT_DEMAND_COEF, &root_model, root::Model::ROOT_DEMAND_COEF);
+    internal(ROOT_DEMAND, &root_model, root::Model::ROOT_DEMAND);
+    internal(ROOT_BIOMASS, &root_model, root::Model::ROOT_BIOMASS);
+    // internal(STOCK, &stock_model, stock::Model::STOCK);
+    internal(GROW, &stock_model, stock::Model::GROW);
+    internal(SUPPLY, &stock_model, stock::Model::SUPPLY);
+    internal(DEFICIT, &stock_model, stock::Model::DEFICIT);
+    internal(IC, &stock_model, stock::Model::IC);
+    internal(SURPLUS, &stock_model, stock::Model::SURPLUS);
+    internal(TEST_IC, &stock_model, stock::Model::TEST_IC);
+    internal(DAY_DEMAND, &stock_model, stock::Model::DAY_DEMAND);
+    internal(RESERVOIR_DISPO, &stock_model, stock::Model::RESERVOIR_DISPO);
+    internal(SEED_RES, &stock_model, stock::Model::SEED_RES);
+
+    internal(LEAF_BIOMASS_SUM, &Model::_leaf_biomass_sum);
+    internal(INTERNODE_BIOMASS_SUM, &Model::_internode_biomass_sum);
+    internal(LEAF_LAST_DEMAND_SUM, &Model::_leaf_last_demand_sum);
+    internal(INTERNODE_DEMAND_SUM, &Model::_internode_demand_sum);
+    internal(LEAF_DEMAND_SUM, &Model::_leaf_demand_sum);
+    internal(INTERNODE_LAST_DEMAND_SUM, &Model::_internode_last_demand_sum);
+    internal(SENESC_DW_SUM, &Model::_senesc_dw_sum);
 
     // externals
-    E({ { ETP, &Model::_etp }, { P, &Model::_p },
-        { RADIATION, &Model::_radiation }, { TA, &Model::_ta },
-        { WATER_SUPPLY, &Model::_water_supply } });
+    external(ETP, &Model::_etp);
+    external(P, &Model::_p);
+    external(RADIATION, &Model::_radiation);
+    external(TA, &Model::_ta);
+    external(WATER_SUPPLY, &Model::_water_supply);
 }
 
 void Model::init(double t, const model::models::ModelParameters& parameters)

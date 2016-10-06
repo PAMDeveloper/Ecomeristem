@@ -39,6 +39,7 @@
 #include <utils/ParametersReader.hpp>
 
 #include <iostream>
+#include <iso646.h>
 
 using namespace model;
 
@@ -65,7 +66,7 @@ static void run(const std::string& simulation, int /* verbose */)
     std::string begin;
     std::string end;
 
-    reader.load(simulation, parameters);
+    reader.loadParametersFromProstgresql(simulation, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),

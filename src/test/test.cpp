@@ -116,7 +116,7 @@ TEST_CASE("Thermal_time_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -166,7 +166,7 @@ TEST_CASE("Water_balance_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -191,7 +191,7 @@ TEST_CASE("Assimilation_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -216,7 +216,7 @@ TEST_CASE("Root_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -245,7 +245,7 @@ TEST_CASE("Stock_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -298,7 +298,7 @@ TEST_CASE("Plant_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),

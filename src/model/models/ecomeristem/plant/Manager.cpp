@@ -38,9 +38,9 @@ void Manager::compute(double t, bool /* update */)
     phase_t old_phase;
 
     do {
-        old_phase = (phase_t)_phase;
+        old_phase = (phase_t)(int)_phase;
 
-        switch ((phase_t)_phase) {
+        switch ((phase_t)(int)_phase) {
         case INIT: {
             _phase = INITIAL;
             _state = VEGETATIVE;

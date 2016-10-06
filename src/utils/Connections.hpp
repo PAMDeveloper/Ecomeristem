@@ -22,48 +22,100 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+//#ifndef ECOMERISTEM_UTILS_CONNECTIONS_HPP
+//#define ECOMERISTEM_UTILS_CONNECTIONS_HPP
+//
+//#include <pqxx/pqxx>
+//
+//namespace utils {
+//
+//class Connections
+//{
+//    typedef std::map < std::string, pqxx::connection* > connections_t;
+//
+//public:
+//    inline static pqxx::connection& connection(const std::string& database,
+//                                               const std::string& request)
+//    {
+//        connections_t::const_iterator it =
+//            mConnections.connections.find(database);
+//
+//        if (it == mConnections.connections.end()) {
+//            mConnections.connections[database] = new pqxx::connection(request);
+//            it = mConnections.connections.find(database);
+//        }
+//        return *(it->second);
+//    }
+//
+//private:
+//    Connections();
+//
+//    virtual ~Connections()
+//    {
+//        for (connections_t::const_iterator it =
+//                 mConnections.connections.begin();
+//             it != mConnections.connections.end(); ++it) {
+//            delete it->second;
+//        }
+//        mConnections.connections.clear();
+//    }
+//
+//    static Connections mConnections;
+//
+//    connections_t connections;
+//};
+//
+//} // namespace utils
+//
+//#endif
+
+
+
 #ifndef ECOMERISTEM_UTILS_CONNECTIONS_HPP
 #define ECOMERISTEM_UTILS_CONNECTIONS_HPP
 
-#include <pqxx/pqxx>
+#include <libpq-fe.h>
+#include <map>
+#include <string>
+#include <iostream>
 
 namespace utils {
 
-class Connections
-{
-    typedef std::map < std::string, pqxx::connection* > connections_t;
+	class Connections
+	{
+		typedef std::map < std::string, PGconn* > connections_t;
 
-public:
-    inline static pqxx::connection& connection(const std::string& database,
-                                               const std::string& request)
-    {
-        connections_t::const_iterator it =
-            mConnections.connections.find(database);
+	public:
+		inline static PGconn* connection(const std::string& database,
+			const std::string& request)
+		{
+			connections_t::const_iterator it =
+				mConnections.connections.find(database);
 
-        if (it == mConnections.connections.end()) {
-            mConnections.connections[database] = new pqxx::connection(request);
-            it = mConnections.connections.find(database);
-        }
-        return *(it->second);
-    }
+			if (it == mConnections.connections.end()) {
+				mConnections.connections[database] = PQconnectdb(request.c_str());
+				it = mConnections.connections.find(database);
+			}
+			return it->second;
+		}
 
-private:
-    Connections();
+	private:
+		Connections();
 
-    virtual ~Connections()
-    {
-        for (connections_t::const_iterator it =
-                 mConnections.connections.begin();
-             it != mConnections.connections.end(); ++it) {
-            delete it->second;
-        }
-        mConnections.connections.clear();
-    }
+		virtual ~Connections()
+		{
+			for (connections_t::const_iterator it =
+				mConnections.connections.begin();
+				it != mConnections.connections.end(); ++it) {
+				// delete it->second;
+			}
+			mConnections.connections.clear();
+		}
 
-    static Connections mConnections;
+		static Connections mConnections;
 
-    connections_t connections;
-};
+		connections_t connections;
+	};
 
 } // namespace utils
 
