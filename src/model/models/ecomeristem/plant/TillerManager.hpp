@@ -78,7 +78,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("TILLER MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("TILLER MANAGER", t, artis::utils::COMPUTE)
             << "NB_TILLERS = " << _nb_tillers
             << " ; create = " << _create
             << " ; boolCrossedPlasto = " << _boolCrossedPlasto

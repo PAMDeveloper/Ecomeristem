@@ -32,6 +32,7 @@
 #include <artis/kernel/AbstractCoupledModel.hpp>
 #include <artis/utils/DateTime.hpp>
 
+#include <model/kernel/AbstractModel.hpp>
 #include <model/models/ModelParameters.hpp>
 
 namespace ecomeristem {
@@ -45,7 +46,10 @@ class AbstractCoupledModel : public artis::kernel::AbstractCoupledModel <
     GlobalParameters >
 {
 public:
-    AbstractCoupledModel()
+    AbstractCoupledModel(const ecomeristem::AbstractModel* parent = 0) :
+        artis::kernel::AbstractCoupledModel <
+    T, artis::utils::DoubleTime, model::models::ModelParameters,
+    GlobalParameters >(parent)
     { }
 
     virtual ~AbstractCoupledModel()

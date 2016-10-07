@@ -58,7 +58,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("TRANSPIRATION", t, utils::COMPUTE)
+            << utils::TraceElement("TRANSPIRATION", t, artis::utils::COMPUTE)
             << "transpiration = " << _transpiration << " ; SCW[-1] = "
             << _swc_1 << " ; SWC = " << _swc << " ; ETP = "
             << _etp << " ; Interc = " << _interc << " ; cstr = "

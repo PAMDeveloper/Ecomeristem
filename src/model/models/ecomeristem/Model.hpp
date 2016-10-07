@@ -22,6 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <model/kernel/AbstractModel.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/plant/Model.hpp>
 
@@ -39,7 +40,7 @@ public:
                      SEED_RES };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
-    Model();
+    Model(const ecomeristem::AbstractModel* parent);
     virtual ~Model();
 
     void init(double t, const model::models::ModelParameters& parameters);

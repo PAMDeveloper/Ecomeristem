@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("DELTA_T", t, utils::COMPUTE)
+            << utils::TraceElement("DELTA_T", t, artis::utils::COMPUTE)
             << "DeltaT = " << _deltaT << " ; Ta = " << _Ta
             << " ; Tb = " << _Tb;
         utils::Trace::trace().flush();

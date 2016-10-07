@@ -59,7 +59,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("ASSIM_POT", t, utils::COMPUTE)
+            << utils::TraceElement("ASSIM_POT", t, artis::utils::COMPUTE)
             << "assim_pot = " << _assim_pot << " ; cstr = " << _cstr
             << " ; power_for_cstr = " << _power_for_cstr << " ; interc = "
             << _interc << " ; epsib = " << _epsib << " ; radiation = "

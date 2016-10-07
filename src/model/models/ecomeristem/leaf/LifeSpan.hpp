@@ -51,7 +51,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LIFE_SPAN", t, utils::COMPUTE)
+            << utils::TraceElement("LIFE_SPAN", t, artis::utils::COMPUTE)
             << "LifeSpan = " << _life_span
             << " ; mu = " << _mu
             << " ; coeffLifespan = " << _coeffLifespan

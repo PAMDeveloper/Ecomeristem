@@ -38,8 +38,9 @@ namespace ecomeristem { namespace plant { namespace thermal_time {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
-    enum submodels { DD_MODEL, IH_MODEL, LIGULO_VISU_MODEL, PHENO_STAGE_MODEL,
-                     PLASTO_VISU_MODEL, TT_MODEL, TT_LIG_MODEL };
+    enum submodels { DELTA_T_MODEL, DD_MODEL, IH_MODEL, LIGULO_VISU_MODEL,
+                     PHENO_STAGE_MODEL, PLASTO_VISU_MODEL, TT_MODEL,
+                     TT_LIG_MODEL, MANAGER_MODEL };
     enum internals { DD, DELTA_T, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO };
     enum externals { STOCK, PHASE, TA, GROW, LIG, PLASTO_DELAY };

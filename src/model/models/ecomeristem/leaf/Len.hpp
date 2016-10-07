@@ -76,7 +76,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_LEN", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_LEN", t, artis::utils::COMPUTE)
             << "Len = " << _len
             << " ; index = " << _index
             << " ; len[-1] = " << _len_1

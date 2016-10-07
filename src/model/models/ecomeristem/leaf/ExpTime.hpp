@@ -75,7 +75,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_EXP_TIME", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_EXP_TIME", t, artis::utils::COMPUTE)
             << "ExpTime = " << _exp_time
             << " ; len = " << _len
             << " ; len[-1] = " << _len_1

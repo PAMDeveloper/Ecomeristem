@@ -1,12 +1,12 @@
 /**
- * @file utils/Trace.cpp
+ * @file model/kernel/AbstractModel.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
 
 /*
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
  * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,30 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <utils/Trace.hpp>
+#ifndef __ECOMERISTEM_ABSTRACT_MODEL_HPP
+#define __ECOMERISTEM_ABSTRACT_MODEL_HPP
 
-namespace utils {
+#include <model/models/ModelParameters.hpp>
 
-template < > std::shared_ptr < Trace > Trace::_instance;
-template < > std::once_flag Trace::_flag;
+#include <artis/kernel/AbstractModel.hpp>
+#include <artis/utils/DoubleTime.hpp>
 
-} // namespace utils
+namespace ecomeristem {
 
-/* utils::Trace& operator<<(utils::Trace& trace, const utils::TraceElement& e)
-{
-    trace.set_element(e);
-    return trace;
+typedef artis::kernel::AbstractModel <
+    artis::utils::DoubleTime,
+    model::models::ModelParameters > AbstractModel;
+
 }
 
-utils::Trace& operator<<(utils::Trace& trace, const std::string& str)
-{
-    trace.sstream() << str;
-    return trace;
-}
-
-utils::Trace& operator<<(utils::Trace& trace, double t)
-{
-    trace.sstream().precision(10);
-    trace.sstream() << t;
-    return trace;
-    } */
+#endif

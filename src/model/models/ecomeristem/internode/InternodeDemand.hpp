@@ -61,7 +61,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_DEMAND", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_DEMAND", t, artis::utils::COMPUTE)
             << "Demand = " << _demand
             << " ; index = " << _index
             << " ; Biomass = " << _biomass
@@ -84,7 +84,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_DEMAND", t, utils::PUT)
+            << utils::TraceElement("INTERNODE_DEMAND", t, artis::utils::PUT)
             << "Index = " << index
             << " ; value = " << value
             << " ; biomass = " << _biomass;

@@ -60,7 +60,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_PREDIM", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_PREDIM", t, artis::utils::COMPUTE)
             << "Predim = " << _predim
             << " ; leaf_predim = " << _leaf_predim
             << " ; index = " << _index

@@ -25,10 +25,11 @@
 #ifndef __ECOMERISTEM_ABSTRACT_ATOMIC_MODEL_HPP
 #define __ECOMERISTEM_ABSTRACT_ATOMIC_MODEL_HPP
 
-#include <model/models/ModelParameters.hpp>
-
 #include <artis/kernel/AbstractAtomicModel.hpp>
 #include <artis/utils/DateTime.hpp>
+
+#include <model/kernel/AbstractModel.hpp>
+#include <model/models/ModelParameters.hpp>
 
 // #include <typeinfo>
 
@@ -39,7 +40,9 @@ class AbstractAtomicModel : public artis::kernel::AbstractAtomicModel <
     T, artis::utils::DoubleTime, model::models::ModelParameters >
 {
 public:
-    AbstractAtomicModel()
+    AbstractAtomicModel(const ecomeristem::AbstractModel* parent = 0) :
+        artis::kernel::AbstractAtomicModel <
+    T, artis::utils::DoubleTime, model::models::ModelParameters >(parent)
     { }
 
     virtual ~AbstractAtomicModel()

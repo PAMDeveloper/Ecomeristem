@@ -41,19 +41,38 @@ Model::Model(int index, bool is_on_mainstem) :
     life_span_model(index),
     thermal_time_since_ligulation_model(index)
 {
-    internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
-    internal(BLADE_AREA, &blade_area_model, BladeArea::BLADE_AREA);
-    internal(DEMAND, &leaf_demand_model, LeafDemand::DEMAND);
-    internal(LAST_DEMAND, &last_demand_model, LastDemand::LAST_DEMAND);
-    internal(PREDIM, &predim_model, Predim::PREDIM);
-    internal(PLASTO_DELAY, &plasto_delay_model, PlastoDelay::PLASTO_DELAY);
-    internal(REALLOC_BIOMASS, &biomass_model, Biomass::REALLOC_BIOMASS);
-    internal(SENESC_DW, &biomass_model, Biomass::SENESC_DW);
-    internal(SENESC_DW_SUM, &biomass_model, Biomass::SENESC_DW_SUM);
-    internal(CORRECTED_BIOMASS, &biomass_model, Biomass::CORRECTED_BIOMASS);
-    internal(CORRECTED_BLADE_AREA, &blade_area_model,
-             BladeArea::CORRECTED_BLADE_AREA);
-    internal(LEN, &len_model, Len::LEN);
+    // submodels
+    S({ { TIME_FROM_APP, &time_from_app_model },
+        { BIOMASS_, &biomass_model },
+        { EXP_TIME, &exp_time_model },
+        { LEN_, &len_model },
+        { PREDIM_, &predim_model },
+        { WIDTH, &width_model },
+        { BLADE_AREA_, &blade_area_model },
+        { LAST_DEMAND_, &last_demand_model },
+        { LER, &ler_model },
+        { REDUCTION_LER, &reduction_ler_model },
+        { DEMAND_, &leaf_demand_model },
+        { MANAGER, &manager_model },
+        { PLASTO_DELAY_, &plasto_delay_model },
+        { LIFE_SPAN, &life_span_model },
+        { THERMAL_TIME_SINCE_LIGULATION, &thermal_time_since_ligulation_model }
+        });
+
+    I({ { BIOMASS, &biomass_model, Biomass::BIOMASS },
+            { BLADE_AREA, &blade_area_model, BladeArea::BLADE_AREA },
+            { DEMAND, &leaf_demand_model, LeafDemand::DEMAND },
+            { LAST_DEMAND, &last_demand_model, LastDemand::LAST_DEMAND },
+            { PREDIM, &predim_model, Predim::PREDIM },
+            { PLASTO_DELAY, &plasto_delay_model, PlastoDelay::PLASTO_DELAY },
+            { REALLOC_BIOMASS, &biomass_model, Biomass::REALLOC_BIOMASS },
+            { SENESC_DW, &biomass_model, Biomass::SENESC_DW },
+            { SENESC_DW_SUM, &biomass_model, Biomass::SENESC_DW_SUM },
+            { CORRECTED_BIOMASS, &biomass_model, Biomass::CORRECTED_BIOMASS },
+            { CORRECTED_BLADE_AREA, &blade_area_model,
+                    BladeArea::CORRECTED_BLADE_AREA },
+            { LEN, &len_model, Len::LEN }
+        });
 
     external(DD, &Model::_dd);
     external(DELTA_T, &Model::_delta_t);
@@ -238,7 +257,7 @@ void Model::compute(double t, bool /* update */)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF", t, artis::utils::COMPUTE)
             << "index = " << _index
             << " ; predim = "
             << (predim_model.is_computed(t, Predim::PREDIM) ?

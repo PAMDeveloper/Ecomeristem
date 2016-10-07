@@ -61,7 +61,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PHENO_STAGE", t, utils::COMPUTE)
+            << utils::TraceElement("PHENO_STAGE", t, artis::utils::COMPUTE)
             << "phenoStage = " << _PhenoStage
             << " ; phase = " << _phase
             << " ; phase[-1] = " << _phase_1

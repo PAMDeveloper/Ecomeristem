@@ -77,7 +77,7 @@ public:
 
  #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("TT_lig", t, utils::COMPUTE)
+            << utils::TraceElement("TT_lig", t, artis::utils::COMPUTE)
             << "TT_lig = " << _TT_lig
             << " ; TT_lig[-1] = " << _TT_lig_1
             << " ; phase = " << _phase

@@ -56,7 +56,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("SWC", t, utils::COMPUTE)
+            << utils::TraceElement("SWC", t, artis::utils::COMPUTE)
             << "swc = " << _swc << " ; delta_p = " << _delta_p
             << " ; water_supply = " << _water_supply << " ; RU1 = "
             << RU1;

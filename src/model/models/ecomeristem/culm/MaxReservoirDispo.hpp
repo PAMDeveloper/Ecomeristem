@@ -57,7 +57,7 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM_MAX_RESERVOIR_DISPO",
-                                   t, utils::COMPUTE)
+                                   t, artis::utils::COMPUTE)
             << "MaxReservoirDispo = " << _max_reversoir_dispo
             << " ; InternodeBiomassSum = " << _internode_biomass_sum
             << " ; LeafBiomassSum = " << _leaf_biomass_sum

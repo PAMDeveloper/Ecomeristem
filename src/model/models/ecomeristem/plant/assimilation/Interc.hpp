@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERC", t, utils::COMPUTE)
+            << utils::TraceElement("INTERC", t, artis::utils::COMPUTE)
             << "interc = " << _interc << " ; Kdf = " << _Kdf
             << " ; LAI = " << _lai;
         utils::Trace::trace().flush();

@@ -65,7 +65,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_DEMAND", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_DEMAND", t, artis::utils::COMPUTE)
             << "Demand = " << _demand
             << " ; phase = " << _phase
             << " ; index = " << _index
@@ -94,7 +94,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_DEMAND", t, utils::PUT)
+            << utils::TraceElement("LEAF_DEMAND", t, artis::utils::PUT)
             << "Index = " << index
             << " ; value = " << value
             << " ; biomass = " << _biomass

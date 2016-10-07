@@ -42,6 +42,9 @@ namespace ecomeristem { namespace internode {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { TIME_FROM_APP, BIOMASS_, EXP_TIME, LEN_, VOLUME, PREDIM,
+                     DIAMETER_PREDIM, LAST_DEMAND_, INER, REDUCTION_INER,
+                     DEMAND_, MANAGER };
     enum internals { BIOMASS, DEMAND, LAST_DEMAND, LEN };
     enum externals { DD, DELTA_T, FTSW, P, PHASE, STATE, PREDIM_LEAF,
                      LIG };

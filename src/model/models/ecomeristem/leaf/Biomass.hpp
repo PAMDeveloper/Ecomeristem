@@ -118,7 +118,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_BIOMASS", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_BIOMASS", t, artis::utils::COMPUTE)
             << "Biomass = " << _biomass
             << " ; correctedBiomass = " << _corrected_biomass
             << " ; index = " << _index

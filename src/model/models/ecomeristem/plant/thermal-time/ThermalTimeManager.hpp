@@ -90,7 +90,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("THERMAL_TIME_MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("THERMAL_TIME_MANAGER", t, artis::utils::COMPUTE)
             << "phase = " << _phase
             << " ; state = " << _state
             << " ; stock = " << _stock;

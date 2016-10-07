@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("FCSTR", t, utils::COMPUTE)
+            << utils::TraceElement("FCSTR", t, artis::utils::COMPUTE)
             << "fcstr = " << _fcstr << " ; cstr = " << _cstr;
         utils::Trace::trace().flush();
 #endif

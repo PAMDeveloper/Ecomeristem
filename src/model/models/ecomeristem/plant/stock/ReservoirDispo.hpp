@@ -61,7 +61,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("RESERVOIR_DISPO", t, utils::COMPUTE)
+            << utils::TraceElement("RESERVOIR_DISPO", t, artis::utils::COMPUTE)
             << "ReservoirDispo = " << _reservoir_dispo
             << " ; stock = " << _stock
             << " ; stock[-1] = " << _stock_1
@@ -86,7 +86,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("RESERVOIR_DISPO", t, utils::PUT)
+            << utils::TraceElement("RESERVOIR_DISPO", t, artis::utils::PUT)
             << "index  = " << index
             << " ; value = " << value;
         utils::Trace::trace().flush();

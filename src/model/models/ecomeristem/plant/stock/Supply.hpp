@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("SUPPLY", t, utils::COMPUTE)
+            << utils::TraceElement("SUPPLY", t, artis::utils::COMPUTE)
             << "supply = " << _supply << " ; Assim = " << _assim;
         utils::Trace::trace().flush();
 #endif

@@ -22,6 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <model/kernel/AbstractModel.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ecomeristem/phytomer/Model.hpp>
 #include <model/models/ecomeristem/culm/Deficit.hpp>
@@ -39,6 +40,7 @@ namespace ecomeristem { namespace culm {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { PHYTOMERS };
     enum internals { LEAF_BIOMASS_SUM, LEAF_LAST_DEMAND_SUM, LEAF_DEMAND_SUM,
                      INTERNODE_DEMAND_SUM, INTERNODE_LAST_DEMAND_SUM,
                      INTERNODE_BIOMASS_SUM, INTERNODE_LEN_SUM,

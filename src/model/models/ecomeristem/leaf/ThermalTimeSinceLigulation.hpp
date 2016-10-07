@@ -72,7 +72,7 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("THERMAL_TIME_SINCE_LIGUALTION", t,
-                                   utils::COMPUTE)
+                                   artis::utils::COMPUTE)
             << "TT = " << _TT
             << " ; delta_t = " << _delta_t
             << " ; index = " << _index;

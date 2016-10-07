@@ -97,7 +97,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_LEN", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_LEN", t, artis::utils::COMPUTE)
             << "Len = " << _len
             << " ; index = " << _index
             << " ; len[-1] = " << _len_1
@@ -125,7 +125,7 @@ public:
     {
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_LEN", t, utils::PUT)
+            << utils::TraceElement("INTERNODE_LEN", t, artis::utils::PUT)
             << "Index = " << index
             << " ; index = " << _index
             << " ; value = " << value;

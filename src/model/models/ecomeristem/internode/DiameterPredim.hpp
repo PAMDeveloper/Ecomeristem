@@ -51,7 +51,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_DIAMETER", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_DIAMETER", t, artis::utils::COMPUTE)
             << "DiameterPredim = " << _diameter_predim
             << " ; predim = " << _predim;
         utils::Trace::trace().flush();

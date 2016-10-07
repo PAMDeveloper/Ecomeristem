@@ -79,7 +79,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("SURPLUS", t, utils::COMPUTE)
+            << utils::TraceElement("SURPLUS", t, artis::utils::COMPUTE)
             << "Surplus = " << _surplus
             << " ; SeedRes = " << _seed_res
             << " ; SeedRes[-1] = " << _seed_res_1

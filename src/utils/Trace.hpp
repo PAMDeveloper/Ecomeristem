@@ -22,10 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef UTILS_TRACE
-#define UTILS_TRACE
+#ifndef ECOMERISTEM_UTILS_TRACE
+#define ECOMERISTEM_UTILS_TRACE
 
-#include <utils/DateTime.hpp>
+#include <artis/utils/DoubleTime.hpp>
+#include <artis/utils/Trace.hpp>
+
+namespace utils {
+
+typedef artis::utils::TraceElement < artis::utils::DoubleTime > TraceElement;
+typedef artis::utils::TraceElements < artis::utils::DoubleTime > TraceElements;
+typedef artis::utils::Trace < artis::utils::DoubleTime > Trace;
+
+}
+
+/*#include <utils/DateTime.hpp>
 
 #include <algorithm>
 #include <iterator>
@@ -210,6 +221,6 @@ private:
 
 utils::Trace& operator<<(utils::Trace& trace, const utils::TraceElement& e);
 utils::Trace& operator<<(utils::Trace& trace, const std::string& str);
-utils::Trace& operator<<(utils::Trace& trace, double t);
+utils::Trace& operator<<(utils::Trace& trace, double t); */
 
 #endif

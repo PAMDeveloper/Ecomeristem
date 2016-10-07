@@ -61,7 +61,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LIGULO_VISU", t, utils::COMPUTE)
+            << utils::TraceElement("LIGULO_VISU", t, artis::utils::COMPUTE)
             << "LIGULO_VISU = " << _LiguloVisu
             << " ; plasto_delay = " << _plasto_delay
             << " ; EDD = " << _EDD;

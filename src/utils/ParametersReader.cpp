@@ -190,7 +190,7 @@ void ParametersReader::load_simulation(
         }
 
     // parameters.set < std::string >("BeginDate", "20-01-2010");
-    // parameters.set < std::string >("EndDate", "26-02-2010");
+	parameters.set < std::string >("EndDate", "12-07-2015");
     // parameters.set < std::string >("idsite", "1");
     // parameters.set < std::string >("idvariety", "rice");
 

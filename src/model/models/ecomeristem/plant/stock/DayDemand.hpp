@@ -83,7 +83,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("DAY_DEMAND", t, utils::COMPUTE)
+            << utils::TraceElement("DAY_DEMAND", t, artis::utils::COMPUTE)
             << "dayDemand = " << _day_demand
             << " ; phase = " << _phase
             << " ; stop = " << _stop

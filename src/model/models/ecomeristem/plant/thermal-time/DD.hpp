@@ -90,7 +90,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("DD", t, utils::COMPUTE)
+            << utils::TraceElement("DD", t, artis::utils::COMPUTE)
             << "DD = " << _DD
             << " ; EDD = " << _EDD
             << " ; DD[-1] = " << _DD_1

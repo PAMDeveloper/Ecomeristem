@@ -86,7 +86,8 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_MANAGER", t,
+                                   artis::utils::COMPUTE)
             << "index = " << _index
             << " ; phase = " << _phase_
             << " ; phase = " << _phase

@@ -74,7 +74,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_MANAGER", t, artis::utils::COMPUTE)
             << "phase = " << _phase_
             << " ; index = " << _index
             << " ; plant phase = " << _phase

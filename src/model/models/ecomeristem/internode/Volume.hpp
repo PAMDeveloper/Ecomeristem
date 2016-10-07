@@ -57,7 +57,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_VOLUME", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_VOLUME", t, artis::utils::COMPUTE)
             << "Volume = " << _volume
             << " ; len = " << _len
             << " ; diameter = " << _diameter;

@@ -57,7 +57,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LAI", t, utils::COMPUTE)
+            << utils::TraceElement("LAI", t, artis::utils::COMPUTE)
             << "lai = " << _lai << " ; fcstr = " << _fcstr
             << " ; PAI = " << _PAI << " ; rollingA = "
             << _rolling_A << " ; rollingB = " << _rolling_B;

@@ -91,7 +91,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_SURPLUS", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_SURPLUS", t, artis::utils::COMPUTE)
             << "Surplus = " << _surplus
             << " ; Plant state = " << _plant_state
             << " ; Plant stock = " << _plant_stock

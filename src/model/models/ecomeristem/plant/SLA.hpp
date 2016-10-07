@@ -51,7 +51,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("SLA", t, utils::COMPUTE)
+            << utils::TraceElement("SLA", t, artis::utils::COMPUTE)
             << "SLA = " << _sla
             << " ; Phenostage = " << _phenoStage
             << " ; FSLA = " << FSLA

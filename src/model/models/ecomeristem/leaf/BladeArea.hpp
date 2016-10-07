@@ -73,7 +73,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_BLADE_AREA", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_BLADE_AREA", t, artis::utils::COMPUTE)
             << "BladeArea = " << _blade_area
             << " ; correctedBladeArea = " << _corrected_blade_area
             << " ; index = " << _index

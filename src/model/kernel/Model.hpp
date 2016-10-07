@@ -42,7 +42,7 @@ public:
                      IC, SURPLUS, TEST_IC, DAY_DEMAND, RESERVOIR_DISPO,
                      SEED_RES };
 
-    Model()
+    Model() : ecomeristem_model(this)
     {
         submodel(ECOMERISTEM, &ecomeristem_model);
         submodel(CLIMATE, &meteo_model);

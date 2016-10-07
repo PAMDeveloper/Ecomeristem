@@ -26,7 +26,9 @@
 
 namespace ecomeristem {
 
-Model::Model() : plant_model(new plant::Model)
+Model::Model(const ecomeristem::AbstractModel* parent) :
+    AbstractCoupledModel < Model >(parent),
+    plant_model(new plant::Model(this))
 {
     submodel(PLANT, plant_model);
 

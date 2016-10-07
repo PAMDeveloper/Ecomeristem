@@ -77,7 +77,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_INTERMEDIATE", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_INTERMEDIATE", t, artis::utils::COMPUTE)
             << "Intermediaire = " << _intermediate
             << " ; Stock[-1] = " << _plant_stock_1
             << " ; Deficit[-1] = " << _plant_deficit_1
@@ -119,7 +119,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_INTERMEDIATE", t, utils::PUT)
+            << utils::TraceElement("CULM_INTERMEDIATE", t, artis::utils::PUT)
             << "Intermediaire = " << _intermediate
             << " ; Stock[-1] = " << _plant_stock_1
             << " ; Deficit[-1] = " << _plant_deficit_1
@@ -143,7 +143,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_INTERMEDIATE", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_INTERMEDIATE", t, artis::utils::COMPUTE)
             << "Intermediaire = " << _intermediate
             << " ; Stock[-1] = " << _plant_stock_1
             << " ; Deficit[-1] = " << _plant_deficit_1

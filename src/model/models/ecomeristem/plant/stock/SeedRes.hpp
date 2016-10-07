@@ -69,7 +69,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("SEED_RES", t, utils::COMPUTE)
+            << utils::TraceElement("SEED_RES", t, artis::utils::COMPUTE)
             << "seedRes = " << _seed_res << " ; seed_res[-1] = " << _seed_res_1
             << " ; gdw = " << _gdw << " ; DayDemand = "
             << _day_demand;

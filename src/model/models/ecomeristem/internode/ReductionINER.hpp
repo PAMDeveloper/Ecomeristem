@@ -59,7 +59,7 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("INTERNODE_REDUCTION_INER",
-                                   t, utils::COMPUTE)
+                                   t, artis::utils::COMPUTE)
             << "ReductionINER = " << _reduction_iner
             << " ; FTSW = " << _ftsw
             << " ; P = " << _p;

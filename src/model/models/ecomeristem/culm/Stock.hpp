@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_STOCK", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_STOCK", t, artis::utils::COMPUTE)
             << "Stock = " << _stock
             << " ; Intermediate = " << _intermediate
             << " ; MaxReservoirDispo = " << _max_reversoir_dispo;

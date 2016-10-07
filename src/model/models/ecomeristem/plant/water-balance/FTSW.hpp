@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("FTSW", t, utils::COMPUTE)
+            << utils::TraceElement("FTSW", t, artis::utils::COMPUTE)
             << "FTSW = " << _ftsw << " ; swc_1 = " << _swc_1
             << " ; swc = " << _swc << " ; RU1 = "
             << RU1;

@@ -52,7 +52,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_BIOMASS", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_BIOMASS", t, artis::utils::COMPUTE)
             << "Biomass = " << _biomass
             << " ; index = " << _index
             << " ; volume = " << _volume;

@@ -32,7 +32,8 @@ using namespace artis::kernel;
 
 namespace ecomeristem { namespace plant {
 
-Model::Model()
+Model::Model(const ecomeristem::AbstractModel* parent) :
+    ecomeristem::AbstractCoupledModel < Model >(parent)
 {
     // submodels
     S({ { ASSIMILATION, &assimilation_model },
@@ -106,6 +107,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
     culm::Model* meristem = new culm::Model(1);
 
+    setsubmodel(CULMS, meristem);
     meristem->init(t, parameters);
     culm_models.push_back(meristem);
 
@@ -212,7 +214,7 @@ void Model::compute_assimilation(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE ASSIMILATION ";
     utils::Trace::trace().flush();
 #endif
@@ -300,7 +302,7 @@ void Model::compute_culms(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE CULMS "
         << " ; LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
@@ -337,7 +339,7 @@ void Model::compute_height(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE HEIGHT "
         << " ; Height = " << _height;
     utils::Trace::trace().flush();
@@ -429,7 +431,7 @@ void Model::compute_root(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "DemandSum = " << _demand_sum;
     utils::Trace::trace().flush();
 #endif
@@ -615,7 +617,7 @@ void Model::create_culm(double t, int n)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
             << "CREATE CULM = " << culm_models.size()
             << " ; n = " << n;
         utils::Trace::trace().flush();
@@ -652,7 +654,7 @@ void Model::delete_leaf(double t)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
             << "DELETE LEAF: culm index = " << _culm_index
             << " ; leaf index = " << _leaf_index;
         utils::Trace::trace().flush();
@@ -740,7 +742,7 @@ void Model::search_deleted_leaf(double t)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
             << "DELETE LEAF: "
             << " ; culm index = " << _culm_index
             << " ; leaf index = " << _leaf_index

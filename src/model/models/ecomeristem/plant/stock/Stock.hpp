@@ -72,7 +72,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("STOCK", t, utils::COMPUTE)
+            << utils::TraceElement("STOCK", t, artis::utils::COMPUTE)
             << "BEFORE Stock = " << _stock
             << " ; Stock[-1] = " << _stock_1
             << " ; SeedRes = " << _seed_res
@@ -118,7 +118,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("STOCK", t, utils::COMPUTE)
+            << utils::TraceElement("STOCK", t, artis::utils::COMPUTE)
             << "AFTER Stock = " << _stock
             << " ; Stock[-1] = " << _stock_1
             << " ; SeedRes = " << _seed_res
@@ -162,7 +162,7 @@ public:
 
 #ifdef WITH_TRACE
             utils::Trace::trace()
-                << utils::TraceElement("STOCK", t, utils::COMPUTE)
+                << utils::TraceElement("STOCK", t, artis::utils::COMPUTE)
                 << "BEFORE stock = " << _stock
                 << " ; Stock[-1] = " << _stock_1
                 << " ; deficit = " << _deficit
@@ -176,7 +176,7 @@ public:
 
 #ifdef WITH_TRACE
             utils::Trace::trace()
-                << utils::TraceElement("STOCK", t, utils::COMPUTE)
+                << utils::TraceElement("STOCK", t, artis::utils::COMPUTE)
                 << "AFTER stock = " << _stock
                 << " ; Stock[-1] = " << _stock_1
                 << " ; deficit = " << _deficit

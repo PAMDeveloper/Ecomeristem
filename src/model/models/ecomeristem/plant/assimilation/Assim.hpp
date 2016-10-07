@@ -56,7 +56,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("ASSIM", t, utils::COMPUTE)
+            << utils::TraceElement("ASSIM", t, artis::utils::COMPUTE)
             << "assim = " << _assim << " ; assim_pot = " << _assim_pot
             << " ; resp_maint = " << _resp_maint << " ; density = "
             << _density;

@@ -136,7 +136,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("ROOT_DEMAND", t, utils::COMPUTE)
+            << utils::TraceElement("ROOT_DEMAND", t, artis::utils::COMPUTE)
             << "RootDemand = " << _root_demand
             << " ; RootBiomass = " << _root_biomass
             << " ; phase = " << _phase

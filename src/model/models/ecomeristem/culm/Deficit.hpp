@@ -52,7 +52,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_DEFICIT", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_DEFICIT", t, artis::utils::COMPUTE)
             << "Deficit = " << _deficit
             << " ; Intermediate = " << _intermediate;
         utils::Trace::trace().flush();

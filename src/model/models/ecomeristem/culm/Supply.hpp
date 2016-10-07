@@ -54,7 +54,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM_SUPPLY", t, utils::COMPUTE)
+            << utils::TraceElement("CULM_SUPPLY", t, artis::utils::COMPUTE)
             << "Supply = " << _supply
             << " ; Assim = " << _assim
             << " ; LeafBiomassSum = " << _leaf_biomass_sum

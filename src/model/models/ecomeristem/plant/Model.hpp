@@ -33,6 +33,7 @@
 #include <model/models/ecomeristem/plant/stock/Model.hpp>
 #include <model/models/ecomeristem/plant/thermal-time/Model.hpp>
 #include <model/models/ecomeristem/plant/water-balance/Model.hpp>
+#include <model/kernel/AbstractModel.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 
 namespace ecomeristem { namespace plant {
@@ -53,7 +54,7 @@ public:
                      INTERNODE_DEMAND_SUM };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
-    Model();
+    Model(const ecomeristem::AbstractModel* parent);
 
     virtual ~Model()
     {

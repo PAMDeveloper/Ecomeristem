@@ -59,7 +59,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("RESPMAINT", t, utils::COMPUTE)
+            << utils::TraceElement("RESPMAINT", t, artis::utils::COMPUTE)
             << "respMaint = " << _RespMaint << " ; LeafBiomass = "
             << _LeafBiomass << " ; InternodeBiomass = "
             << _InternodeBiomass << " ; TA = "

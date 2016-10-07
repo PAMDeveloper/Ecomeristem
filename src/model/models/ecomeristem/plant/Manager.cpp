@@ -109,7 +109,7 @@ void Manager::compute(double t, bool /* update */)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT_MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT_MANAGER", t, artis::utils::COMPUTE)
             << "phase = " << _phase
             << " ; state = " << _state
             << " ; stock = " << _stock

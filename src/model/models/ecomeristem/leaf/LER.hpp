@@ -53,7 +53,7 @@ public:
 
  #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("LEAF_LER", t, utils::COMPUTE)
+            << utils::TraceElement("LEAF_LER", t, artis::utils::COMPUTE)
             << "LER = " << _ler
             << " ; predim = " << _predim
             << " ; reduction_ler = " << _reduction_ler
