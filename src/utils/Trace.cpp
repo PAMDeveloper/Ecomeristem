@@ -30,22 +30,3 @@ template < > std::shared_ptr < Trace > Trace::_instance;
 template < > std::once_flag Trace::_flag;
 
 } // namespace utils
-
-/* utils::Trace& operator<<(utils::Trace& trace, const utils::TraceElement& e)
-{
-    trace.set_element(e);
-    return trace;
-}
-
-utils::Trace& operator<<(utils::Trace& trace, const std::string& str)
-{
-    trace.sstream() << str;
-    return trace;
-}
-
-utils::Trace& operator<<(utils::Trace& trace, double t)
-{
-    trace.sstream().precision(10);
-    trace.sstream() << t;
-    return trace;
-    } */
