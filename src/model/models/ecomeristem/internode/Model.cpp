@@ -95,10 +95,10 @@ void Model::compute(double t, bool /* update */)
 
     if (predim_model.is_computed(t, Predim::PREDIM)) {
         iner_model.put(t, Iner::PREDIM,
-                      predim_model.get(t, Predim::PREDIM));
+                      predim_model.get < double >(t, Predim::PREDIM));
     }
     iner_model.put(t, Iner::REDUCTION_INER,
-                  reduction_iner_model.get(t, ReductionINER::REDUCTION_INER));
+                  reduction_iner_model.get < double >(t, ReductionINER::REDUCTION_INER));
     iner_model(t);
 
     manager_model.put(t, Manager::PHASE, _phase);
@@ -109,71 +109,71 @@ void Model::compute(double t, bool /* update */)
         len_model.put(t, Len::DELTA_T, _delta_t);
         if (exp_time_model.is_computed(t, ExpTime::EXP_TIME)) {
             len_model.put(t, Len::EXP_TIME,
-                          exp_time_model.get(t, ExpTime::EXP_TIME));
+                          exp_time_model.get < double >(t, ExpTime::EXP_TIME));
         }
-        len_model.put(t, Len::INER, iner_model.get(t, Iner::INER));
+        len_model.put(t, Len::INER, iner_model.get < double >(t, Iner::INER));
         if (manager_model.is_computed(t, Manager::INTERNODE_PHASE)) {
-            len_model.put(t, Len::PHASE, manager_model.get(
+            len_model.put(t, Len::PHASE, manager_model.get < double >(
                               t, Manager::INTERNODE_PHASE));
         }
         if (predim_model.is_computed(t, Predim::PREDIM)) {
             len_model.put(t, Len::PREDIM,
-                          predim_model.get(t, Predim::PREDIM));
+                          predim_model.get < double >(t, Predim::PREDIM));
         }
         len_model(t);
 
-        exp_time_model.put(t, ExpTime::INER, iner_model.get(t, Iner::INER));
+        exp_time_model.put(t, ExpTime::INER, iner_model.get < double >(t, Iner::INER));
         if (len_model.is_computed(t, Len::LEN)) {
-            exp_time_model.put(t, ExpTime::LEN, len_model.get(t, Len::LEN));
+            exp_time_model.put(t, ExpTime::LEN, len_model.get < double >(t, Len::LEN));
         }
         if (manager_model.is_computed(t, Manager::INTERNODE_PHASE)) {
-            exp_time_model.put(t, ExpTime::PHASE, manager_model.get(
+            exp_time_model.put(t, ExpTime::PHASE, manager_model.get < double >(
                                    t, Manager::INTERNODE_PHASE));
         }
         if (predim_model.is_computed(t, Predim::PREDIM)) {
             exp_time_model.put(t, ExpTime::PREDIM,
-                               predim_model.get(t, Predim::PREDIM));
+                               predim_model.get < double >(t, Predim::PREDIM));
         }
         exp_time_model(t);
     } while (not len_model.is_computed(t, Len::LEN) or
              not exp_time_model.is_computed(t, ExpTime::EXP_TIME));
 
-    manager_model.put(t, Manager::LEN, len_model.get(t, Len::LEN));
+    manager_model.put(t, Manager::LEN, len_model.get < double >(t, Len::LEN));
     if (predim_model.is_computed(t, Predim::PREDIM)) {
         manager_model.put(t, Manager::PREDIM,
-                          predim_model.get(t, Predim::PREDIM));
+                          predim_model.get < double >(t, Predim::PREDIM));
     }
 
     if (predim_model.is_computed(t, Predim::PREDIM)) {
         diameter_predim_model.put(t, DiameterPredim::PREDIM,
-                                  predim_model.get(t, Predim::PREDIM));
+                                  predim_model.get < double >(t, Predim::PREDIM));
     }
     diameter_predim_model(t);
 
-    volume_model.put(t, Volume::LEN, len_model.get(t, Len::LEN));
+    volume_model.put(t, Volume::LEN, len_model.get < double >(t, Len::LEN));
     volume_model.put(t, Volume::DIAMETER,
-                         diameter_predim_model.get(
+                         diameter_predim_model.get < double >(
                              t, DiameterPredim::DIAMETER_PREDIM));
     volume_model(t);
 
     biomass_model.put(t, Biomass::VOLUME,
-                      volume_model.get(t, Volume::VOLUME));
+                      volume_model.get < double >(t, Volume::VOLUME));
     biomass_model(t);
 
     internode_demand_model.put(t, InternodeDemand::BIOMASS,
-                          biomass_model.get(t, Biomass::BIOMASS));
+                          biomass_model.get < double >(t, Biomass::BIOMASS));
     internode_demand_model.put(t, InternodeDemand::PHASE,
-                           manager_model.get(t, Manager::INTERNODE_PHASE));
+                           manager_model.get < double >(t, Manager::INTERNODE_PHASE));
     internode_demand_model(t);
 
     last_demand_model.put(t, LastDemand::PHASE,
-                          manager_model.get(t, Manager::INTERNODE_PHASE));
+                          manager_model.get < double >(t, Manager::INTERNODE_PHASE));
     last_demand_model.put(t, LastDemand::BIOMASS,
-                          biomass_model.get(t, Biomass::BIOMASS));
+                          biomass_model.get < double >(t, Biomass::BIOMASS));
     last_demand_model(t);
 
     time_from_app_model.put(t, TimeFromApp::PHASE,
-                            manager_model.get(t, Manager::INTERNODE_PHASE));
+                            manager_model.get < double >(t, Manager::INTERNODE_PHASE));
     time_from_app_model.put(t, TimeFromApp::DD, _dd);
     time_from_app_model.put(t, TimeFromApp::DELTA_T, _delta_t);
     time_from_app_model(t);
@@ -184,7 +184,7 @@ void Model::compute(double t, bool /* update */)
             << "index = " << _index
             << " ; predim = "
             << (predim_model.is_computed(t, Predim::PREDIM) ?
-                predim_model.get(t, Predim::PREDIM) : -1);
+                predim_model.get < double >(t, Predim::PREDIM) : -1);
         utils::Trace::trace().flush();
 #endif
 

@@ -27,6 +27,7 @@
 
 #include <model/kernel/AbstractAtomicModel.hpp>
 #include <model/models/ecomeristem/plant/thermal-time/ThermalTimeManager.hpp>
+
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace thermal_time {

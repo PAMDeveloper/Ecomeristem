@@ -94,7 +94,7 @@ void Model::compute(double t, bool update)
         day_demand_model(t);
 
         seed_res_model.put(t, SeedRes::DAY_DEMAND,
-                           day_demand_model.get(t, DayDemand::DAY_DEMAND));
+                           day_demand_model.get < double >(t, DayDemand::DAY_DEMAND));
         seed_res_model(t);
 
         if (is_ready(t, ASSIM)) {
@@ -103,14 +103,14 @@ void Model::compute(double t, bool update)
 
             // if (not update or (update and not _stop)) {
                 index_competition_model.put(t, IndexCompetition::DAY_DEMAND,
-                                            day_demand_model.get(
+                                            day_demand_model.get < double >(
                                                 t, DayDemand::DAY_DEMAND));
                 index_competition_model.put(
                     t, IndexCompetition::SEED_RES,
-                    seed_res_model.get(t, SeedRes::SEED_RES));
+                    seed_res_model.get < double >(t, SeedRes::SEED_RES));
                 index_competition_model.put(
                     t, IndexCompetition::SUPPLY,
-                    supply_model.get(t, Supply::SUPPLY));
+                    supply_model.get < double >(t, Supply::SUPPLY));
                 index_competition_model(t);
                 _stop = _phase == plant::NOGROWTH4;
             // }
@@ -120,14 +120,14 @@ void Model::compute(double t, bool update)
             reservoir_dispo_model(t);
 
             surplus_model.put(t, Surplus::DAY_DEMAND,
-                              day_demand_model.get(t, DayDemand::DAY_DEMAND));
+                              day_demand_model.get < double >(t, DayDemand::DAY_DEMAND));
             surplus_model.put(t, Surplus::RESERVOIR_DISPO,
-                              reservoir_dispo_model.get(
+                              reservoir_dispo_model.get < double >(
                                   t, ReservoirDispo::RESERVOIR_DISPO));
             surplus_model.put(t, Surplus::SEED_RES,
-                              seed_res_model.get(t, SeedRes::SEED_RES));
+                              seed_res_model.get < double >(t, SeedRes::SEED_RES));
             surplus_model.put(t, Surplus::SUPPLY,
-                              supply_model.get(t, Supply::SUPPLY));
+                              supply_model.get < double >(t, Supply::SUPPLY));
             surplus_model.put(t, Surplus::REALLOC_BIOMASS_SUM,
                               _realloc_biomass_sum);
             surplus_model.put(t, Surplus::CULM_SURPLUS_SUM,
@@ -147,13 +147,13 @@ void Model::compute_stock(double t)
         stock_model.put(t, Stock::CULM_DEFICIT, _culm_deficit);
     }
     stock_model.put(t, Stock::DAY_DEMAND,
-                    day_demand_model.get(t, DayDemand::DAY_DEMAND));
+                    day_demand_model.get < double >(t, DayDemand::DAY_DEMAND));
     stock_model.put(t, Stock::SEED_RES,
-                    seed_res_model.get(t, SeedRes::SEED_RES));
+                    seed_res_model.get < double >(t, SeedRes::SEED_RES));
     stock_model.put(t, Stock::SUPPLY,
-                    supply_model.get(t, Supply::SUPPLY));
+                    supply_model.get < double >(t, Supply::SUPPLY));
     stock_model.put(t, Stock::RESERVOIR_DISPO,
-                    reservoir_dispo_model.get(
+                    reservoir_dispo_model.get < double >(
                         t, ReservoirDispo::RESERVOIR_DISPO));
     stock_model.put(t, Stock::REALLOC_BIOMASS_SUM, _realloc_biomass_sum);
     stock_model.put(t, Stock::DELETED_LEAF_BIOMASS, _deleted_leaf_biomass);
@@ -163,13 +163,13 @@ void Model::compute_stock(double t)
 
     if (stock_model.is_computed(t, Stock::GROW)) {
         day_demand_model.put(t, DayDemand::GROW,
-                             stock_model.get(t, Stock::GROW));
+                             stock_model.get < double >(t, Stock::GROW));
         reservoir_dispo_model.put(t, ReservoirDispo::GROW,
-                                  stock_model.get(t, Stock::GROW));
+                                  stock_model.get < double >(t, Stock::GROW));
     }
     if (stock_model.is_computed(t, Stock::STOCK)) {
         reservoir_dispo_model.put(t, ReservoirDispo::STOCK,
-                                  stock_model.get(t, Stock::STOCK));
+                                  stock_model.get < double >(t, Stock::STOCK));
     }
 }
 

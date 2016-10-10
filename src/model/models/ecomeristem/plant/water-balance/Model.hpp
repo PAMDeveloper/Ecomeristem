@@ -75,27 +75,29 @@ public:
     {
         FTSW_model(t);
 
-        cstr_model.put(t, cstr::FTSW, FTSW_model.get(t, Ftsw::FTSW));
+        cstr_model.put < double >(t, cstr::FTSW,
+                                  FTSW_model.get < double >(t, Ftsw::FTSW));
         cstr_model(t);
 
-        fcstr_model.put(t, Fcstr::CSTR, cstr_model.get(t, cstr::CSTR));
+        fcstr_model.put < double >(t, Fcstr::CSTR,
+                                   cstr_model.get < double >(t, cstr::CSTR));
         fcstr_model(t);
 
         if (is_ready(t, INTERC)) {
             transpiration_model.put(t, Transpiration::ETP, _etp);
             transpiration_model.put(t, Transpiration::INTERC, _interc);
             transpiration_model.put(t, Transpiration::CSTR,
-                                    cstr_model.get(t, cstr::CSTR));
+                                    cstr_model.get < double >(t, cstr::CSTR));
             transpiration_model(t);
 
-            SWC_model.put(t, Swc::WATER_SUPPLY, _water_supply);
-            SWC_model.put(t, Swc::DELTA_P,
-                          transpiration_model.get(t,
+            SWC_model.put < double >(t, Swc::WATER_SUPPLY, _water_supply);
+            SWC_model.put < double >(t, Swc::DELTA_P,
+                          transpiration_model.get < double >(t,
                               Transpiration::TRANSPIRATION));
             SWC_model(t);
-            FTSW_model.put(t, Ftsw::SWC, SWC_model.get(t, Swc::SWC));
+            FTSW_model.put(t, Ftsw::SWC, SWC_model.get < double >(t, Swc::SWC));
             transpiration_model.put(t, Transpiration::SWC,
-                                    SWC_model.get(t, Swc::SWC));
+                                    SWC_model.get < double >(t, Swc::SWC));
         }
     }
 
