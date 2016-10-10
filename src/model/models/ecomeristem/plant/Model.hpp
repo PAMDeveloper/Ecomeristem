@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@
 #include <model/models/ecomeristem/plant/stock/Model.hpp>
 #include <model/models/ecomeristem/plant/thermal-time/Model.hpp>
 #include <model/models/ecomeristem/plant/water-balance/Model.hpp>
+#include <model/kernel/AbstractModel.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 
 namespace ecomeristem { namespace plant {
@@ -53,7 +54,7 @@ public:
                      INTERNODE_DEMAND_SUM };
     enum externals { ETP, P, RADIATION, TA, WATER_SUPPLY };
 
-    Model();
+    Model(const ecomeristem::AbstractModel* parent);
 
     virtual ~Model()
     {

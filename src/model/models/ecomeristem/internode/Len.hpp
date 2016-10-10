@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_LEN", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE_LEN", t, artis::utils::COMPUTE)
             << "Len = " << _len
             << " ; index = " << _index
             << " ; len[-1] = " << _len_1
@@ -125,7 +125,7 @@ public:
     {
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE_LEN", t, utils::PUT)
+            << utils::TraceElement("INTERNODE_LEN", t, artis::utils::PUT)
             << "Index = " << index
             << " ; index = " << _index
             << " ; value = " << value;

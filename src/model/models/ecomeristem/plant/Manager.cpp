@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -109,7 +109,7 @@ void Manager::compute(double t, bool /* update */)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT_MANAGER", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT_MANAGER", t, artis::utils::COMPUTE)
             << "phase = " << _phase
             << " ; state = " << _state
             << " ; stock = " << _stock

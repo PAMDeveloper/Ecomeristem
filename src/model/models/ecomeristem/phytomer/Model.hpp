@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,8 @@ namespace ecomeristem { namespace phytomer {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { LEAF, INTERNODE };
+
     enum internals { LEAF_BIOMASS, LEAF_BLADE_AREA, LEAF_DEMAND,
                      INTERNODE_DEMAND, INTERNODE_LAST_DEMAND, INTERNODE_BIOMASS,
                      INTERNODE_LEN, LEAF_LAST_DEMAND, PREDIM, PLASTO_DELAY,
@@ -48,6 +50,8 @@ public:
         internode_model(new internode::Model(_index, _is_on_mainstem)),
         leaf_model(new leaf::Model(_index, _is_on_mainstem))
     {
+        S({ { LEAF, leaf_model }, { INTERNODE, internode_model } });
+
         internal(LEAF_BIOMASS, leaf_model, leaf::Model::BIOMASS);
         internal(LEAF_BLADE_AREA, leaf_model, leaf::Model::BLADE_AREA);
         internal(LEAF_DEMAND, leaf_model, leaf::Model::DEMAND);
@@ -108,7 +112,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PHYTOMER", t, utils::COMPUTE)
+            << utils::TraceElement("PHYTOMER", t, artis::utils::COMPUTE)
             << "COMPUTE : index = " << _index;
         utils::Trace::trace().flush();
 #endif
@@ -169,7 +173,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << utils::TraceElement("CULM", t, artis::utils::COMPUTE)
             << "ADD LIG ; DELETE index = " << _index;
         utils::Trace::trace().flush();
 #endif

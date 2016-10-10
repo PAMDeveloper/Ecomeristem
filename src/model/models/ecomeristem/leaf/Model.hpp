@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,6 +45,10 @@ namespace ecomeristem { namespace leaf {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
+    enum submodels { TIME_FROM_APP, BIOMASS_, EXP_TIME, LEN_, PREDIM_, WIDTH,
+                     BLADE_AREA_, LAST_DEMAND_, LER, REDUCTION_LER,
+                     DEMAND_, MANAGER, PLASTO_DELAY_, LIFE_SPAN,
+                     THERMAL_TIME_SINCE_LIGULATION };
     enum internals { BIOMASS, BLADE_AREA, DEMAND, LAST_DEMAND, PREDIM,
                      PLASTO_DELAY, REALLOC_BIOMASS, SENESC_DW,
                      SENESC_DW_SUM, CORRECTED_BIOMASS, CORRECTED_BLADE_AREA,

@@ -1,5 +1,5 @@
 /**
- * @file ecomeristem/peduncle/Model.cpp
+ * @file model/kernel/AbstractModel.hpp
  * @author The Ecomeristem Development Team
  * See the AUTHORS or Authors.txt file
  */
@@ -22,8 +22,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ecomeristem/peduncle/Model.hpp>
+#ifndef __ECOMERISTEM_ABSTRACT_MODEL_HPP
+#define __ECOMERISTEM_ABSTRACT_MODEL_HPP
 
-namespace ecomeristem { namespace peduncle {
+#include <model/models/ModelParameters.hpp>
 
-} } // namespace ecomeristem peduncle
+#include <artis/kernel/AbstractModel.hpp>
+#include <artis/utils/DoubleTime.hpp>
+
+namespace ecomeristem {
+
+typedef artis::kernel::AbstractModel <
+    artis::utils::DoubleTime,
+    model::models::ModelParameters > AbstractModel;
+
+}
+
+#endif

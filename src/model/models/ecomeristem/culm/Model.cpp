@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,9 +67,9 @@ Model::Model(int index) : _index(index), _is_first_culm(index == 1)
 
 void Model::init(double t, const model::models::ModelParameters& parameters)
 {
-    phytomer::Model* first_phytomer = new phytomer::Model(1,
-                                                          _is_first_culm);
+    phytomer::Model* first_phytomer = new phytomer::Model(1, _is_first_culm);
 
+    setsubmodel(PHYTOMERS, first_phytomer);
     first_phytomer->init(t, parameters);
     phytomer_models.push_back(first_phytomer);
 
@@ -221,7 +221,7 @@ void Model::compute(double t, bool update)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("CULM", t, utils::COMPUTE)
+        << utils::TraceElement("CULM", t, artis::utils::COMPUTE)
         << "ADD LIG ; index = " << (*it)->get_index()
         << " ; lig = " << _lig
         << " ; deleted leaf number = " << _deleted_leaf_number;
@@ -346,7 +346,7 @@ void Model::compute(double t, bool update)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("CULM", t, utils::COMPUTE)
+        << utils::TraceElement("CULM", t, artis::utils::COMPUTE)
         << "Predim = " << _leaf_predim
         << " ; index = " << _index
         << " ; assim = " << _assim
@@ -377,7 +377,7 @@ void Model::create_phytomer(double t)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << utils::TraceElement("CULM", t, artis::utils::COMPUTE)
             << "CREATE PHYTOMER: " << index
             << " ; index = " << _index;
         utils::Trace::trace().flush();
@@ -385,6 +385,7 @@ void Model::create_phytomer(double t)
 
         phytomer::Model* phytomer = new phytomer::Model(index, _is_first_culm);
 
+        setsubmodel(PHYTOMERS, phytomer);
         phytomer->init(t, *_parameters);
         phytomer_models.push_back(phytomer);
         compute(t, true);
@@ -407,7 +408,7 @@ void Model::delete_leaf(double t, int index)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("CULM", t, utils::COMPUTE)
+            << utils::TraceElement("CULM", t, artis::utils::COMPUTE)
             << "DELETE LEAF: " << _index
             << " ; index = " << index
             << " ; nb = " << _deleted_leaf_number;

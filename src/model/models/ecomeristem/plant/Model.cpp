@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,8 @@
 
 namespace ecomeristem { namespace plant {
 
-Model::Model()
+Model::Model(const ecomeristem::AbstractModel* parent) :
+    ecomeristem::AbstractCoupledModel < Model >(parent)
 {
     // submodels
     submodel(ASSIMILATION, &assimilation_model);
@@ -108,6 +109,7 @@ void Model::init(double t, const model::models::ModelParameters& parameters)
 
     culm::Model* meristem = new culm::Model(1);
 
+    setsubmodel(CULMS, meristem);
     meristem->init(t, parameters);
     culm_models.push_back(meristem);
 
@@ -257,7 +259,7 @@ void Model::compute_assimilation(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE ASSIMILATION ";
     utils::Trace::trace().flush();
 #endif
@@ -369,7 +371,7 @@ void Model::compute_culms(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE CULMS "
         << " ; LeafBiomassSum = " << _leaf_biomass_sum
         << " ; LeafLastDemandSum = " << _leaf_last_demand_sum
@@ -406,7 +408,7 @@ void Model::compute_height(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "COMPUTE HEIGHT "
         << " ; Height = " << _height;
     utils::Trace::trace().flush();
@@ -498,7 +500,7 @@ void Model::compute_root(double t)
 
 #ifdef WITH_TRACE
     utils::Trace::trace()
-        << utils::TraceElement("PLANT", t, utils::COMPUTE)
+        << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
         << "DemandSum = " << _demand_sum;
     utils::Trace::trace().flush();
 #endif
@@ -684,7 +686,7 @@ void Model::create_culm(double t, int n)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
             << "CREATE CULM = " << culm_models.size()
             << " ; n = " << n;
         utils::Trace::trace().flush();
@@ -721,7 +723,7 @@ void Model::delete_leaf(double t)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
             << "DELETE LEAF: culm index = " << _culm_index
             << " ; leaf index = " << _leaf_index;
         utils::Trace::trace().flush();
@@ -778,6 +780,47 @@ double Model::get_stock(double t) const
     return stock_model.is_computed(t, stock::Model::STOCK) ?
         stock_model.get(t, stock::Model::STOCK) :
         (t == _begin ? 0. : stock_model.get(t - 1, stock::Model::STOCK));
+}
+
+void Model::search_deleted_leaf(double t)
+{
+    _culm_index = -1;
+    _leaf_index = -1;
+    _deleted_leaf_biomass = 0;
+    _deleted_leaf_blade_area = 0;
+    if (stock_model.get(t, stock::Model::STOCK) == 0) {
+        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+        int i = 0;
+
+        while (it != culm_models.end() and
+               (*it)->get_phytomer_number() == 0) {
+            ++it;
+            ++i;
+        }
+        if (it != culm_models.end()) {
+            _culm_index = i;
+            _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
+            if (_leaf_index != -1) {
+                _deleted_leaf_biomass =
+                    culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+                _deleted_leaf_blade_area =
+                    culm_models[_culm_index]->get_leaf_blade_area(t,
+                                                                  _leaf_index);
+            }
+        }
+
+#ifdef WITH_TRACE
+        utils::Trace::trace()
+            << utils::TraceElement("PLANT", t, artis::utils::COMPUTE)
+            << "DELETE LEAF: "
+            << " ; culm index = " << _culm_index
+            << " ; leaf index = " << _leaf_index
+            << " ; leaf biomass = " << _deleted_leaf_biomass
+            << " ; culm number = " << culm_models.size();
+        utils::Trace::trace().flush();
+#endif
+
+    }
 }
 
 } } // namespace ecomeristem plant

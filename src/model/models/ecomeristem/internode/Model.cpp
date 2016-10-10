@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,20 @@ Model::Model(int index, bool is_on_mainstem) :
     internode_demand_model(index),
     manager_model(index)
 {
+    S({ { TIME_FROM_APP, &time_from_app_model },
+        { BIOMASS_, &biomass_model },
+        { EXP_TIME, &exp_time_model },
+        { LEN_, &len_model },
+        { VOLUME, &volume_model },
+        { PREDIM, &predim_model },
+        { DIAMETER_PREDIM, &diameter_predim_model },
+        { LAST_DEMAND_, &last_demand_model },
+        { INER, &iner_model },
+        { REDUCTION_INER, &reduction_iner_model },
+        { DEMAND_, &internode_demand_model },
+        { MANAGER, &manager_model }
+        });
+
     internal(BIOMASS, &biomass_model, Biomass::BIOMASS);
     internal(DEMAND, &internode_demand_model, InternodeDemand::DEMAND);
     internal(LAST_DEMAND, &last_demand_model, LastDemand::LAST_DEMAND);
@@ -166,7 +180,7 @@ void Model::compute(double t, bool /* update */)
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("INTERNODE", t, utils::COMPUTE)
+            << utils::TraceElement("INTERNODE", t, artis::utils::COMPUTE)
             << "index = " << _index
             << " ; predim = "
             << (predim_model.is_computed(t, Predim::PREDIM) ?

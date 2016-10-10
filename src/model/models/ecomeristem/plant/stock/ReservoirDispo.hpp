@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("RESERVOIR_DISPO", t, utils::COMPUTE)
+            << utils::TraceElement("RESERVOIR_DISPO", t, artis::utils::COMPUTE)
             << "ReservoirDispo = " << _reservoir_dispo
             << " ; stock = " << _stock
             << " ; stock[-1] = " << _stock_1
@@ -86,7 +86,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("RESERVOIR_DISPO", t, utils::PUT)
+            << utils::TraceElement("RESERVOIR_DISPO", t, artis::utils::PUT)
             << "index  = " << index
             << " ; value = " << value;
         utils::Trace::trace().flush();

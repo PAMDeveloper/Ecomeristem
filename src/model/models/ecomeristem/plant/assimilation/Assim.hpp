@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public:
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
-            << utils::TraceElement("ASSIM", t, utils::COMPUTE)
+            << utils::TraceElement("ASSIM", t, artis::utils::COMPUTE)
             << "assim = " << _assim << " ; assim_pot = " << _assim_pot
             << " ; resp_maint = " << _resp_maint << " ; density = "
             << _density;

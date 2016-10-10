@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,7 @@
 
 namespace utils {
 
-    Trace* Trace::_instance = 0;
+template < > std::shared_ptr < Trace > Trace::_instance;
+template < > std::once_flag Trace::_flag;
 
 } // namespace utils
-
-utils::Trace& operator<<(utils::Trace& trace, const utils::TraceElement& e)
-{
-    trace.set_element(e);
-    return trace;
-}
-
-utils::Trace& operator<<(utils::Trace& trace, const std::string& str)
-{
-    trace.sstream() << str;
-    return trace;
-}
-
-utils::Trace& operator<<(utils::Trace& trace, double t)
-{
-    trace.sstream().precision(10);
-    trace.sstream() << t;
-    return trace;
-}

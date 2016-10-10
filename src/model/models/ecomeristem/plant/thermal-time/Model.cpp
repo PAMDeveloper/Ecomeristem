@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ namespace ecomeristem { namespace plant { namespace thermal_time {
 Model::Model()
 {
     // submodels
+    submodel(DELTA_T_MODEL, &DeltaT_model);
     submodel(DD_MODEL, &DD_model);
     submodel(IH_MODEL, &IH_model);
     submodel(LIGULO_VISU_MODEL, &LiguloVisu_model);
@@ -36,6 +37,7 @@ Model::Model()
     submodel(PLASTO_VISU_MODEL, &PlastoVisu_model);
     submodel(TT_MODEL, &TT_model);
     submodel(TT_LIG_MODEL, &TT_lig_model);
+    submodel(MANAGER_MODEL, &ThermalTimeManager_model);
 
      // internals
     internal(DD, &DD_model, Dd::DD);

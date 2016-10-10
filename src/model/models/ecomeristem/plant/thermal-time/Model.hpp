@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,9 @@ namespace ecomeristem { namespace plant { namespace thermal_time {
 class Model : public ecomeristem::AbstractCoupledModel < Model >
 {
 public:
-    enum submodels { DD_MODEL, IH_MODEL, LIGULO_VISU_MODEL, PHENO_STAGE_MODEL,
-                     PLASTO_VISU_MODEL, TT_MODEL, TT_LIG_MODEL };
+    enum submodels { DELTA_T_MODEL, DD_MODEL, IH_MODEL, LIGULO_VISU_MODEL,
+                     PHENO_STAGE_MODEL, PLASTO_VISU_MODEL, TT_MODEL,
+                     TT_LIG_MODEL, MANAGER_MODEL };
     enum internals { DD, DELTA_T, EDD, IH, LIGULO_VISU, PHENO_STAGE,
                      PLASTO_VISU, TT, TT_LIG, BOOL_CROSSED_PLASTO };
     enum externals { STOCK, PHASE, TA, GROW, LIG, PLASTO_DELAY };

@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,7 +57,7 @@ public:
 #ifdef WITH_TRACE
         utils::Trace::trace()
             << utils::TraceElement("CULM_MAX_RESERVOIR_DISPO",
-                                   t, utils::COMPUTE)
+                                   t, artis::utils::COMPUTE)
             << "MaxReservoirDispo = " << _max_reversoir_dispo
             << " ; InternodeBiomassSum = " << _internode_biomass_sum
             << " ; LeafBiomassSum = " << _leaf_biomass_sum

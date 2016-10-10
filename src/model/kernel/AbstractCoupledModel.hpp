@@ -5,8 +5,8 @@
  */
 
 /*
- * Copyright (C) 2005-2015 Cirad http://www.cirad.fr
- * Copyright (C) 2012-2015 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@
 #include <artis/kernel/AbstractCoupledModel.hpp>
 #include <artis/utils/DateTime.hpp>
 
+#include <model/kernel/AbstractModel.hpp>
 #include <model/models/ModelParameters.hpp>
 
 namespace ecomeristem {
@@ -45,7 +46,10 @@ class AbstractCoupledModel : public artis::kernel::AbstractCoupledModel <
     GlobalParameters >
 {
 public:
-    AbstractCoupledModel()
+    AbstractCoupledModel(const ecomeristem::AbstractModel* parent = 0) :
+        artis::kernel::AbstractCoupledModel <
+    T, artis::utils::DoubleTime, model::models::ModelParameters,
+    GlobalParameters >(parent)
     { }
 
     virtual ~AbstractCoupledModel()
