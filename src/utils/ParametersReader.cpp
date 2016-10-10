@@ -335,13 +335,21 @@ namespace utils {
 		endYear = DateTime::year(end);
 
 		for (unsigned int year = beginYear; year <= endYear; year++) {
-			std::string request =
+			/*std::string request =
 				(boost::format("Select * from meteorology where " \
 					"EXTRACT(YEAR FROM day) = %1% " \
 					"AND \"idsite\" = '%2%' "       \
 					"order by EXTRACT(YEAR FROM day) asc")
 					% year % parameters.get < std::string >("idsite")
-					).str();
+					).str();*/
+
+			std::string request =
+				(boost::format("SELECT * FROM \"meteorology\" "         \
+					"WHERE \"day\" like \'%%%1%%%\' "        \
+					"AND \"idsite\" = '%2%' order by "       \
+					"to_date(\"day\",'DD/MM/YYYY') asc") % year %
+					parameters.get < std::string >("idsite")).str();
+
 
 			PGresult* result = PQexec(connection, request.c_str());
 
@@ -355,7 +363,7 @@ namespace utils {
 				double t;
 
 				//utils::DateTime::format_date(boost::lexical_cast < std::string >(PQgetvalue(result, i, 0)), day);
-				t = utils::DateTime::fromYearMonthDayToJulianDay(boost::lexical_cast < std::string >(PQgetvalue(
+				t = utils::DateTime::fromDayMonthYearToJulianDay(boost::lexical_cast < std::string >(PQgetvalue(
 					result, i, 0)));
 
 				if (t >= begin && t <= end) {

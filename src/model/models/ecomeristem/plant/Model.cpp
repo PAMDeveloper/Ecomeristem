@@ -186,7 +186,43 @@ void Model::compute(double t, bool /* update */)
                  not culms_is_stable(t) or
                  not root_model.is_stable(t) or not stock_model.is_stable(t));
 
-        search_deleted_leaf(t);
+        _culm_index = -1;
+        _leaf_index = -1;
+        _deleted_leaf_biomass = 0;
+        _deleted_leaf_blade_area = 0;
+        if (stock_model.get(t, stock::Model::STOCK) == 0) {
+            std::vector < culm::Model* >::const_iterator it = culm_models.begin();
+            int i = 0;
+
+            while (it != culm_models.end() and
+                   (*it)->get_phytomer_number() == 0) {
+                ++it;
+                ++i;
+            }
+            if (it != culm_models.end()) {
+                _culm_index = i;
+                _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
+                if (_leaf_index != -1) {
+                    _deleted_leaf_biomass =
+                        culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
+                    _deleted_leaf_blade_area =
+                        culm_models[_culm_index]->get_leaf_blade_area(t,
+                                                                      _leaf_index);
+                }
+            }
+
+#ifdef WITH_TRACE
+            utils::Trace::trace()
+                << utils::TraceElement("PLANT", t, utils::COMPUTE)
+                << "DELETE LEAF: "
+                << " ; culm index = " << _culm_index
+                << " ; leaf index = " << _leaf_index
+                << " ; leaf biomass = " << _deleted_leaf_biomass
+                << " ; culm number = " << culm_models.size();
+            utils::Trace::trace().flush();
+#endif
+
+        }
         compute_height(t);
     } else {
         _height = 0;
@@ -195,21 +231,28 @@ void Model::compute(double t, bool /* update */)
 
 void Model::compute_assimilation(double t)
 {
-    OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
-      IN(t, &assimilation_model, assimilation::Model::FCSTR);
-    OUT(t, &water_balance_model, water_balance::Model::CSTR) >>
-      IN(t, &assimilation_model, assimilation::Model::CSTR);
+    if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
+        assimilation_model.put(t, assimilation::Model::FCSTR,
+                               water_balance_model.get(t,
+                                   water_balance::Model::FCSTR));
+    };
+//TODO
     if (_culm_is_computed) {
-        OUT(t, _leaf_biomass_sum) >>
-	  IN(t, &assimilation_model, assimilation::Model::LEAF_BIOMASS);
-        OUT(t, _internode_biomass_sum) >>
-	  IN(t, &assimilation_model, assimilation::Model::INTERNODE_BIOMASS);
-        OUT(t, _leaf_blade_area_sum) >>
-	  IN(t, &assimilation_model, assimilation::Model::PAI);
+        assimilation_model.put(t, assimilation::Model::LEAF_BIOMASS,
+                               _leaf_biomass_sum);
+        assimilation_model.put(t, assimilation::Model::INTERNODE_BIOMASS,
+                               _internode_biomass_sum);
+        assimilation_model.put(t, assimilation::Model::PAI,
+                               _leaf_blade_area_sum);
     }
-    OUT(t, _radiation) >>
-      IN(t, &assimilation_model, assimilation::Model::RADIATION);
-    OUT(t, _ta) >> IN(t, &assimilation_model, assimilation::Model::TA);
+    assimilation_model.put(t,
+                           assimilation::Model::RADIATION, _radiation);
+    assimilation_model.put(t, assimilation::Model::TA, _ta);
+    if (water_balance_model.is_computed(t, water_balance::Model::CSTR)) {
+        assimilation_model.put(t, assimilation::Model::CSTR,
+                               water_balance_model.get(t,
+                                   water_balance::Model::CSTR));
+    }
     assimilation_model(t);
 
 #ifdef WITH_TRACE
@@ -236,30 +279,54 @@ void Model::compute_culms(double t)
     _realloc_biomass_sum = 0;
     _senesc_dw_sum = 0;
     while (it != culm_models.end()) {
-        OUT(t, &thermal_time_model, thermal_time::Model::DD) >>
-	  IN(t, *it, culm::Model::DD);
-        OUT(t, &thermal_time_model, thermal_time::Model::DELTA_T) >>
-	  IN(t, *it, culm::Model::DELTA_T);
-        OUT(t, &water_balance_model, water_balance::Model::FTSW) >>
-	  IN(t, *it, culm::Model::FTSW);
-        OUT(t, &water_balance_model, water_balance::Model::FCSTR) >>
-	  IN(t, *it, culm::Model::FCSTR);
-        OUT(t, _p) >> IN(t, *it, culm::Model::P);
-        OUT(t, &thermal_time_model, thermal_time::Model::PHENO_STAGE) >>
-	  IN(t, *it, culm::Model::PHENO_STAGE);
-        OUT(t, _predim_leaf_on_mainstem) >>
-	  IN(t, *it, culm::Model::PREDIM_LEAF_ON_MAINSTEM);
-        OUT(t, &sla_model, Sla::SLA) >> IN(t, *it, culm::Model::SLA);
-        OUT(t, &stock_model, stock::Model::GROW) >>
-	  IN(t, *it, culm::Model::GROW);
-        OUT(t, &manager_model, Manager::PHASE) >>
-	  IN(t, *it, culm::Model::PHASE);
-        OUT(t, &manager_model, Manager::STATE) >>
-	  IN(t, *it, culm::Model::STATE);
+        if (thermal_time_model.is_computed(t, thermal_time::Model::DD)) {
+            (*it)->put(t, culm::Model::DD,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::DD));
+        }
+        if (thermal_time_model.is_computed(t, thermal_time::Model::DELTA_T)) {
+            (*it)->put(t, culm::Model::DELTA_T,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::DELTA_T));
+        }
+        if (water_balance_model.is_computed(t, water_balance::Model::FTSW)) {
+            (*it)->put(t, culm::Model::FTSW,
+                       water_balance_model.get(
+                           t, water_balance::Model::FTSW));
+        }
+        if (water_balance_model.is_computed(t, water_balance::Model::FCSTR)) {
+            (*it)->put(t, culm::Model::FCSTR,
+                       water_balance_model.get(
+                           t, water_balance::Model::FCSTR));
+        }
+        (*it)->put(t, culm::Model::P, _p);
+        if (thermal_time_model.is_computed(
+                t, thermal_time::Model::PHENO_STAGE)) {
+            (*it)->put(t, culm::Model::PHENO_STAGE,
+                       thermal_time_model.get(
+                           t, thermal_time::Model::PHENO_STAGE));
+        }
+        (*it)->put(t, culm::Model::PREDIM_LEAF_ON_MAINSTEM,
+                   _predim_leaf_on_mainstem);
+        if ( sla_model.is_computed(t, Sla::SLA)) {
+            (*it)->put(t, culm::Model::SLA, sla_model.get(t, Sla::SLA));
+        }
+        if (stock_model.is_computed(t, stock::Model::GROW)) {
+            (*it)->put(t, culm::Model::GROW,
+                       stock_model.get(t, stock::Model::GROW));
+        }
+        if (manager_model.is_computed(t, Manager::PHASE)) {
+            (*it)->put(t, culm::Model::PHASE,
+                       manager_model.get(t, Manager::PHASE));
+            (*it)->put(t, culm::Model::STATE,
+                       manager_model.get(t, Manager::STATE));
+        }
         //TODO
         (*it)->put(t, culm::Model::STOP, 0.);
-        OUT(t, &stock_model, stock::Model::TEST_IC) >>
-	  IN(t, *it, culm::Model::TEST_IC);
+        if (stock_model.is_computed(t, stock::Model::TEST_IC)) {
+            (*it)->put(t, culm::Model::TEST_IC,
+                       stock_model.get(t, stock::Model::TEST_IC));
+        }
         (**it)(t);
 
         _leaf_biomass_sum += (*it)->get(t, culm::Model::LEAF_BIOMASS_SUM);
@@ -288,14 +355,14 @@ void Model::compute_culms(double t)
     // stock computations
     it = culm_models.begin();
     while (it != culm_models.end()) {
-        OUT(t, _leaf_biomass_sum + _internode_biomass_sum) >>
-	  IN(t, *it, culm::Model::PLANT_BIOMASS_SUM);
-        OUT(t, _leaf_biomass_sum) >>
-	  IN(t, *it, culm::Model::PLANT_LEAF_BIOMASS_SUM);
-        OUT(t, _leaf_blade_area_sum) >>
-	  IN(t, *it, culm::Model::PLANT_BLADE_AREA_SUM);
-        OUT(t, &assimilation_model, assimilation::Model::ASSIM) >>
-	  IN(t, *it, culm::Model::ASSIM);
+        (*it)->put(t, culm::Model::PLANT_BIOMASS_SUM, _leaf_biomass_sum +
+            _internode_biomass_sum);
+        (*it)->put(t, culm::Model::PLANT_LEAF_BIOMASS_SUM, _leaf_biomass_sum);
+        (*it)->put(t, culm::Model::PLANT_BLADE_AREA_SUM, _leaf_blade_area_sum);
+        if (assimilation_model.is_computed(t, assimilation::Model::ASSIM)) {
+            (*it)->put(t, culm::Model::ASSIM,
+                       assimilation_model.get(t, assimilation::Model::ASSIM));
+        }
         (**it)(t);
         ++it;
     }
@@ -711,47 +778,6 @@ double Model::get_stock(double t) const
     return stock_model.is_computed(t, stock::Model::STOCK) ?
         stock_model.get(t, stock::Model::STOCK) :
         (t == _begin ? 0. : stock_model.get(t - 1, stock::Model::STOCK));
-}
-
-void Model::search_deleted_leaf(double t)
-{
-    _culm_index = -1;
-    _leaf_index = -1;
-    _deleted_leaf_biomass = 0;
-    _deleted_leaf_blade_area = 0;
-    if (stock_model.get(t, stock::Model::STOCK) == 0) {
-        std::vector < culm::Model* >::const_iterator it = culm_models.begin();
-        int i = 0;
-
-        while (it != culm_models.end() and
-               (*it)->get_phytomer_number() == 0) {
-            ++it;
-            ++i;
-        }
-        if (it != culm_models.end()) {
-            _culm_index = i;
-            _leaf_index = (*it)->get_first_ligulated_leaf_index(t);
-            if (_leaf_index != -1) {
-                _deleted_leaf_biomass =
-                    culm_models[_culm_index]->get_leaf_biomass(t, _leaf_index);
-                _deleted_leaf_blade_area =
-                    culm_models[_culm_index]->get_leaf_blade_area(t,
-                                                                  _leaf_index);
-            }
-        }
-
-#ifdef WITH_TRACE
-        utils::Trace::trace()
-            << utils::TraceElement("PLANT", t, utils::COMPUTE)
-            << "DELETE LEAF: "
-            << " ; culm index = " << _culm_index
-            << " ; leaf index = " << _leaf_index
-            << " ; leaf biomass = " << _deleted_leaf_biomass
-            << " ; culm number = " << culm_models.size();
-        utils::Trace::trace().flush();
-#endif
-
-    }
 }
 
 } } // namespace ecomeristem plant

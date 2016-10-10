@@ -56,17 +56,17 @@ static void format_dates(const model::models::ModelParameters& parameters,
                                  end);
 }
 
-static void run(const std::string& simulation, int /* verbose */)
+static void run(const std::string& simulation, const model::models::ModelParameters &parameters, int /* verbose */)
 {
     ecomeristem::GlobalParameters globalParameters;
     kernel::Model* model = new kernel::Model;
     kernel::Simulator simulator(model, globalParameters);
-    model::models::ModelParameters parameters;
+    //model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     std::string begin;
     std::string end;
 
-    reader.loadParametersFromProstgresql(simulation, parameters);
+    
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
@@ -75,8 +75,8 @@ static void run(const std::string& simulation, int /* verbose */)
     // std::string date;
 
     // utils::DateTime::format_date("27-05-2014", date);
-    std::cout << utils::Trace::trace().elements().to_string()
-              << std::endl;
+    /*std::cout << utils::Trace::trace().elements().to_string()
+              << std::endl;*/
 
     // utils::DateTime::format_date("04-07-2014", date);
     // std::cout << utils::Trace::trace().elements().filter_time(
@@ -203,11 +203,18 @@ int main(int argc, char** argv)
 {
     std::string simulation;
     int verbose;
-    CmdArgs args;
+
+    //CmdArgs args;
 
     setlocale(LC_ALL, "C");
 
-    {
+	simulation = "sim_rice";
+	model::models::ModelParameters parameters;
+	utils::ParametersReader reader;
+	reader.loadParametersFromProstgresql(simulation, parameters);
+	run(simulation, parameters, 0);
+	std::cout << "Simulation done." << std::endl;
+   /* {
         ProgramOptions prgs(&simulation, &verbose, &args);
         int ret = prgs.run(argc, argv);
 
@@ -218,6 +225,6 @@ int main(int argc, char** argv)
         }
     }
 
-    run(simulation, verbose);
+    run(simulation, verbose);*/
     return 0;
 }

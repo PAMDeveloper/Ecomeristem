@@ -32,8 +32,7 @@ Model::Model() : plant_model(new plant::Model)
 
     internal(LAI, plant_model, plant::Model::LAI);
     internal(DELTA_T, plant_model, plant::Model::DELTA_T);
-    internal(BOOL_CROSSED_PLASTO, plant_model,
-             plant::Model::BOOL_CROSSED_PLASTO);
+    internal(BOOL_CROSSED_PLASTO, plant_model, plant::Model::BOOL_CROSSED_PLASTO);
     internal(DD, plant_model, plant::Model::DD);
     internal(EDD, plant_model, plant::Model::EDD);
     internal(IH, plant_model, plant::Model::IH);
@@ -44,8 +43,7 @@ Model::Model() : plant_model(new plant::Model)
     internal(TT_LIG, plant_model, plant::Model::TT_LIG);
     internal(ASSIM, plant_model, plant::Model::ASSIM);
     internal(CSTR, plant_model, plant::Model::CSTR);
-    internal(ROOT_DEMAND_COEF, plant_model,
-             plant::Model::ROOT_DEMAND_COEF);
+    internal(ROOT_DEMAND_COEF, plant_model, plant::Model::ROOT_DEMAND_COEF);
     internal(ROOT_DEMAND, plant_model, plant::Model::ROOT_DEMAND);
     internal(ROOT_BIOMASS, plant_model, plant::Model::ROOT_BIOMASS);
     internal(STOCK, plant_model, plant::Model::STOCK);

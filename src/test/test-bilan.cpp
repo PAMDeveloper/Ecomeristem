@@ -61,7 +61,7 @@ TEST_CASE("Bilan_tests", "variables")
     simulator.attachView("plant", new observer::PlantView);
 
     utils::Trace::trace().clear();
-    reader.load(SIMULATION_NAME, parameters);
+    reader.loadParametersFromProstgresql(SIMULATION_NAME, parameters);
     format_dates(parameters, begin, end);
     simulator.init(utils::DateTime::toJulianDayNumber(begin), parameters);
     simulator.run(utils::DateTime::toJulianDayNumber(begin),
