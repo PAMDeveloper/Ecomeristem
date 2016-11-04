@@ -1,7 +1,7 @@
 #include "mainwindow.h"
 #include <QApplication>
 
-
+//#define WITH_TRACE
 //#include <boost/program_options.hpp>
 //#include <boost/property_tree/ptree.hpp>
 //#include <boost/property_tree/xml_parser.hpp>
@@ -30,14 +30,19 @@ int main(int argc, char *argv[])
     w.show();
 
     std::string simulation;
+
 //    setlocale(LC_ALL, "C");
 
     simulation = "sim_rice";
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
     reader.loadParametersFromProstgresql(simulation, parameters);
+//    reader.loadParametersFromFiles("d:/Output", parameters);
+    std::cout << "Simulation loaded. Starting." << std::endl;
     w.run(simulation, parameters, 0);
     std::cout << "Simulation done." << std::endl;
+
+
 
     return a.exec();
 }

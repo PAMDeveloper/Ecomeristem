@@ -24,11 +24,20 @@ INCLUDEPATH +=  ../src \
                 ../../artis/src \
                 ../../../Lib/boost_1_61_0 \
                 ../../../Lib/pgsql/include
+#\
+#                ../../OGDF/include
 
 LIBPATH     +=  ../../../Lib/boost_1_61_0/lib64-msvc-14.0 \
-                 ../../../Lib/pgsql/lib
+                ../../../Lib/pgsql/lib
 
-LIBS        += libpq.lib
+#CONFIG(debug, debug|release) {
+#    LIBPATH += ../../../Lib/OGDF/debug
+#} else {
+#    LIBPATH += ../../../Lib/OGDF/release
+#}
+
+LIBS        += -llibpq
+#-logdf -lcoin
 
 DEFINES += ECOMERISTEMQT_LIBRARY
 
@@ -55,7 +64,8 @@ SOURCES += main.cpp\
     ../src/model/observer/View.cpp \
     ../src/utils/Connections.cpp \
     ../src/utils/ParametersReader.cpp \
-    ../src/utils/Trace.cpp
+    ../src/utils/Trace.cpp \
+    graphView.cpp
 
 HEADERS += mainwindow.h \
     ../src/ecomeristem/version.hpp \
@@ -151,7 +161,8 @@ HEADERS += mainwindow.h \
     ../src/utils/DateTime.hpp \
     ../src/utils/Exception.hpp \
     ../src/utils/ParametersReader.hpp \
-    ../src/utils/Trace.hpp
+    ../src/utils/Trace.hpp \
+    graphView.h
 
 FORMS    += mainwindow.ui
 

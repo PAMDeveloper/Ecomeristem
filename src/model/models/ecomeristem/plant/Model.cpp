@@ -215,7 +215,7 @@ void Model::compute(double t, bool /* update */)
 
 #ifdef WITH_TRACE
             utils::Trace::trace()
-                << utils::TraceElement("PLANT", t, utils::COMPUTE)
+                //<< utils::TraceElement("PLANT", t, utils::COMPUTE)
                 << "DELETE LEAF: "
                 << " ; culm index = " << _culm_index
                 << " ; leaf index = " << _leaf_index
