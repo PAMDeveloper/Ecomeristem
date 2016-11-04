@@ -92,7 +92,7 @@ public:
         root_demand_model.put(t, RootDemand::INTERNODE_LAST_DEMAND_SUM,
                               _internode_last_demand_sum);
         root_demand_model.put(t, RootDemand::ROOT_DEMAND_COEF,
-                              root_demand_coef_model.get(t,
+                              root_demand_coef_model.get < double >(t,
                                   RootDemandCoef::ROOT_DEMAND_COEF));
         root_demand_model.put(t, RootDemand::GROW, _grow);
         root_demand_model.put(t, RootDemand::PHASE, _phase);

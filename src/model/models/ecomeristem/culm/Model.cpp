@@ -150,7 +150,8 @@ void Model::compute(double t, bool update)
                 if ((*previous_it)->is_stable(t)) {
                     (*it)->put(
                         t, phytomer::Model::PREDIM_LEAF_ON_MAINSTEM,
-                        (*previous_it)->get(t, phytomer::Model::PREDIM));
+                        (*previous_it)->get < double, leaf::Predim >(
+                            t, phytomer::Model::PREDIM));
                 }
             }
         } else {
@@ -162,7 +163,8 @@ void Model::compute(double t, bool update)
         } else {
             if ((*previous_it)->is_stable(t)) {
                 (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF,
-                           (*previous_it)->get(t, phytomer::Model::PREDIM));
+                           (*previous_it)->get < double, leaf::Predim >(
+                               t, phytomer::Model::PREDIM));
             }
             // else {
             //     (*it)->put(t, phytomer::Model::PREDIM_PREVIOUS_LEAF, 0.);
@@ -178,45 +180,58 @@ void Model::compute(double t, bool update)
         }
         (**it)(t);
 
-        if ((*it)->get(t, phytomer::Model::LEAF_CORRECTED_BIOMASS) == 0) {
+        if ((*it)->get < double, leaf::Biomass >(
+                t, phytomer::Model::LEAF_CORRECTED_BIOMASS) == 0) {
             _leaf_biomass_sum +=
-                (*it)->get(t, phytomer::Model::LEAF_BIOMASS);
+                (*it)->get < double, leaf::Biomass >(
+                    t, phytomer::Model::LEAF_BIOMASS);
         } else {
             _leaf_biomass_sum +=
-                (*it)->get(t, phytomer::Model::LEAF_CORRECTED_BIOMASS);
+                (*it)->get < double, leaf::Biomass >(
+                    t, phytomer::Model::LEAF_CORRECTED_BIOMASS);
         }
 
         _leaf_last_demand_sum +=
-            (*it)->get(t, phytomer::Model::LEAF_LAST_DEMAND);
-        _leaf_demand_sum += (*it)->get(t, phytomer::Model::LEAF_DEMAND);
-        _internode_last_demand_sum += (*it)->get(
-            t, phytomer::Model::INTERNODE_LAST_DEMAND);
-        _internode_demand_sum += (*it)->get(
-            t, phytomer::Model::INTERNODE_DEMAND);
-        _internode_biomass_sum += (*it)->get(
+            (*it)->get < double, leaf::LastDemand >(
+                t, phytomer::Model::LEAF_LAST_DEMAND);
+        _leaf_demand_sum += (*it)->get < double, leaf::LeafDemand >(
+            t, phytomer::Model::LEAF_DEMAND);
+        _internode_last_demand_sum +=
+            (*it)->get < double, internode::LastDemand >(
+                t, phytomer::Model::INTERNODE_LAST_DEMAND);
+        _internode_demand_sum +=
+            (*it)->get < double, internode::InternodeDemand >(
+                t, phytomer::Model::INTERNODE_DEMAND);
+        _internode_biomass_sum += (*it)->get < double, internode::Biomass >(
             t, phytomer::Model::INTERNODE_BIOMASS);
-        _internode_len_sum += (*it)->get(
+        _internode_len_sum += (*it)->get < double, internode::Len >(
             t, phytomer::Model::INTERNODE_LEN);
 
-        if ((*it)->get(t
-                       , phytomer::Model::LEAF_CORRECTED_BLADE_AREA) == 0) {
+        if ((*it)->get < double, leaf::BladeArea >(
+                t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA) == 0) {
             _leaf_blade_area_sum +=
-                (*it)->get(t, phytomer::Model::LEAF_BLADE_AREA);
+                (*it)->get < double, leaf::BladeArea >(
+                    t, phytomer::Model::LEAF_BLADE_AREA);
         } else {
             _leaf_blade_area_sum +=
-                (*it)->get(t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA);
+                (*it)->get < double, leaf::BladeArea >(
+                    t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA);
         }
 
         _realloc_biomass_sum +=
-            (*it)->get(t, phytomer::Model::REALLOC_BIOMASS);
+            (*it)->get < double, leaf::Biomass >(
+                t, phytomer::Model::REALLOC_BIOMASS);
         _senesc_dw_sum +=
-            (*it)->get(t, phytomer::Model::SENESC_DW);
+            (*it)->get < double, leaf::Biomass >(
+                t, phytomer::Model::SENESC_DW);
 
         if (not (*it)->is_leaf_dead()) {
             if ((*it)->is_computed(t, phytomer::Model::PREDIM)) {
                 // if leaf state = lig
-                if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
-                    (*it)->get(t, phytomer::Model::PREDIM)) {
+                if ((*it)->get < double, leaf::Len >(
+                        t, phytomer::Model::LEAF_LEN) ==
+                    (*it)->get < double, leaf::Predim >(
+                        t, phytomer::Model::PREDIM)) {
                     ++_lig;
 
 #ifdef WITH_TRACE
@@ -230,12 +245,16 @@ void Model::compute(double t, bool update)
 
                 }
                 if (i == 0) {
-                    _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                    _leaf_predim = (*it)->get < double, leaf::Predim >(
+                        t, phytomer::Model::PREDIM);
                 } else {
                     // if leaf state = lig
-                    if ((*it)->get(t, phytomer::Model::LEAF_LEN) ==
-                        (*it)->get(t, phytomer::Model::PREDIM)) {
-                        _leaf_predim = (*it)->get(t, phytomer::Model::PREDIM);
+                    if ((*it)->get < double, leaf::Len >(
+                            t, phytomer::Model::LEAF_LEN) ==
+                        (*it)->get < double, leaf::Predim >(
+                            t, phytomer::Model::PREDIM)) {
+                        _leaf_predim = (*it)->get < double, leaf::Predim >(
+                            t, phytomer::Model::PREDIM);
                     }
                 }
             } else {
@@ -270,7 +289,8 @@ void Model::compute(double t, bool update)
         supply_model.put(t, culm::Supply::ASSIM, _assim);
         supply_model(t);
         intermediate_model.put(t, culm::Intermediate::SUPPLY,
-                               supply_model.get(t, culm::Supply::SUPPLY));
+                               supply_model.get < double >(
+                                   t, culm::Supply::SUPPLY));
         intermediate_model.put(t, culm::Intermediate::LEAF_BIOMASS_SUM,
                                _leaf_biomass_sum);
         intermediate_model.put(t, culm::Intermediate::INTERNODE_BIOMASS_SUM,
@@ -291,20 +311,20 @@ void Model::compute(double t, bool update)
                                _realloc_biomass_sum);
         intermediate_model(t);
 
-        deficit_model.put(
+        deficit_model.put < double >(
             t, culm::Deficit::INTERMEDIATE,
-            intermediate_model.get(
+            intermediate_model.get < double >(
                 t, culm::Intermediate::INTERMEDIATE));
         deficit_model(t);
 
         surplus_model.put(t, culm::Surplus::PLANT_STATE, _state);
         surplus_model.put(t, culm::Surplus::SUPPLY,
-                          supply_model.get(t, culm::Supply::SUPPLY));
+                          supply_model.get < double >(t, culm::Supply::SUPPLY));
         surplus_model.put(t, culm::Surplus::PLANT_STOCK,
                                _plant_stock);
         surplus_model.put(
             t, culm::Surplus::MAX_RESERVOIR_DISPO,
-            max_reservoir_dispo_model.get(
+            max_reservoir_dispo_model.get < double >(
                 t, culm::MaxReservoirDispo::MAX_RESERVOIR_DISPO));
         surplus_model.put(t, culm::Surplus::LEAF_DEMAND_SUM,
                           _leaf_demand_sum);
@@ -320,18 +340,18 @@ void Model::compute(double t, bool update)
                           _realloc_biomass_sum);
         surplus_model(t);
 
-        stock_model.put(
+        stock_model.put < double >(
             t, culm::Stock::MAX_RESERVOIR_DISPO,
-            max_reservoir_dispo_model.get(
+            max_reservoir_dispo_model.get < double >(
                 t, culm::MaxReservoirDispo::MAX_RESERVOIR_DISPO));
-        stock_model.put(
+        stock_model.put < double >(
             t, culm::Stock::INTERMEDIATE,
-            intermediate_model.get(
+            intermediate_model.get < double >(
                 t, culm::Intermediate::INTERMEDIATE));
         stock_model(t);
 
         surplus_model.put(t, culm::Surplus::STOCK,
-                          stock_model.get(t, culm::Stock::STOCK));
+                          stock_model.get < double >(t, culm::Stock::STOCK));
     } else {
         surplus_model.put(t, culm::Surplus::PLANT_STOCK,
                                _plant_stock);
@@ -419,10 +439,10 @@ void Model::delete_leaf(double t, int index)
 
 double Model::get_leaf_biomass(double t, int index) const
 {
-    double biomass = phytomer_models[index]->get(
+    double biomass = phytomer_models[index]->get < double, leaf::Biomass >(
         t, phytomer::Model::LEAF_BIOMASS);
     double corrected_biomass =
-        phytomer_models[index]->get(
+        phytomer_models[index]->get < double, leaf::Biomass >(
             t, phytomer::Model::LEAF_CORRECTED_BIOMASS);
 
     if (corrected_biomass > 0) {
@@ -434,10 +454,10 @@ double Model::get_leaf_biomass(double t, int index) const
 
 double Model::get_leaf_blade_area(double t, int index) const
 {
-    double blade_area = phytomer_models[index]->get(
+    double blade_area = phytomer_models[index]->get < double, leaf::BladeArea >(
         t, phytomer::Model::LEAF_BLADE_AREA);
     double corrected_blade_area =
-        phytomer_models[index]->get(
+        phytomer_models[index]->get < double, leaf::BladeArea >(
             t, phytomer::Model::LEAF_CORRECTED_BLADE_AREA);
 
     if (corrected_blade_area > 0) {
@@ -449,7 +469,8 @@ double Model::get_leaf_blade_area(double t, int index) const
 
 double Model::get_leaf_len(double t, int index) const
 {
-    return phytomer_models[index]->get(t, phytomer::Model::LEAF_LEN);
+    return phytomer_models[index]->get < double, leaf::Len >(
+        t, phytomer::Model::LEAF_LEN);
 }
 
 int Model::get_first_ligulated_leaf_index(double t) const
@@ -460,8 +481,9 @@ int Model::get_first_ligulated_leaf_index(double t) const
 
     while (it != phytomer_models.end()) {
         if (not (*it)->is_leaf_dead() and
-            (*it)->get(t, phytomer::Model::LEAF_LEN) ==
-            (*it)->get(t, phytomer::Model::PREDIM)) {
+            (*it)->get < double, leaf::Len >(
+                t, phytomer::Model::LEAF_LEN) ==
+            (*it)->get < double, leaf::Predim >(t, phytomer::Model::PREDIM)) {
             break;
         }
         ++it;
@@ -483,8 +505,9 @@ int Model::get_last_ligulated_leaf_index(double t) const
 
     while (it != phytomer_models.end()) {
         if (not (*it)->is_leaf_dead() and
-            (*it)->get(t, phytomer::Model::LEAF_LEN) ==
-            (*it)->get(t, phytomer::Model::PREDIM)) {
+            (*it)->get < double, leaf::Len >(
+                t, phytomer::Model::LEAF_LEN) ==
+            (*it)->get < double, leaf::Predim >(t, phytomer::Model::PREDIM)) {
             index = i;
         }
         ++it;

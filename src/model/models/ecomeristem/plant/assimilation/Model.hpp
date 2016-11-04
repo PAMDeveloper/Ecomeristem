@@ -76,31 +76,31 @@ public:
     {
         if (is_ready(t, LEAF_BIOMASS) and is_ready(t, INTERNODE_BIOMASS) and
             is_ready(t, TA)) {
-            respMaint_model.put(t, RespMaint::LEAF_BIOMASS, _leafBiomass);
-            respMaint_model.put(t, RespMaint::INTERNODE_BIOMASS,
+            respMaint_model.put < double >(t, RespMaint::LEAF_BIOMASS, _leafBiomass);
+            respMaint_model.put < double >(t, RespMaint::INTERNODE_BIOMASS,
                                 _internodeBiomass);
-            respMaint_model.put(t, RespMaint::TA, _Ta);
+            respMaint_model.put < double >(t, RespMaint::TA, _Ta);
             respMaint_model(t);
             if (is_ready(t, FCSTR) and is_ready(t, PAI)) {
-                lai_model.put(t, Lai::FCSTR, _fcstr);
-                lai_model.put(t, Lai::PAI, _PAI);
+                lai_model.put < double >(t, Lai::FCSTR, _fcstr);
+                lai_model.put < double >(t, Lai::PAI, _PAI);
                 lai_model(t);
 
-                interc_model.put(t, Interc::LAI,
-                                 lai_model.get(t, Lai::LAI));
+                interc_model.put < double >(t, Interc::LAI,
+                                 lai_model.get < double >(t, Lai::LAI));
                 interc_model(t);
                 if (is_ready(t, CSTR) and is_ready(t, RADIATION)) {
-                    assimPot_model.put(t, AssimPot::CSTR, _cstr);
-                    assimPot_model.put(t, AssimPot::RADIATION, _Radiation);
-                    assimPot_model.put(t, AssimPot::INTERC,
-                                       interc_model.get(t, Interc::INTERC));
+                    assimPot_model.put < double >(t, AssimPot::CSTR, _cstr);
+                    assimPot_model.put < double >(t, AssimPot::RADIATION, _Radiation);
+                    assimPot_model.put < double >(t, AssimPot::INTERC,
+                                       interc_model.get < double >(t, Interc::INTERC));
                     assimPot_model(t);
 
-                    assim_model.put(t, Assim::RESP_MAINT,
-                                    respMaint_model.get(t,
+                    assim_model.put < double >(t, Assim::RESP_MAINT,
+                                    respMaint_model.get < double >(t,
                                                         RespMaint::RESP_MAINT));
-                    assim_model.put(t, Assim::ASSIM_POT,
-                                    assimPot_model.get(t, AssimPot::ASSIM_POT));
+                    assim_model.put < double >(t, Assim::ASSIM_POT,
+                                    assimPot_model.get < double >(t, AssimPot::ASSIM_POT));
                     assim_model(t);
                 }
             }

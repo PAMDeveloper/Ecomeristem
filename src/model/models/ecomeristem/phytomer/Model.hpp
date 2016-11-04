@@ -141,8 +141,10 @@ public:
             if (_lig == 0) {
                 if (leaf_model->is_computed(t, leaf::Model::PREDIM) and
                     leaf_model->is_computed(t, leaf::Model::LEN) and
-                    leaf_model->get(t, leaf::Model::PREDIM) ==
-                    leaf_model->get(t, leaf::Model::LEN)) {
+                    leaf_model->get < double, leaf::Predim >(
+                        t, leaf::Model::PREDIM) ==
+                    leaf_model->get < double, leaf::Len >(
+                        t, leaf::Model::LEN)) {
                     _lig = t;
                 }
             }
@@ -157,8 +159,10 @@ public:
         internode_model->put(t, internode::Model::LIG, _lig);
         if (leaf_model and leaf_model->is_computed(t, leaf::Model::PREDIM)) {
             internode_model->put(t, internode::Model::PREDIM_LEAF,
-                                 leaf_model->get(t, leaf::Model::PREDIM));
-            _leaf_predim = leaf_model->get(t, leaf::Model::PREDIM);
+                                 leaf_model->get < double,
+                                 leaf::Predim >(t, leaf::Model::PREDIM));
+            _leaf_predim = leaf_model->get < double, leaf::Predim >(
+                t, leaf::Model::PREDIM);
         } else {
             if (t != _first_day) {
                 internode_model->put(

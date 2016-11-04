@@ -30,13 +30,13 @@ void Model::compute(double t, bool /* update */)
 {
     meteo_model(t);
 
-    ecomeristem_model.put(t, ecomeristem::Model::ETP, meteo_model.get().Etp);
-    ecomeristem_model.put(t, ecomeristem::Model::P, meteo_model.get().P);
-    ecomeristem_model.put(t, ecomeristem::Model::RADIATION,
+    ecomeristem_model.put < double >(t, ecomeristem::Model::ETP, meteo_model.get().Etp);
+    ecomeristem_model.put < double >(t, ecomeristem::Model::P, meteo_model.get().P);
+    ecomeristem_model.put < double >(t, ecomeristem::Model::RADIATION,
                           meteo_model.get().Par);
-    ecomeristem_model.put(t, ecomeristem::Model::WATER_SUPPLY,
+    ecomeristem_model.put < double >(t, ecomeristem::Model::WATER_SUPPLY,
                           meteo_model.get().Irrigation);
-    ecomeristem_model.put(t, ecomeristem::Model::TA,
+    ecomeristem_model.put < double >(t, ecomeristem::Model::TA,
                           meteo_model.get().Temperature);
     ecomeristem_model(t);
 }
