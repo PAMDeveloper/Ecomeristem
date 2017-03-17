@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 #include <model/kernel/Simulator.hpp>
 #include <QtCharts/QLineSeries>
 #include <QtCharts/QSplineSeries>
@@ -10,6 +10,11 @@
 
 #include <model/observer/View.hpp>
 #include <model/observer/PlantView.hpp>
+#include <utils/ParametersReader.hpp>
+#include <model/models/ModelParameters.hpp>
+
+#include <utils/DateTime.hpp>
+
 #include "graphView.h"
 #include <QMouseEvent>
 #include <QDate>
@@ -35,7 +40,21 @@ public:
     void displayGraph();
     void mousePressEvent(QMouseEvent * event);
 
+
+private slots:
+    void on_loadSimulationFileBtn_clicked();
+
+    void on_loadMeteoFileBtn_clicked();
+
+    void on_launchSimulationButton_clicked();
+
+    void on_testLoadButton_clicked();
+
 private:
+    model::models::ModelParameters parameters;
+    utils::ParametersReader reader;
+    std::string simulation;
+
     Ui::MainWindow *ui;
     GraphView * graph;
     QDate currentDate;
