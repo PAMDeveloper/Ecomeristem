@@ -26,12 +26,11 @@
 #define __ECOMERISTEM_LEAF_BIOMASS_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {
 
-class Biomass : public ecomeristem::AbstractAtomicModel < Biomass >
+class LeafBiomass : public ecomeristem::AbstractAtomicModel < LeafBiomass >
 {
 public:
     enum internals { BIOMASS, REALLOC_BIOMASS, SENESC_DW, SENESC_DW_SUM,
@@ -39,24 +38,24 @@ public:
     enum externals { BLADE_AREA, SLA, GROW, PHASE, TT, LIFE_SPAN,
                      CORRECTED_BLADE_AREA };
 
-    Biomass(int index) : _index(index)
+    LeafBiomass(int index) : _index(index)
     {
-        internal(BIOMASS, &Biomass::_biomass);
-        internal(REALLOC_BIOMASS, &Biomass::_realloc_biomass);
-        internal(SENESC_DW, &Biomass::_senesc_dw);
-        internal(SENESC_DW_SUM, &Biomass::_senesc_dw_sum);
-        internal(CORRECTED_BIOMASS, &Biomass::_corrected_biomass);
+        internal(BIOMASS, &LeafBiomass::_biomass);
+        internal(REALLOC_BIOMASS, &LeafBiomass::_realloc_biomass);
+        internal(SENESC_DW, &LeafBiomass::_senesc_dw);
+        internal(SENESC_DW_SUM, &LeafBiomass::_senesc_dw_sum);
+        internal(CORRECTED_BIOMASS, &LeafBiomass::_corrected_biomass);
 
-        external(BLADE_AREA, &Biomass::_blade_area);
-        external(SLA, &Biomass::_sla);
-        external(GROW, &Biomass::_grow);
-        external(PHASE, &Biomass::_phase);
-        external(TT, &Biomass::_TT);
-        external(LIFE_SPAN, &Biomass::_life_span);
-        external(CORRECTED_BLADE_AREA, &Biomass::_corrected_blade_area);
+        external(BLADE_AREA, &LeafBiomass::_blade_area);
+        external(SLA, &LeafBiomass::_sla);
+        external(GROW, &LeafBiomass::_grow);
+        external(PHASE, &LeafBiomass::_phase);
+        external(TT, &LeafBiomass::_TT);
+        external(LIFE_SPAN, &LeafBiomass::_life_span);
+        external(CORRECTED_BLADE_AREA, &LeafBiomass::_corrected_blade_area);
     }
 
-    virtual ~Biomass()
+    virtual ~LeafBiomass()
     { }
 
     void compute(double t, bool update)

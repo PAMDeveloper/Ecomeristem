@@ -1,8 +1,8 @@
 /**
- * @file ecomeristem/phytomer/Model.cpp
- * @author The Ecomeristem Development Team
- * See the AUTHORS or Authors.txt file
- */
+* @file model/models/meteo/Meteo.hpp
+* @author The Ecomeristem Development Team
+* See the AUTHORS file
+*/
 
 /*
  * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
@@ -22,8 +22,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ecomeristem/phytomer/Model.hpp>
+#ifndef MODEL_MODELS_METEO_METEO_HPP
+#define MODEL_MODELS_METEO_METEO_HPP
 
-namespace ecomeristem { namespace phytomer {
+#include <model/kernel/AbstractAtomicModel.hpp>
 
-} } // namespace ecomeristem phytomer
+namespace meteo {
+
+	class MeteoModel : public ecomeristem::AbstractAtomicModel < MeteoModel > {
+	public:
+		MeteoModel();
+
+
+		virtual ~MeteoModel()
+		{ }
+
+		void compute(double t, bool update);
+
+		const model::models::Climate &get() const
+		{
+			return *it;
+		}
+
+
+		void init(double t, const model::models::ModelParameters &parameters);
+
+	private:
+		double begin;
+		double end;
+
+		std::vector < model::models::Climate > values;
+		std::vector < model::models::Climate >::const_iterator it;
+	};
+
+} // namespace meteo
+
+#endif

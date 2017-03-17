@@ -25,7 +25,7 @@
 #define CATCH_CONFIG_MAIN
 #include <test/catch.hpp>
 
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 #include <model/kernel/Simulator.hpp>
 #include <model/observer/View.hpp>
 #include <model/observer/PlantView.hpp>
@@ -93,7 +93,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
 TEST_CASE("Thermal_time_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -143,7 +143,7 @@ TEST_CASE("Thermal_time_tests", "variables")
 TEST_CASE("Water_balance_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -168,7 +168,7 @@ TEST_CASE("Water_balance_tests", "variables")
 TEST_CASE("Assimilation_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -193,7 +193,7 @@ TEST_CASE("Assimilation_tests", "variables")
 TEST_CASE("Root_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -222,7 +222,7 @@ TEST_CASE("Root_tests", "variables")
 TEST_CASE("Stock_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -275,7 +275,7 @@ TEST_CASE("Stock_tests", "variables")
 TEST_CASE("Plant_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;

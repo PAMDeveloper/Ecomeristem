@@ -22,21 +22,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 
 namespace model { namespace kernel {
 
-void Model::compute(double t, bool /* update */)
+void KernelModel::compute(double t, bool /* update */)
 {
     meteo_model(t);
 
-    ecomeristem_model.put < double >(t, ecomeristem::Model::ETP, meteo_model.get().Etp);
-    ecomeristem_model.put < double >(t, ecomeristem::Model::P, meteo_model.get().P);
-    ecomeristem_model.put < double >(t, ecomeristem::Model::RADIATION,
+    ecomeristem_model.put < double >(t, ecomeristem::EcomeristemModel::ETP, meteo_model.get().Etp);
+    ecomeristem_model.put < double >(t, ecomeristem::EcomeristemModel::P, meteo_model.get().P);
+    ecomeristem_model.put < double >(t, ecomeristem::EcomeristemModel::RADIATION,
                           meteo_model.get().Par);
-    ecomeristem_model.put < double >(t, ecomeristem::Model::WATER_SUPPLY,
+    ecomeristem_model.put < double >(t, ecomeristem::EcomeristemModel::WATER_SUPPLY,
                           meteo_model.get().Irrigation);
-    ecomeristem_model.put < double >(t, ecomeristem::Model::TA,
+    ecomeristem_model.put < double >(t, ecomeristem::EcomeristemModel::TA,
                           meteo_model.get().Temperature);
     ecomeristem_model(t);
 }

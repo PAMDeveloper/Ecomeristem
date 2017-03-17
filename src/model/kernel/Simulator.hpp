@@ -25,7 +25,7 @@
 #ifndef MODEL_KERNEL_SIMULATOR_HPP
 #define MODEL_KERNEL_SIMULATOR_HPP
 
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 #include <model/kernel/AbstractCoupledModel.hpp>
 #include <model/models/ModelParameters.hpp>
 
@@ -33,7 +33,7 @@
 
 namespace model { namespace kernel {
 
-typedef artis::kernel::Simulator < model::kernel::Model,
+typedef artis::kernel::Simulator < model::kernel::KernelModel,
                                    artis::utils::DoubleTime,
                                    model::models::ModelParameters,
                                    ecomeristem::GlobalParameters > Simulator;

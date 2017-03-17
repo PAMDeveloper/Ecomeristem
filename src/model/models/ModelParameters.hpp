@@ -129,7 +129,11 @@ class ModelParameters {
       mParams.clear();
    }
 
+   
    std::vector < Climate > meteoValues;
+public:
+        std::map < std::string, std::string > * getRawParameters() { return &mParams; }
+		std::vector < Climate > * getMeteoValues() { return &meteoValues; }
  private:
    /*
     * We could use std::map < std::string, boost::any > params; but it doesn't

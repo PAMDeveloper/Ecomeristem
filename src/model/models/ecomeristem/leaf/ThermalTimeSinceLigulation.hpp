@@ -26,7 +26,6 @@
 #define __ECOMERISTEM_LEAF_THERMAL_TIME_SINCE_LIGULATION_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/leaf/Manager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace leaf {

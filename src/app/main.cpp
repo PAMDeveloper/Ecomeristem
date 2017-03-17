@@ -30,7 +30,7 @@
 
 #include <ecomeristem/version.hpp>
 
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 #include <model/kernel/Simulator.hpp>
 
 #include <model/models/ModelParameters.hpp>
@@ -59,7 +59,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
 static void run(const std::string& simulation, const model::models::ModelParameters &parameters, int /* verbose */)
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     //model::models::ModelParameters parameters;
     utils::ParametersReader reader;
@@ -211,8 +211,8 @@ int main(int argc, char** argv)
 	simulation = "sim_rice";
 	model::models::ModelParameters parameters;
 	utils::ParametersReader reader;
-	reader.loadParametersFromProstgresql(simulation, parameters);
-	run(simulation, parameters, 0);
+	//reader.loadParametersFromProstgresql(simulation, parameters);
+	reader.loadParametersFromFiles("d:\\Output", parameters);
 	std::cout << "Simulation done." << std::endl;
    /* {
         ProgramOptions prgs(&simulation, &verbose, &args);

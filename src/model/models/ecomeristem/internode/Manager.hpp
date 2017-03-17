@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_INTERNODE_MANAGER_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/plant/PlantManager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace internode {
@@ -34,24 +34,24 @@ namespace ecomeristem { namespace internode {
 enum Phase { INIT, VEGETATIVE, REALIZATION, REALIZATION_NOGROWTH, MATURITY,
              MATURITY_NOGROWTH };
 
-class Manager : public ecomeristem::AbstractAtomicModel < Manager >
+class InternodeManager : public ecomeristem::AbstractAtomicModel < InternodeManager >
 {
 public:
     enum internals { INTERNODE_PHASE };
     enum externals { PHASE, STATE, LEN, PREDIM, LIG };
 
-    Manager(int index) : _index(index)
+    InternodeManager(int index) : _index(index)
     {
-        internal(INTERNODE_PHASE, &Manager::_phase_);
+        internal(INTERNODE_PHASE, &InternodeManager::_phase_);
 
-        external(PHASE, &Manager::_phase);
-        external(STATE, &Manager::_state);
-        external(LEN, &Manager::_len);
-        external(PREDIM, &Manager::_predim);
-        external(LIG, &Manager::_lig);
+        external(PHASE, &InternodeManager::_phase);
+        external(STATE, &InternodeManager::_state);
+        external(LEN, &InternodeManager::_len);
+        external(PREDIM, &InternodeManager::_predim);
+        external(LIG, &InternodeManager::_lig);
     }
 
-    virtual ~Manager()
+    virtual ~InternodeManager()
     { }
 
     virtual bool check(double /* t */) const
@@ -112,7 +112,7 @@ public:
             _predim_init = true;
         }
 
-        ecomeristem::AbstractAtomicModel < Manager >::put(t, index, value);
+        ecomeristem::AbstractAtomicModel < InternodeManager >::put(t, index, value);
 
         //TODO: remove _phase_ == internode::REALIZATION !!!!
         if (_phase_ == internode::INIT or _phase_ == internode::REALIZATION

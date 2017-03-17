@@ -1,8 +1,8 @@
 /**
- * @file ecomeristem/peduncle/Model.cpp
- * @author The Ecomeristem Development Team
- * See the AUTHORS or Authors.txt file
- */
+* @file model/models/meteo/Meteo.cpp
+* @author The Ecomeristem Development Team
+* See the AUTHORS file
+*/
 
 /*
  * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
@@ -22,8 +22,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <model/models/ecomeristem/peduncle/Model.hpp>
+#include <model/models/meteo/MeteoModel.hpp>
+#include <utils/Connections.hpp>
+#include <utils/DateTime.hpp>
 
-namespace ecomeristem { namespace peduncle {
+namespace meteo {
 
-} } // namespace ecomeristem peduncle
+	MeteoModel::MeteoModel()
+	{
+	}
+
+	void MeteoModel::compute(double /* t */, bool /* update */)
+	{
+		if (it == values.end())
+			it = values.begin();
+
+		else
+			++it;
+	}
+
+
+
+	void MeteoModel::init(double /* t */,
+		const model::models::ModelParameters &parameters)
+	{
+		this->values = parameters.meteoValues;
+		it = values.end();
+	}
+
+
+
+
+}

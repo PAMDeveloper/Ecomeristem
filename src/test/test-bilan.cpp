@@ -25,7 +25,7 @@
 #define CATCH_CONFIG_MAIN
 #include <test/catch.hpp>
 
-#include <model/kernel/Model.hpp>
+#include <model/kernel/KernelModel.hpp>
 #include <model/kernel/Simulator.hpp>
 #include <model/observer/View.hpp>
 #include <model/observer/PlantView.hpp>
@@ -51,7 +51,7 @@ static void format_dates(const model::models::ModelParameters& parameters,
 TEST_CASE("Bilan_tests", "variables")
 {
     ecomeristem::GlobalParameters globalParameters;
-    kernel::Model* model = new kernel::Model;
+    kernel::KernelModel* model = new kernel::KernelModel;
     kernel::Simulator simulator(model, globalParameters);
     model::models::ModelParameters parameters;
     utils::ParametersReader reader;

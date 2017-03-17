@@ -26,8 +26,7 @@
 #define __ECOMERISTEM_PLANT_THERMAL_TIME_THERMAL_TIME_MANAGER_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/plant/PlantManager.hpp>
 
 namespace ecomeristem { namespace plant { namespace thermal_time {
 

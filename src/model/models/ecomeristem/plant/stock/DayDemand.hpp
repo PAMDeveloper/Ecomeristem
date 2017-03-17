@@ -26,7 +26,7 @@
 #define __ECOMERISTEM_PLANT_STOCK_DAY_DEMAND_HPP
 
 #include <model/kernel/AbstractAtomicModel.hpp>
-#include <model/models/ecomeristem/plant/Manager.hpp>
+#include <model/models/ecomeristem/plant/PlantManager.hpp>
 #include <utils/Trace.hpp>
 
 namespace ecomeristem { namespace plant { namespace stock {
