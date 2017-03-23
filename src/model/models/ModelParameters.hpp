@@ -80,31 +80,31 @@ class ModelParameters {
       return boost::lexical_cast<T>( ( it == mParams.end() ) ? "0" : it->second );
    }
 
-   #ifdef OPTIM_NO_LEXCAST
-   template <>
-   double get( const std::string &paramName ) const
-   {
-      std::map < std::string, std::string >::const_iterator it;
-      it = mParams.find( paramName );
+//   #ifdef OPTIM_NO_LEXCAST
+//   template <>
+//   double get( const std::string &paramName ) const
+//   {
+//      std::map < std::string, std::string >::const_iterator it;
+//      it = mParams.find( paramName );
 
-      if( it == mParams.end() )
-         std::cout << "Warning: no value for " << paramName << std::endl;
+//      if( it == mParams.end() )
+//         std::cout << "Warning: no value for " << paramName << std::endl;
 
-	  return (it == mParams.end()) ? 0. : std::stod(it->second.c_str());
-   }
+//	  return (it == mParams.end()) ? 0. : std::stod(it->second.c_str());
+//   }
 
-   template <>
-   int get( const std::string &paramName ) const
-   {
-      std::map < std::string, std::string >::const_iterator it;
-      it = mParams.find( paramName );
+//   template <>
+//   int get( const std::string &paramName ) const
+//   {
+//      std::map < std::string, std::string >::const_iterator it;
+//      it = mParams.find( paramName );
 
-      if( it == mParams.end() )
-         std::cout << "Warning: no value for " << paramName << std::endl;
+//      if( it == mParams.end() )
+//         std::cout << "Warning: no value for " << paramName << std::endl;
 
-      return ( it == mParams.end() ) ? 0. : atoi( it->second.c_str() );
-   }
-   #endif
+//      return ( it == mParams.end() ) ? 0. : atoi( it->second.c_str() );
+//   }
+//   #endif
 
 
    /**

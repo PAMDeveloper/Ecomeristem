@@ -44,58 +44,58 @@ namespace utils {
 	public:
 		static std::string currentDate()
 		{
-			boost::posix_time::ptime current(
-				boost::posix_time::second_clock::local_time());
+            boost::posix_time::ptime current(
+                boost::posix_time::second_clock::local_time());
 
-			std::ostringstream out;
-			out << current;
+            std::ostringstream out;
+            out << current;
 
-			return out.str();
+            return out.str();
 		}
 
 		static unsigned int year(const double& time)
 		{
-			boost::gregorian::date d(
-				boost::numeric_cast <
-				boost::gregorian::date::date_int_type >(time));
+            boost::gregorian::date d(
+                boost::numeric_cast <
+                boost::gregorian::date::date_int_type >(time));
 
-			return d.year();
+            return d.year();
 		}
 
 		static unsigned int month(const double& time)
 		{
-			boost::gregorian::date d(
-				boost::numeric_cast <
-				boost::gregorian::date::date_int_type >(time));
+            boost::gregorian::date d(
+                boost::numeric_cast <
+                boost::gregorian::date::date_int_type >(time));
 
-			return d.month();
+            return d.month();
 		}
 
 		static unsigned int dayOfMonth(const double& time)
 		{
-			boost::gregorian::date d(
-				boost::numeric_cast <
-				boost::gregorian::date::date_int_type >(time));
+            boost::gregorian::date d(
+                boost::numeric_cast <
+                boost::gregorian::date::date_int_type >(time));
 
-			return d.day();
+            return d.day();
 		}
 
 		static unsigned int dayOfYear(const double& time)
 		{
-			boost::gregorian::date d(
-				boost::numeric_cast <
-				boost::gregorian::date::date_int_type >(time));
+            boost::gregorian::date d(
+                boost::numeric_cast <
+                boost::gregorian::date::date_int_type >(time));
 
-			return d.day_of_year();
+            return d.day_of_year();
 		}
 
 		static unsigned int weekOfYear(const double& time)
 		{
-			boost::gregorian::date d(
-				boost::numeric_cast <
-				boost::gregorian::date::date_int_type >(time));
+            boost::gregorian::date d(
+                boost::numeric_cast <
+                boost::gregorian::date::date_int_type >(time));
 
-			return d.week_number();
+            return d.week_number();
 		}
 
 		static long toJulianDayNumber(int year, int month, int day)
@@ -107,98 +107,98 @@ namespace utils {
 
 		static long fromDayMonthYearToJulianDay(const std::string& date)
 		{
-			boost::gregorian::date d;
+            boost::gregorian::date d;
 
-			try {
-				d = boost::gregorian::from_uk_string(date);
-				return d.julian_day();
-			}
-			catch (...) {
+            try {
+                d = boost::gregorian::from_uk_string(date);
+                return d.julian_day();
+            }
+            catch (...) {
 
-				throw utils::ParseError(
-					boost::format(
-						"Date time error: error to convert '%1%' into julian"
-						" day number") % date);
-			}
+                throw utils::ParseError(
+                    boost::format(
+                        "Date time error: error to convert '%1%' into julian"
+                        " day number") % date);
+            }
 			return -1.0L;
 		}
 
 		static long fromYearMonthDayToJulianDay(const std::string& date)
 		{
-			boost::gregorian::date d;
+            boost::gregorian::date d;
 
-			try {
-				d = boost::gregorian::from_simple_string(date);
-				return d.julian_day();
-			}
-			catch (...) {
+            try {
+                d = boost::gregorian::from_simple_string(date);
+                return d.julian_day();
+            }
+            catch (...) {
 
-				throw utils::ParseError(
-					boost::format(
-						"Date time error: error to convert '%1%' into julian"
-						" day number") % date);
-			}
+                throw utils::ParseError(
+                    boost::format(
+                        "Date time error: error to convert '%1%' into julian"
+                        " day number") % date);
+            }
 			return -1.0L;
 		}
 
 		static long toJulianDayNumber(const std::string& date)
 		{
-			boost::gregorian::date d;
+            boost::gregorian::date d;
 
-			try {
-				d = boost::gregorian::from_simple_string(date);
-				return d.julian_day();
-			}
-			catch (...) {
-				try {
-					d = boost::gregorian::from_undelimited_string(date);
-					return d.julian_day();
-				}
-				catch (...) {
-					try {
-						d = boost::gregorian::from_uk_string(date);
-						return d.julian_day();
-					}
-					catch (...) {
-						throw utils::ParseError(
-							boost::format(
-								"Date time error: error to convert '%1%' into julian"
-								" day number") % date);
-					}
-				}
-			}
+            try {
+                d = boost::gregorian::from_simple_string(date);
+                return d.julian_day();
+            }
+            catch (...) {
+                try {
+                    d = boost::gregorian::from_undelimited_string(date);
+                    return d.julian_day();
+                }
+                catch (...) {
+                    try {
+                        d = boost::gregorian::from_uk_string(date);
+                        return d.julian_day();
+                    }
+                    catch (...) {
+                        throw utils::ParseError(
+                            boost::format(
+                                "Date time error: error to convert '%1%' into julian"
+                                " day number") % date);
+                    }
+                }
+            }
 			return -1.0L;
 		}
 
 		static std::string toJulianDay(double date)
 		{
-			double f, e;
-			f = std::modf(date, &e);
+            double f, e;
+            f = std::modf(date, &e);
 
-			f *= 24.0;
-			long hours = std::floor(f);
-			f -= hours;
+            f *= 24.0;
+            long hours = std::floor(f);
+            f -= hours;
 
-			f *= 60.0;
-			long minutes = std::floor(f);
-			f -= minutes;
+            f *= 60.0;
+            long minutes = std::floor(f);
+            f -= minutes;
 
-			f *= 60.0;
-			long seconds = std::floor(f);
-			f -= seconds;
+            f *= 60.0;
+            long seconds = std::floor(f);
+            f -= seconds;
 
-			boost::posix_time::time_duration td(hours, minutes, seconds, f);
-			boost::posix_time::ptime d(boost::gregorian::date(e), td);
-			return boost::posix_time::to_simple_string(d);
+            boost::posix_time::time_duration td(hours, minutes, seconds, f);
+            boost::posix_time::ptime d(boost::gregorian::date(e), td);
+            return boost::posix_time::to_simple_string(d);
 		}
 
 		static void format_date(const std::string& str, std::string& date)
 		{
-			std::vector < std::string > list;
+            std::vector < std::string > list;
 
-			boost::split(list, str, boost::is_any_of("-/"));
-			date = (boost::format("%1%/%2%/%3%") % list[2] % list[1] %
-				list[0]).str();
+            boost::split(list, str, boost::is_any_of("-/"));
+            date = (boost::format("%1%/%2%/%3%") % list[2] % list[1] %
+                list[0]).str();
 		}
 
 	};

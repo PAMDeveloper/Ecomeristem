@@ -256,21 +256,21 @@ namespace utils {
 		std::string line;
 
 		while (varietyParams >> line) {
-#ifdef OPTIM_NO_LEXCAST
-			parameters.set <double>(line.substr(0, line.find("=")),
-				std::stod(line.substr(line.find("=") + 1, line.size()).c_str()));
-#else
+//#ifdef OPTIM_NO_LEXCAST
+//			parameters.set <double>(line.substr(0, line.find("=")),
+//				std::stod(line.substr(line.find("=") + 1, line.size()).c_str()));
+//#else
 			parameters.set <double>(line.substr(0, line.find("=")),
 				boost::lexical_cast<double>(line.substr(line.find("=") + 1, line.size())));
-#endif
+//#endif
 		}
 
-		std::ifstream meteoFiles[5] = {
-			std::ifstream(folder + "/meteo_T.txt"),
-			std::ifstream(folder + "/meteo_PAR.txt"),
-			std::ifstream(folder + "/meteo_ETP.txt"),
-			std::ifstream(folder + "/meteo_irrig.txt"),
-			std::ifstream(folder + "/meteo_P.txt")
+        std::ifstream * meteoFiles[5] = {
+            new std::ifstream(folder + "/meteo_T.txt"),
+            new std::ifstream(folder + "/meteo_PAR.txt"),
+            new std::ifstream(folder + "/meteo_ETP.txt"),
+            new std::ifstream(folder + "/meteo_irrig.txt"),
+            new std::ifstream(folder + "/meteo_P.txt")
 		};
 
 
@@ -278,16 +278,16 @@ namespace utils {
 		std::string date;
 		bool first = true;
 
-		while (meteoFiles[0] >> date) {
+        while (*meteoFiles[0] >> date) {
 			if (first) {
 				parameters.set < std::string >("BeginDate", date);
 				first = false;
 			}
 
-			meteoFiles[0] >> values[0] >> values[0];
+            *meteoFiles[0] >> values[0] >> values[0];
 
 			for (int i = 1; i < 5; i++)
-				meteoFiles[i] >> values[i] >> values[i] >> values[i];
+                *meteoFiles[i] >> values[i] >> values[i] >> values[i];
 						
 
 #ifdef OPTIM_NO_LEXCAST
@@ -320,66 +320,66 @@ namespace utils {
 
 	void ParametersReader::load_meteo(PGconn* connection, model::models::ModelParameters &parameters)
 	{
-		std::vector < model::models::Climate > values;
-		std::string beginDate;
-		std::string endDate;
-		double begin;
-		double end;
-		unsigned int beginYear;
-		unsigned int endYear;
+        std::vector < model::models::Climate > values;
+        std::string beginDate;
+        std::string endDate;
+        double begin;
+        double end;
+        unsigned int beginYear;
+        unsigned int endYear;
 
 
-		begin = DateTime::fromDayMonthYearToJulianDay(parameters.get
-			< std::string >("BeginDate"));
-		end = DateTime::fromDayMonthYearToJulianDay(parameters.get < std::string >("EndDate"));
-		beginYear = DateTime::year(begin);
-		endYear = DateTime::year(end);
+        begin = DateTime::fromDayMonthYearToJulianDay(parameters.get
+            < std::string >("BeginDate"));
+        end = DateTime::fromDayMonthYearToJulianDay(parameters.get < std::string >("EndDate"));
+        beginYear = DateTime::year(begin);
+        endYear = DateTime::year(end);
 
-		for (unsigned int year = beginYear; year <= endYear; year++) {
-			/*std::string request =
-				(boost::format("Select * from meteorology where " \
-					"EXTRACT(YEAR FROM day) = %1% " \
-					"AND \"idsite\" = '%2%' "       \
-					"order by EXTRACT(YEAR FROM day) asc")
-					% year % parameters.get < std::string >("idsite")
-					).str();*/
+        for (unsigned int year = beginYear; year <= endYear; year++) {
+            /*std::string request =
+                (boost::format("Select * from meteorology where " \
+                    "EXTRACT(YEAR FROM day) = %1% " \
+                    "AND \"idsite\" = '%2%' "       \
+                    "order by EXTRACT(YEAR FROM day) asc")
+                    % year % parameters.get < std::string >("idsite")
+                    ).str();*/
 
-			std::string request =
-				(boost::format("SELECT * FROM \"meteorology\" "         \
-					"WHERE \"day\" like \'%%%1%%%\' "        \
-					"AND \"idsite\" = '%2%' order by "       \
-					"to_date(\"day\",'DD/MM/YYYY') asc") % year %
-					parameters.get < std::string >("idsite")).str();
+            std::string request =
+                (boost::format("SELECT * FROM \"meteorology\" "         \
+                    "WHERE \"day\" like \'%%%1%%%\' "        \
+                    "AND \"idsite\" = '%2%' order by "       \
+                    "to_date(\"day\",'DD/MM/YYYY') asc") % year %
+                    parameters.get < std::string >("idsite")).str();
 
 
-			PGresult* result = PQexec(connection, request.c_str());
+            PGresult* result = PQexec(connection, request.c_str());
 
-			if (PQresultStatus(result) != PGRES_TUPLES_OK) {
-				std::cout << "Error: " << PQerrorMessage(connection) << std::endl;
-				return;
-			}
+            if (PQresultStatus(result) != PGRES_TUPLES_OK) {
+                std::cout << "Error: " << PQerrorMessage(connection) << std::endl;
+                return;
+            }
 
-			for (int i = 0; i < PQntuples(result); i++) {
-				std::string day;
-				double t;
+            for (int i = 0; i < PQntuples(result); i++) {
+                std::string day;
+                double t;
 
-				//utils::DateTime::format_date(boost::lexical_cast < std::string >(PQgetvalue(result, i, 0)), day);
-				t = utils::DateTime::fromDayMonthYearToJulianDay(boost::lexical_cast < std::string >(PQgetvalue(
-					result, i, 0)));
+                //utils::DateTime::format_date(boost::lexical_cast < std::string >(PQgetvalue(result, i, 0)), day);
+                t = utils::DateTime::fromDayMonthYearToJulianDay(boost::lexical_cast < std::string >(PQgetvalue(
+                    result, i, 0)));
 
-				if (t >= begin && t <= end) {
-					parameters.meteoValues.push_back(
-						model::models::Climate(
-							boost::lexical_cast < double >(PQgetvalue(result, i, 1)),
-							boost::lexical_cast < double >(PQgetvalue(result, i, 2)),
-							boost::lexical_cast < double >(PQgetvalue(result, i, 3)),
-							boost::lexical_cast < double >(PQgetvalue(result, i, 4)),
-							boost::lexical_cast < double >(PQgetvalue(result, i, 5))
-						)
-					);
-				}
-			}
-		}
+                if (t >= begin && t <= end) {
+                    parameters.meteoValues.push_back(
+                        model::models::Climate(
+                            boost::lexical_cast < double >(PQgetvalue(result, i, 1)),
+                            boost::lexical_cast < double >(PQgetvalue(result, i, 2)),
+                            boost::lexical_cast < double >(PQgetvalue(result, i, 3)),
+                            boost::lexical_cast < double >(PQgetvalue(result, i, 4)),
+                            boost::lexical_cast < double >(PQgetvalue(result, i, 5))
+                        )
+                    );
+                }
+            }
+        }
 	}
 
 
