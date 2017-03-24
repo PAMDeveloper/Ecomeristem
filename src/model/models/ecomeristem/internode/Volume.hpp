@@ -29,8 +29,10 @@
 #include <utils/Trace.hpp>
 
 //#include <cmath>
-#define _USE_MATH_DEFINES
-#include <math.h>
+//#define _USE_MATH_DEFINES
+#ifndef MLOCAL_PI
+   #define MLOCAL_PI 3.141592653589793238462643383279502884197169399375
+#endif
 
 namespace ecomeristem { namespace internode {
 
@@ -55,7 +57,7 @@ public:
     {
         double radius = _diameter / 2;
 
-        _volume = _len * M_PI * radius * radius;
+        _volume = _len * MLOCAL_PI * radius * radius;
 
 #ifdef WITH_TRACE
         utils::Trace::trace()
