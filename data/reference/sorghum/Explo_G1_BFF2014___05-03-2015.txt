@@ -1,2 +1,0 @@
-ligne	Treatment	Rep	nbleaf_pi	nb_leaf_stem_elong	phenostage_to_end_filling	phenostage_to_maturity	StartingDate	EndingDate	coeff_lifespan	density_IN	Epsib	Ict	MGR_init	plasto_init	SLAp	slope_length_IN	slope_LL_BL_at_PI
-1	1	1	18	8	30	31	27/05/2014	23/09/2014	594.084223	0.08459624	5.660340788	1.738851229	9.871996688	32.61538468	66.228461	1.099355218	0.060050621
