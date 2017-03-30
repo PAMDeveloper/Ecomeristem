@@ -1,12 +1,12 @@
 /**
- * @file version.hpp.in
+ * @file ecomeristem/phytomer/Model.cpp
  * @author The Ecomeristem Development Team
- * See the AUTHORS file
+ * See the AUTHORS or Authors.txt file
  */
 
 /*
  * Copyright (C) 2005-2016 Cirad http://www.cirad.fr
- * Copyright (C) 2016 ULCO http://www.univ-littoral.fr
+ * Copyright (C) 2012-2016 ULCO http://www.univ-littoral.fr
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,16 +22,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ECOMERISTEM_VERSION_HPP
-#define ECOMERISTEM_VERSION_HPP 1
+#include <model/models/ecomeristem/phytomer/PhytomerModel.hpp>
 
-#define ECOMERISTEM_MAJOR_VERSION   (@ECOMERISTEM_MAJOR@)
-#define ECOMERISTEM_MINOR_VERSION   (@ECOMERISTEM_MINOR@)
-#define ECOMERISTEM_PATCH_VERSION   (@ECOMERISTEM_PATCH@)
-#define ECOMERISTEM_EXTRA_VERSION   "@ECOMERISTEM_EXTRA@"
-#define ECOMERISTEM_VERSION         "@ECOMERISTEM_VERSION@"
-#define ECOMERISTEM_ABI_VERSION     "@ECOMERISTEM_VERSION_SHORT@"
-#define ECOMERISTEM_NAME_COMPLETE   "@ECOMERISTEM_NAME_COMPLETE@"
-#define ECOMERISTEM_LOCALE_NAME     "@ECOMERISTEM_LOCALE_NAME@"
+namespace ecomeristem { namespace phytomer {
 
-#endif
+} } // namespace ecomeristem phytomer

@@ -48,7 +48,7 @@ public:
         submodel(ECOMERISTEM, &ecomeristem_model);
         submodel(CLIMATE, &meteo_model);
 
-        internal(LAI, &ecomeristem_model, ecomeristem::EcomeristemModel::LAI);
+//        internal(LAI, &ecomeristem_model, ecomeristem::EcomeristemModel::LAI);
         internal(DELTA_T, &ecomeristem_model, ecomeristem::EcomeristemModel::DELTA_T);
         internal(DD, &ecomeristem_model, ecomeristem::EcomeristemModel::DD);
         internal(EDD, &ecomeristem_model, ecomeristem::EcomeristemModel::EDD);
