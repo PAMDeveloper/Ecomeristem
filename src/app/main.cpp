@@ -28,7 +28,7 @@
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 
-#include <ecomeristem/version.hpp>
+#include <app/version.hpp>
 
 #include <model/kernel/Model.hpp>
 #include <model/kernel/Simulator.hpp>
